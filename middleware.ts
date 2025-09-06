@@ -1,16 +1,50 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/admin')) {
-    const token = request.cookies.get('auth-token');
-    
-    if (!token || !token.value) {
-      return NextResponse.redirect(new URL('/login', request.url));
+    let supabaseResponse = NextResponse.next({
+      request,
+    })
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll()
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+            supabaseResponse = NextResponse.next({
+              request,
+            })
+            cookiesToSet.forEach(({ name, value, options }) =>
+              supabaseResponse.cookies.set(name, value, options)
+            )
+          },
+        },
+      }
+    )
+
+    // Check if user is authenticated
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    // If no user is found, redirect to login
+    if (!user) {
+      return NextResponse.redirect(new URL('/login', request.url))
     }
+
+    return supabaseResponse
   }
+
+  return NextResponse.next()
 }
 
 export const config = {
   matcher: '/admin/:path*',
-};
+}

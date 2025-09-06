@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
+import { createClient } from '@/lib/supabase';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -21,6 +22,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const supabase = createClient();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -34,20 +36,24 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+      // Use Supabase client-side auth
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
       });
 
-      if (response.ok) {
+      if (error) {
+        toast.error(error.message || 'Login failed');
+        return;
+      }
+
+      if (authData.user) {
         toast.success('Login successful!');
         router.push('/admin/dashboard');
-      } else {
-        const error = await response.text();
-        toast.error(error || 'Login failed');
+        router.refresh(); // Refresh to update auth state
       }
     } catch (error) {
+      console.error('Login error:', error);
       toast.error('An error occurred during login');
     } finally {
       setIsLoading(false);
