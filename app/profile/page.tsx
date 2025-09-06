@@ -5,14 +5,24 @@ import { Separator } from '@/components/ui/separator';
 import { prisma } from '@/lib/prisma';
 import { Download, MapPin, Calendar, Mail, Linkedin, Github } from 'lucide-react';
 
+// Force dynamic rendering to avoid build-time database queries
+export const dynamic = 'force-dynamic';
+
 export default async function ProfilePage() {
-  // Fetch settings and work experience
-  const [settings, experiences] = await Promise.all([
-    prisma.settings.findFirst(),
-    prisma.workExperience.findMany({
-      orderBy: { order: 'asc' },
-    })
-  ]);
+  let settings: any = null;
+  let experiences: any[] = [];
+  
+  try {
+    // Fetch settings and work experience
+    [settings, experiences] = await Promise.all([
+      prisma.settings.findFirst(),
+      prisma.workExperience.findMany({
+        orderBy: { order: 'asc' },
+      })
+    ]);
+  } catch (error) {
+    console.log('Database not available, using default values');
+  }
 
   return (
     <div className="container mx-auto px-4 py-12">

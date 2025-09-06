@@ -1,18 +1,28 @@
 import { prisma } from '@/lib/prisma';
 import { ProjectCard } from '@/components/sections/project-card';
 
+// Force dynamic rendering to avoid build-time database queries
+export const dynamic = 'force-dynamic';
+
 export default async function ProjectsPage() {
-  const projects = await prisma.project.findMany({
-    orderBy: { order: 'asc' },
-  });
+  let projects: any[] = [];
+  let uniqueCategories: string[] = [];
+  
+  try {
+    projects = await prisma.project.findMany({
+      orderBy: { order: 'asc' },
+    });
 
-  // Get unique categories for filter
-  const categories = await prisma.project.findMany({
-    select: { category: true },
-    distinct: ['category'],
-  });
+    // Get unique categories for filter
+    const categories = await prisma.project.findMany({
+      select: { category: true },
+      distinct: ['category'],
+    });
 
-  const uniqueCategories = categories.map(c => c.category);
+    uniqueCategories = categories.map(c => c.category);
+  } catch (error) {
+    console.log('Database not available, using empty state');
+  }
 
   return (
     <div className="container mx-auto px-4 py-12">

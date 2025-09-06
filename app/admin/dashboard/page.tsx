@@ -3,47 +3,62 @@ import { Badge } from '@/components/ui/badge';
 import { prisma } from '@/lib/prisma';
 import { FileText, FolderOpen, Mail, User } from 'lucide-react';
 
+// Force dynamic rendering to avoid build-time database queries
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
-  // Fetch dashboard stats
-  const [
-    articlesCount,
-    publishedArticlesCount,
-    projectsCount,
-    messagesCount,
-    experienceCount,
-  ] = await Promise.all([
-    prisma.article.count(),
-    prisma.article.count({ where: { published: true } }),
-    prisma.project.count(),
-    prisma.contact.count(),
-    prisma.workExperience.count(),
-  ]);
+  let articlesCount = 0;
+  let publishedArticlesCount = 0;
+  let projectsCount = 0;
+  let messagesCount = 0;
+  let experienceCount = 0;
+  let recentArticles: any[] = [];
+  let recentMessages: any[] = [];
+  
+  try {
+    // Fetch dashboard stats
+    [
+      articlesCount,
+      publishedArticlesCount,
+      projectsCount,
+      messagesCount,
+      experienceCount,
+    ] = await Promise.all([
+      prisma.article.count(),
+      prisma.article.count({ where: { published: true } }),
+      prisma.project.count(),
+      prisma.contact.count(),
+      prisma.workExperience.count(),
+    ]);
 
-  // Fetch recent articles
-  const recentArticles = await prisma.article.findMany({
-    take: 5,
-    orderBy: { createdAt: 'desc' },
-    select: {
-      id: true,
-      title: true,
-      published: true,
-      createdAt: true,
-      category: true,
-    },
-  });
+    // Fetch recent articles
+    recentArticles = await prisma.article.findMany({
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        title: true,
+        published: true,
+        createdAt: true,
+        category: true,
+      },
+    });
 
-  // Fetch recent messages
-  const recentMessages = await prisma.contact.findMany({
-    take: 5,
-    orderBy: { createdAt: 'desc' },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      createdAt: true,
-      message: true,
-    },
-  });
+    // Fetch recent messages
+    recentMessages = await prisma.contact.findMany({
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+        message: true,
+      },
+    });
+  } catch (error) {
+    console.log('Database not available, using empty state');
+  }
 
   const stats = [
     {

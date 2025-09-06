@@ -1,14 +1,20 @@
 import { prisma } from '@/lib/prisma';
 import { ArticleCard } from '@/components/sections/article-card';
 
+// Force dynamic rendering to avoid build-time database queries
+export const dynamic = 'force-dynamic';
+
 interface ArticlesPageProps {
   searchParams: Promise<{ category?: string; search?: string }>;
 }
 
 export default async function ArticlesPage({ searchParams }: ArticlesPageProps) {
   const params = await searchParams;
+  let articles: any[] = [];
+  let uniqueCategories: string[] = [];
   
-  const articles = await prisma.article.findMany({
+  try {
+    articles = await prisma.article.findMany({
     where: {
       published: true,
       ...(params.category && { category: params.category }),
@@ -22,14 +28,17 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
     orderBy: { publishedAt: 'desc' },
   });
 
-  // Get unique categories for filter
-  const categories = await prisma.article.findMany({
-    where: { published: true },
-    select: { category: true },
-    distinct: ['category'],
-  });
+    // Get unique categories for filter
+    const categories = await prisma.article.findMany({
+      where: { published: true },
+      select: { category: true },
+      distinct: ['category'],
+    });
 
-  const uniqueCategories = categories.map(c => c.category);
+    uniqueCategories = categories.map(c => c.category);
+  } catch (error) {
+    console.log('Database not available, using empty state');
+  }
 
   return (
     <div className="container mx-auto px-4 py-12">

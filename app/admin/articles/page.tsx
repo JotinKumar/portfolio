@@ -5,10 +5,19 @@ import { Badge } from '@/components/ui/badge';
 import { prisma } from '@/lib/prisma';
 import { Plus, Edit, Trash, Eye } from 'lucide-react';
 
+// Force dynamic rendering to avoid build-time database queries
+export const dynamic = 'force-dynamic';
+
 export default async function ArticlesAdmin() {
-  const articles = await prisma.article.findMany({
-    orderBy: { createdAt: 'desc' },
-  });
+  let articles: any[] = [];
+  
+  try {
+      articles = await prisma.article.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (error) {
+    console.log('Database not available, using empty state');
+  }
 
   return (
     <div className="space-y-8">
@@ -50,7 +59,7 @@ export default async function ArticlesAdmin() {
                     <span>Created: {new Date(article.createdAt).toLocaleDateString()}</span>
                   </div>
                   <div className="flex flex-wrap gap-1 mt-2">
-                    {article.tags.split(',').filter(Boolean).map((tag) => (
+                    {article.tags.split(',').filter(Boolean).map((tag: string) => (
                       <Badge key={tag.trim()} variant="outline" className="text-xs">
                         {tag.trim()}
                       </Badge>

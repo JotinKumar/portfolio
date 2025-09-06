@@ -2,11 +2,20 @@ import { HeroToggle } from '@/components/sections/hero-toggle';
 import { WorkTimeline } from '@/components/sections/work-timeline';
 import { prisma } from '@/lib/prisma';
 
+// Force dynamic rendering to avoid build-time database queries
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
-  // Fetch work experience data
-  const experiences = await prisma.workExperience.findMany({
-    orderBy: { order: 'asc' },
-  });
+  let experiences: any[] = [];
+  
+  try {
+    // Fetch work experience data
+    experiences = await prisma.workExperience.findMany({
+      orderBy: { order: 'asc' },
+    });
+  } catch (error) {
+    console.log('Database not available, using empty state');
+  }
 
   // Transform data for the component
   const formattedExperiences = experiences.map(exp => ({
