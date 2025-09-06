@@ -1,0 +1,175 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "JK" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e6] [cursor=pointer]: JK
+      - navigation "Main" [ref=e8]:
+        - list [ref=e10]:
+          - listitem [ref=e11]:
+            - link "Home" [ref=e12] [cursor=pointer]:
+              - /url: /
+              - text: Home
+          - listitem [ref=e15]:
+            - link "Profile" [ref=e16] [cursor=pointer]:
+              - /url: /profile
+              - text: Profile
+          - listitem [ref=e19]:
+            - link "Articles" [ref=e20] [cursor=pointer]:
+              - /url: /articles
+              - text: Articles
+          - listitem [ref=e23]:
+            - link "Projects" [ref=e24] [cursor=pointer]:
+              - /url: /projects
+              - text: Projects
+          - listitem [ref=e27]:
+            - link "Contact" [ref=e28] [cursor=pointer]:
+              - /url: /contact
+              - text: Contact
+      - generic [ref=e31]:
+        - button "Toggle theme" [active] [ref=e32]:
+          - img
+          - generic [ref=e33]: Toggle theme
+        - link "Resume" [ref=e34] [cursor=pointer]:
+          - /url: /resume.pdf
+          - img
+          - text: Resume
+  - main [ref=e35]:
+    - generic [ref=e36]:
+      - generic [ref=e40]:
+        - generic [ref=e42]:
+          - generic [ref=e43]: Professional
+          - switch [ref=e44]
+          - generic [ref=e45]: Tech
+        - generic [ref=e46]:
+          - heading "Jotin Kumar Madugula" [level=1] [ref=e47]
+          - heading "Business Process Expert" [level=2] [ref=e48]
+          - paragraph [ref=e49]: Transforming operations through intelligent automation
+          - generic [ref=e50]:
+            - generic [ref=e51]: Process Optimization
+            - generic [ref=e52]: Team Leadership
+            - generic [ref=e53]: AI Integration
+            - generic [ref=e54]: Strategic Planning
+          - generic [ref=e55]:
+            - link "Download Resume" [ref=e56] [cursor=pointer]:
+              - /url: /resume.pdf
+              - img
+              - text: Download Resume
+            - link "Get in Touch" [ref=e57] [cursor=pointer]:
+              - /url: /contact
+              - img
+              - text: Get in Touch
+      - generic [ref=e59]:
+        - heading "Work Experience" [level=2] [ref=e60]
+        - generic [ref=e63]:
+          - generic [ref=e65]:
+            - generic [ref=e66]:
+              - generic [ref=e67]:
+                - heading "Senior Business Process Analyst" [level=3] [ref=e68]
+                - paragraph [ref=e69]:
+                  - img [ref=e70]
+                  - text: Tech Solutions Inc.
+              - generic [ref=e73]: Current
+            - generic [ref=e74]:
+              - paragraph [ref=e75]:
+                - img [ref=e76]
+                - text: Remote
+              - paragraph [ref=e79]:
+                - img [ref=e80]
+                - text: Jan 2022 - Present
+            - paragraph [ref=e82]: Led digital transformation initiatives for major clients.
+            - generic [ref=e83]:
+              - generic [ref=e84]: Process Optimization
+              - generic [ref=e85]: AI Integration
+              - generic [ref=e86]: Team Leadership
+          - generic [ref=e88]:
+            - generic [ref=e90]:
+              - heading "Process Improvement Manager" [level=3] [ref=e91]
+              - paragraph [ref=e92]:
+                - img [ref=e93]
+                - text: Innovation Corp
+            - generic [ref=e96]:
+              - paragraph [ref=e97]:
+                - img [ref=e98]
+                - text: New York, NY
+              - paragraph [ref=e101]:
+                - img [ref=e102]
+                - text: Mar 2020 - Dec 2021
+            - paragraph [ref=e104]: Streamlined operations and implemented automation solutions.
+            - generic [ref=e105]:
+              - generic [ref=e106]: Business Analysis
+              - generic [ref=e107]: Project Management
+              - generic [ref=e108]: RPA
+  - contentinfo [ref=e109]:
+    - generic [ref=e110]:
+      - generic [ref=e111]:
+        - generic [ref=e112]:
+          - generic [ref=e114]: Jotin Kumar
+          - paragraph [ref=e115]: Business Process Expert & Full Stack Developer passionate about transforming operations through intelligent automation.
+          - generic [ref=e116]:
+            - link "GitHub" [ref=e117] [cursor=pointer]:
+              - /url: https://github.com/jotin
+              - img
+              - generic [ref=e118] [cursor=pointer]: GitHub
+            - link "LinkedIn" [ref=e119] [cursor=pointer]:
+              - /url: https://linkedin.com/in/jotin
+              - img
+              - generic [ref=e120] [cursor=pointer]: LinkedIn
+            - link "Twitter" [ref=e121] [cursor=pointer]:
+              - /url: https://twitter.com/jotin
+              - img
+              - generic [ref=e122] [cursor=pointer]: Twitter
+            - link "Email" [ref=e123] [cursor=pointer]:
+              - /url: mailto:contact@jotin.in
+              - img
+              - generic [ref=e124] [cursor=pointer]: Email
+        - generic [ref=e125]:
+          - heading "Quick Links" [level=3] [ref=e126]
+          - list [ref=e127]:
+            - listitem [ref=e128]:
+              - link "Home" [ref=e129] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e130]:
+              - link "Profile" [ref=e131] [cursor=pointer]:
+                - /url: /profile
+            - listitem [ref=e132]:
+              - link "Articles" [ref=e133] [cursor=pointer]:
+                - /url: /articles
+            - listitem [ref=e134]:
+              - link "Projects" [ref=e135] [cursor=pointer]:
+                - /url: /projects
+        - generic [ref=e136]:
+          - heading "Resources" [level=3] [ref=e137]
+          - list [ref=e138]:
+            - listitem [ref=e139]:
+              - link "Resume" [ref=e140] [cursor=pointer]:
+                - /url: /resume.pdf
+            - listitem [ref=e141]:
+              - link "Contact" [ref=e142] [cursor=pointer]:
+                - /url: /contact
+            - listitem [ref=e143]:
+              - link "Newsletter" [ref=e144] [cursor=pointer]:
+                - /url: /newsletter
+        - generic [ref=e145]:
+          - heading "Legal" [level=3] [ref=e146]
+          - list [ref=e147]:
+            - listitem [ref=e148]:
+              - link "Privacy Policy" [ref=e149] [cursor=pointer]:
+                - /url: /privacy
+            - listitem [ref=e150]:
+              - link "Terms of Service" [ref=e151] [cursor=pointer]:
+                - /url: /terms
+      - generic [ref=e152]:
+        - generic [ref=e154]: © 2025 Jotin Kumar Madugula. All rights reserved.
+        - generic [ref=e155]:
+          - generic [ref=e156]: Built with
+          - img [ref=e157]
+          - generic [ref=e159]: using Next.js & Tailwind CSS
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e165] [cursor=pointer]:
+    - img [ref=e166] [cursor=pointer]
+  - alert [ref=e169]
+```

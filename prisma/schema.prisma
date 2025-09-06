@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Article {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  excerpt     String
+  content     String
+  coverImage  String?
+  tags        String
+  category    String
+  published   Boolean  @default(false)
+  readTime    Int      // in minutes
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  publishedAt DateTime?
+
+  @@index([slug])
+  @@index([published])
+  @@index([category])
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String
+  shortDesc   String
+  category    String
+  status      String   // "active", "completed", "in-progress"
+  order       Int      @default(0)
+  
+  // Links
+  liveUrl     String?
+  githubUrl   String?
+  
+  // Media
+  coverImage  String
+  screenshots String
+  
+  // Technical Details
+  techStack   String
+  tags        String
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+  @@index([order])
+}
+
+model WorkExperience {
+  id           String   @id @default(cuid())
+  company      String
+  companyLogo  String?
+  role         String
+  location     String
+  type         String   // "full-time", "contract", "internship"
+  description  String
+  achievements String   // stored as JSON string
+  skills       String   // stored as JSON string
+  startDate    DateTime
+  endDate      DateTime?
+  current      Boolean  @default(false)
+  order        Int      @default(0)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([current, order])
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model Settings {
+  id              String   @id @default(cuid())
+  resumeUrl       String
+  linkedinUrl     String
+  githubUrl       String
+  twitterUrl      String?
+  emailAddress    String
+  heroTitle       String
+  heroSubtitle    String
+  techHeroTitle   String
+  techHeroSubtitle String
+  aboutMe         String
+  profileImage    String
+  updatedAt       DateTime @updatedAt
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // hashed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

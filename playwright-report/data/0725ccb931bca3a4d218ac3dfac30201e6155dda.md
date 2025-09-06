@@ -1,0 +1,122 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "JK" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e6] [cursor=pointer]: JK
+      - navigation "Main" [ref=e8]:
+        - list [ref=e10]:
+          - listitem [ref=e11]:
+            - link "Home" [ref=e12] [cursor=pointer]:
+              - /url: /
+              - text: Home
+          - listitem [ref=e15]:
+            - link "Profile" [ref=e16] [cursor=pointer]:
+              - /url: /profile
+              - text: Profile
+          - listitem [ref=e19]:
+            - link "Articles" [ref=e20] [cursor=pointer]:
+              - /url: /articles
+              - text: Articles
+          - listitem [ref=e23]:
+            - link "Projects" [ref=e24] [cursor=pointer]:
+              - /url: /projects
+              - text: Projects
+          - listitem [ref=e27]:
+            - link "Contact" [ref=e28] [cursor=pointer]:
+              - /url: /contact
+              - text: Contact
+      - generic [ref=e31]:
+        - button "Toggle theme" [ref=e32]:
+          - img
+          - generic [ref=e33]: Toggle theme
+        - link "Resume" [ref=e34] [cursor=pointer]:
+          - /url: /resume.pdf
+          - img
+          - text: Resume
+  - main [ref=e35]:
+    - generic [ref=e37]:
+      - generic [ref=e38]:
+        - generic [ref=e39]: Admin Login
+        - generic [ref=e40]: Enter your credentials to access the admin dashboard
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - generic [ref=e44]: Email
+          - textbox "Email" [disabled]: admin@jotin.in
+        - generic [ref=e45]:
+          - generic [ref=e46]: Password
+          - textbox "Password" [disabled]: admin123
+        - button "Logging in..." [disabled]
+  - contentinfo [ref=e47]:
+    - generic [ref=e48]:
+      - generic [ref=e49]:
+        - generic [ref=e50]:
+          - generic [ref=e52]: Jotin Kumar
+          - paragraph [ref=e53]: Business Process Expert & Full Stack Developer passionate about transforming operations through intelligent automation.
+          - generic [ref=e54]:
+            - link "GitHub" [ref=e55] [cursor=pointer]:
+              - /url: https://github.com/jotin
+              - img
+              - generic [ref=e56] [cursor=pointer]: GitHub
+            - link "LinkedIn" [ref=e57] [cursor=pointer]:
+              - /url: https://linkedin.com/in/jotin
+              - img
+              - generic [ref=e58] [cursor=pointer]: LinkedIn
+            - link "Twitter" [ref=e59] [cursor=pointer]:
+              - /url: https://twitter.com/jotin
+              - img
+              - generic [ref=e60] [cursor=pointer]: Twitter
+            - link "Email" [ref=e61] [cursor=pointer]:
+              - /url: mailto:contact@jotin.in
+              - img
+              - generic [ref=e62] [cursor=pointer]: Email
+        - generic [ref=e63]:
+          - heading "Quick Links" [level=3] [ref=e64]
+          - list [ref=e65]:
+            - listitem [ref=e66]:
+              - link "Home" [ref=e67] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e68]:
+              - link "Profile" [ref=e69] [cursor=pointer]:
+                - /url: /profile
+            - listitem [ref=e70]:
+              - link "Articles" [ref=e71] [cursor=pointer]:
+                - /url: /articles
+            - listitem [ref=e72]:
+              - link "Projects" [ref=e73] [cursor=pointer]:
+                - /url: /projects
+        - generic [ref=e74]:
+          - heading "Resources" [level=3] [ref=e75]
+          - list [ref=e76]:
+            - listitem [ref=e77]:
+              - link "Resume" [ref=e78] [cursor=pointer]:
+                - /url: /resume.pdf
+            - listitem [ref=e79]:
+              - link "Contact" [ref=e80] [cursor=pointer]:
+                - /url: /contact
+            - listitem [ref=e81]:
+              - link "Newsletter" [ref=e82] [cursor=pointer]:
+                - /url: /newsletter
+        - generic [ref=e83]:
+          - heading "Legal" [level=3] [ref=e84]
+          - list [ref=e85]:
+            - listitem [ref=e86]:
+              - link "Privacy Policy" [ref=e87] [cursor=pointer]:
+                - /url: /privacy
+            - listitem [ref=e88]:
+              - link "Terms of Service" [ref=e89] [cursor=pointer]:
+                - /url: /terms
+      - generic [ref=e90]:
+        - generic [ref=e92]: © 2025 Jotin Kumar Madugula. All rights reserved.
+        - generic [ref=e93]:
+          - generic [ref=e94]: Built with
+          - img [ref=e95]
+          - generic [ref=e97]: using Next.js & Tailwind CSS
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e103] [cursor=pointer]:
+    - img [ref=e104] [cursor=pointer]
+  - alert [ref=e107]
+```
