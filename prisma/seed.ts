@@ -1,21 +1,10 @@
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create admin user
-  const hashedPassword = await bcrypt.hash('admin123', 12);
+  console.log('Seeding database...');
   
-  await prisma.adminUser.upsert({
-    where: { email: 'admin@jotin.in' },
-    update: {},
-    create: {
-      email: 'admin@jotin.in',
-      password: hashedPassword,
-    },
-  });
-
   // Create initial settings
   await prisma.settings.upsert({
     where: { id: 'default' },
