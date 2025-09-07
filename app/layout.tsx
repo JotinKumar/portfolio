@@ -1,15 +1,15 @@
-import './globals.css';
-import { Inter } from 'next/font/google';
-import { ThemeProvider } from '@/components/theme-provider';
-import { Header } from '@/components/layout/header';
-import { Footer } from '@/components/layout/footer';
-import { Toaster } from '@/components/ui/sonner';
+import "./globals.css";
+import { Inter } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
+import { Toaster } from "@/components/ui/sonner";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: 'Jotin Kumar Madugula - Portfolio',
-  description: 'Business Process Expert & Full Stack Developer',
+  title: "Jotin Kumar Madugula - Portfolio",
+  description: "Business Process Expert & Full Stack Developer",
 };
 
 export default function RootLayout({
@@ -27,7 +27,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Header />
-          <main className="min-h-screen">{children}</main>
+          <main className="min-h-screen">
+            <div className="max-w-[1280px] mx-auto">{children}</div>
+          </main>
           <Footer />
           <Toaster />
         </ThemeProvider>

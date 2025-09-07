@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, Building } from 'lucide-react';
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, MapPin, Building } from "lucide-react";
 
 interface Experience {
   id: string;
@@ -22,23 +22,23 @@ interface Experience {
 export function WorkTimeline({ experiences }: { experiences: Experience[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollXProgress } = useScroll({ container: containerRef });
-  
+
   return (
     <section className="py-20">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
           Work Experience
         </h2>
-        
+
         <div className="relative">
           {/* Timeline line */}
           <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-border -translate-y-1/2" />
-          
+
           {/* Scrollable container */}
           <div
             ref={containerRef}
             className="flex gap-8 overflow-x-auto pb-4 scrollbar-hide"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {experiences.map((exp, index) => (
               <motion.div
@@ -57,11 +57,9 @@ export function WorkTimeline({ experiences }: { experiences: Experience[] }) {
                         {exp.company}
                       </p>
                     </div>
-                    {exp.current && (
-                      <Badge variant="default">Current</Badge>
-                    )}
+                    {exp.current && <Badge variant="default">Current</Badge>}
                   </div>
-                  
+
                   <div className="space-y-2 text-sm text-muted-foreground mb-4">
                     <p className="flex items-center gap-1">
                       <MapPin className="w-4 h-4" />
@@ -69,18 +67,27 @@ export function WorkTimeline({ experiences }: { experiences: Experience[] }) {
                     </p>
                     <p className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
-                      {exp.startDate} - {exp.endDate || 'Present'}
+                      {exp.startDate} - {exp.endDate || "Present"}
                     </p>
                   </div>
-                  
+
                   <p className="text-sm mb-4">{exp.description}</p>
-                  
+
                   <div className="flex flex-wrap gap-1">
-                    {exp.skills.slice(0, 3).map((skill) => (
-                      <Badge key={skill} variant="secondary" className="text-xs">
-                        {skill}
-                      </Badge>
-                    ))}
+                    {(() => {
+                      const skills = Array.isArray(exp.skills)
+                        ? exp.skills
+                        : JSON.parse(exp.skills || "[]");
+                      return skills.slice(0, 3).map((skill: string) => (
+                        <Badge
+                          key={skill}
+                          variant="secondary"
+                          className="text-xs"
+                        >
+                          {skill}
+                        </Badge>
+                      ));
+                    })()}
                   </div>
                 </Card>
               </motion.div>

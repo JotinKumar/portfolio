@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,18 +9,19 @@ datasource db {
 }
 
 model Article {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
-  slug        String   @unique
+  slug        String    @unique
   excerpt     String
   content     String
   coverImage  String?
   tags        String
   category    String
-  published   Boolean  @default(false)
-  readTime    Int      // in minutes
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  published   Boolean   @default(false)
+  featured    Boolean   @default(false)
+  readTime    Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   publishedAt DateTime?
 
   @@index([slug])
@@ -38,21 +36,15 @@ model Project {
   description String
   shortDesc   String
   category    String
-  status      String   // "active", "completed", "in-progress"
+  status      String
   order       Int      @default(0)
-  
-  // Links
+  featured    Boolean  @default(false)
   liveUrl     String?
   githubUrl   String?
-  
-  // Media
   coverImage  String
   screenshots String
-  
-  // Technical Details
   techStack   String
   tags        String
-  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -61,22 +53,21 @@ model Project {
 }
 
 model WorkExperience {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   company      String
   companyLogo  String?
   role         String
   location     String
-  type         String   // "full-time", "contract", "internship"
+  type         String
   description  String
-  achievements String   // stored as JSON string
-  skills       String   // stored as JSON string
+  achievements String
+  skills       String
   startDate    DateTime
   endDate      DateTime?
-  current      Boolean  @default(false)
-  order        Int      @default(0)
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  current      Boolean   @default(false)
+  order        Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   @@index([current, order])
 }
@@ -92,25 +83,25 @@ model Contact {
 }
 
 model Settings {
-  id              String   @id @default(cuid())
-  resumeUrl       String
-  linkedinUrl     String
-  githubUrl       String
-  twitterUrl      String?
-  emailAddress    String
-  heroTitle       String
-  heroSubtitle    String
-  techHeroTitle   String
+  id               String   @id @default(cuid())
+  resumeUrl        String
+  linkedinUrl      String
+  githubUrl        String
+  twitterUrl       String?
+  emailAddress     String
+  heroTitle        String
+  heroSubtitle     String
+  techHeroTitle    String
   techHeroSubtitle String
-  aboutMe         String
-  profileImage    String
-  updatedAt       DateTime @updatedAt
+  aboutMe          String
+  profileImage     String
+  updatedAt        DateTime @updatedAt
 }
 
 model AdminUser {
   id        String   @id @default(cuid())
   email     String   @unique
-  password  String   // hashed
+  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

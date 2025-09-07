@@ -1,20 +1,33 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { toast } from 'sonner';
-import { createClient } from '@/lib/supabase';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
+import { createClient } from "@/lib/supabase";
 
 const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(1, 'Password is required'),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -27,34 +40,46 @@ export default function LoginPage() {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
   async function onSubmit(data: LoginFormValues) {
     setIsLoading(true);
-
     try {
-      // Use Supabase client-side auth
       const { data: authData, error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       });
-
       if (error) {
-        toast.error(error.message || 'Login failed');
+        toast.error(error.message || "Login failed");
         return;
       }
-
       if (authData.user) {
-        toast.success('Login successful!');
-        router.push('/admin/dashboard');
-        router.refresh(); // Refresh to update auth state
+        toast.success("Login successful!");
+        router.push("/admin/dashboard");
+        router.refresh();
       }
     } catch (error) {
-      console.error('Login error:', error);
-      toast.error('An error occurred during login');
+      console.error("Login error:", error);
+      toast.error("An error occurred during login");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleGoogleLogin() {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+      });
+      if (error) {
+        toast.error(error.message || "Google login failed");
+      }
+    } catch (error) {
+      toast.error("An error occurred during Google login");
     } finally {
       setIsLoading(false);
     }
@@ -109,9 +134,20 @@ export default function LoginPage() {
                 )}
               />
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Logging in...' : 'Login'}
+                {isLoading ? "Logging in..." : "Login"}
               </Button>
             </form>
+            <div className="mt-6">
+              <Button
+                type="button"
+                className="w-full"
+                variant="outline"
+                onClick={handleGoogleLogin}
+                disabled={isLoading}
+              >
+                Login with Google
+              </Button>
+            </div>
           </Form>
         </CardContent>
       </Card>
