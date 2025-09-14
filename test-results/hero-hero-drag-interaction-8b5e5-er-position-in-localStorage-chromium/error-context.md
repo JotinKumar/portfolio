@@ -1,0 +1,191 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - banner [ref=e5]:
+      - generic [ref=e7]:
+        - link "Jotin Portfolio Logo" [ref=e9] [cursor=pointer]:
+          - /url: /
+          - img "Jotin Portfolio Logo" [ref=e10] [cursor=pointer]
+        - list [ref=e13]:
+          - listitem [ref=e14]:
+            - link "Home" [ref=e15] [cursor=pointer]:
+              - /url: /
+              - img [ref=e16] [cursor=pointer]
+              - text: Home
+          - listitem [ref=e19]:
+            - link "Profile" [ref=e20] [cursor=pointer]:
+              - /url: /profile
+              - img [ref=e21] [cursor=pointer]
+              - text: Profile
+          - listitem [ref=e24]:
+            - link "Articles" [ref=e25] [cursor=pointer]:
+              - /url: /articles
+              - img [ref=e26] [cursor=pointer]
+              - text: Articles
+          - listitem [ref=e29]:
+            - link "Projects" [ref=e30] [cursor=pointer]:
+              - /url: /projects
+              - img [ref=e31] [cursor=pointer]
+              - text: Projects
+          - listitem [ref=e34]:
+            - link "Contact" [ref=e35] [cursor=pointer]:
+              - /url: /contact
+              - img [ref=e36] [cursor=pointer]
+              - text: Contact
+        - generic [ref=e39]:
+          - button "Toggle theme" [ref=e40]:
+            - img
+            - generic [ref=e41]: Toggle theme
+          - link "Resume" [ref=e42] [cursor=pointer]:
+            - /url: /resume.pdf
+            - img
+            - text: Resume
+    - main [ref=e44]:
+      - generic [ref=e46]:
+        - generic [ref=e47]:
+          - generic [ref=e54]:
+            - heading "Jotin Kumar Madugula" [level=1] [ref=e55]
+            - heading "Full Stack Developer" [level=2] [ref=e56]
+            - paragraph [ref=e57]: Building scalable solutions with modern technologies and cutting-edge development practices
+            - generic [ref=e58]:
+              - generic [ref=e59]: Next.js
+              - generic [ref=e60]: React
+              - generic [ref=e61]: TypeScript
+              - generic [ref=e62]: Python
+          - generic [ref=e65]:
+            - img "Jotin Kumar Madugula - Professional portrait" [ref=e67]
+            - img "Jotin Kumar Madugula - Tech enthusiast portrait" [ref=e69]
+            - slider "Image comparison slider - drag to reveal different portraits" [ref=e71]
+            - generic [ref=e77]: Slider at 50%.Neutral center mode active
+          - generic [ref=e79]:
+            - link "View Projects" [ref=e80] [cursor=pointer]:
+              - /url: /projects
+              - img
+              - text: View Projects
+            - link "Read Articles" [ref=e81] [cursor=pointer]:
+              - /url: /articles
+              - img
+              - text: Read Articles
+        - generic [ref=e86]:
+          - heading "Work Experience" [level=2] [ref=e87]
+          - generic [ref=e90]:
+            - generic [ref=e92]:
+              - generic [ref=e93]:
+                - generic [ref=e94]:
+                  - heading "Senior Business Process Analyst" [level=3] [ref=e95]
+                  - paragraph [ref=e96]:
+                    - img [ref=e97]
+                    - text: Tech Solutions Inc.
+                - generic [ref=e100]: Current
+              - generic [ref=e101]:
+                - paragraph [ref=e102]:
+                  - img [ref=e103]
+                  - text: Remote
+                - paragraph [ref=e106]:
+                  - img [ref=e107]
+                  - text: Jan 2022 - Present
+              - paragraph [ref=e109]: Led digital transformation initiatives for major clients.
+              - generic [ref=e110]:
+                - generic [ref=e111]: Process Optimization
+                - generic [ref=e112]: AI Integration
+                - generic [ref=e113]: Team Leadership
+            - generic [ref=e115]:
+              - generic [ref=e117]:
+                - heading "Process Improvement Manager" [level=3] [ref=e118]
+                - paragraph [ref=e119]:
+                  - img [ref=e120]
+                  - text: Innovation Corp
+              - generic [ref=e123]:
+                - paragraph [ref=e124]:
+                  - img [ref=e125]
+                  - text: New York, NY
+                - paragraph [ref=e128]:
+                  - img [ref=e129]
+                  - text: Mar 2020 - Dec 2021
+              - paragraph [ref=e131]: Streamlined operations and implemented automation solutions.
+              - generic [ref=e132]:
+                - generic [ref=e133]: Business Analysis
+                - generic [ref=e134]: Project Management
+                - generic [ref=e135]: RPA
+        - generic [ref=e138]:
+          - heading "Featured Articles" [level=2] [ref=e139]
+          - link "View All Articles" [ref=e140] [cursor=pointer]:
+            - /url: /articles
+            - button "View All Articles" [ref=e141]
+        - generic [ref=e144]:
+          - heading "Featured Projects" [level=2] [ref=e145]
+          - link "View All Projects" [ref=e146] [cursor=pointer]:
+            - /url: /projects
+            - button "View All Projects" [ref=e147]
+    - contentinfo [ref=e148]:
+      - generic [ref=e149]:
+        - generic [ref=e150]:
+          - generic [ref=e151]:
+            - generic [ref=e153]: Jotin Kumar
+            - paragraph [ref=e154]: Business Process Expert & Full Stack Developer passionate about transforming operations through intelligent automation.
+            - generic [ref=e155]:
+              - link "GitHub" [ref=e156] [cursor=pointer]:
+                - /url: https://github.com/jotin
+                - img
+                - generic [ref=e157] [cursor=pointer]: GitHub
+              - link "LinkedIn" [ref=e158] [cursor=pointer]:
+                - /url: https://linkedin.com/in/jotin
+                - img
+                - generic [ref=e159] [cursor=pointer]: LinkedIn
+              - link "Twitter" [ref=e160] [cursor=pointer]:
+                - /url: https://twitter.com/jotin
+                - img
+                - generic [ref=e161] [cursor=pointer]: Twitter
+              - link "Email" [ref=e162] [cursor=pointer]:
+                - /url: mailto:contact@jotin.in
+                - img
+                - generic [ref=e163] [cursor=pointer]: Email
+          - generic [ref=e164]:
+            - heading "Quick Links" [level=3] [ref=e165]
+            - list [ref=e166]:
+              - listitem [ref=e167]:
+                - link "Home" [ref=e168] [cursor=pointer]:
+                  - /url: /
+              - listitem [ref=e169]:
+                - link "Profile" [ref=e170] [cursor=pointer]:
+                  - /url: /profile
+              - listitem [ref=e171]:
+                - link "Articles" [ref=e172] [cursor=pointer]:
+                  - /url: /articles
+              - listitem [ref=e173]:
+                - link "Projects" [ref=e174] [cursor=pointer]:
+                  - /url: /projects
+          - generic [ref=e175]:
+            - heading "Resources" [level=3] [ref=e176]
+            - list [ref=e177]:
+              - listitem [ref=e178]:
+                - link "Resume" [ref=e179] [cursor=pointer]:
+                  - /url: /resume.pdf
+              - listitem [ref=e180]:
+                - link "Contact" [ref=e181] [cursor=pointer]:
+                  - /url: /contact
+              - listitem [ref=e182]:
+                - link "Newsletter" [ref=e183] [cursor=pointer]:
+                  - /url: /newsletter
+          - generic [ref=e184]:
+            - heading "Legal" [level=3] [ref=e185]
+            - list [ref=e186]:
+              - listitem [ref=e187]:
+                - link "Privacy Policy" [ref=e188] [cursor=pointer]:
+                  - /url: /privacy
+              - listitem [ref=e189]:
+                - link "Terms of Service" [ref=e190] [cursor=pointer]:
+                  - /url: /terms
+        - generic [ref=e191]:
+          - generic [ref=e193]: © 2025 Jotin Kumar Madugula. All rights reserved.
+          - generic [ref=e194]:
+            - generic [ref=e195]: Built with
+            - img [ref=e196]
+            - generic [ref=e198]: using Next.js & Tailwind CSS
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e204] [cursor=pointer]:
+    - img [ref=e205] [cursor=pointer]
+  - alert [ref=e208]
+```

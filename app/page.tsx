@@ -1,7 +1,7 @@
-import { HeroToggle } from "@/components/sections/hero-toggle";
 import { WorkTimeline } from "@/components/sections/work-timeline";
 import { FeaturedArticles } from "@/components/sections/featured-articles";
 import { FeaturedProjects } from "@/components/sections/featured-projects";
+import HeroSplit from "@/components/sections/hero/HeroSplit";
 import { prisma } from "@/lib/prisma";
 
 // Force dynamic rendering to avoid build-time database queries
@@ -67,7 +67,7 @@ export default async function Home() {
 
   return (
     <div>
-      <HeroToggle />
+      <HeroSplit />
       <WorkTimeline experiences={formattedExperiences} />
       <FeaturedArticles articles={featuredArticles} />
       <FeaturedProjects projects={featuredProjects} />

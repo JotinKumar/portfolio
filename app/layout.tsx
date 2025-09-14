@@ -2,7 +2,11 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/layout/header";
+
 import { Footer } from "@/components/layout/footer";
+import { Background } from "@/components/ui/background";
+import { FloatingBlobsBar } from "@/components/ui/floating-blobs-bar";
+
 import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -26,11 +30,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
-          <main className="min-h-screen">
-            <div className="max-w-[1280px] mx-auto">{children}</div>
-          </main>
-          <Footer />
+          <Background>
+            <Header />
+            <FloatingBlobsBar />
+            <main className="min-h-screen">
+              <div className="max-w-[1280px] mx-auto">{children}</div>
+            </main>
+            <Footer />
+          </Background>
           <Toaster />
         </ThemeProvider>
       </body>

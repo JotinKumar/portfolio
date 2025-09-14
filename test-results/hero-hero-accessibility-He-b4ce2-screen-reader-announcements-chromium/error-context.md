@@ -1,0 +1,185 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - banner [ref=e5]:
+      - generic [ref=e7]:
+        - link "Jotin Portfolio Logo" [ref=e9] [cursor=pointer]:
+          - /url: /
+          - img "Jotin Portfolio Logo" [ref=e10] [cursor=pointer]
+        - list [ref=e13]:
+          - listitem [ref=e14]:
+            - link "Home" [ref=e15] [cursor=pointer]:
+              - /url: /
+              - img [ref=e16] [cursor=pointer]
+              - text: Home
+          - listitem [ref=e19]:
+            - link "Profile" [ref=e20] [cursor=pointer]:
+              - /url: /profile
+              - img [ref=e21] [cursor=pointer]
+              - text: Profile
+          - listitem [ref=e24]:
+            - link "Articles" [ref=e25] [cursor=pointer]:
+              - /url: /articles
+              - img [ref=e26] [cursor=pointer]
+              - text: Articles
+          - listitem [ref=e29]:
+            - link "Projects" [ref=e30] [cursor=pointer]:
+              - /url: /projects
+              - img [ref=e31] [cursor=pointer]
+              - text: Projects
+          - listitem [ref=e34]:
+            - link "Contact" [ref=e35] [cursor=pointer]:
+              - /url: /contact
+              - img [ref=e36] [cursor=pointer]
+              - text: Contact
+        - generic [ref=e39]:
+          - button "Toggle theme" [ref=e40]:
+            - img
+            - generic [ref=e41]: Toggle theme
+          - link "Resume" [ref=e42] [cursor=pointer]:
+            - /url: /resume.pdf
+            - img
+            - text: Resume
+    - main [ref=e44]:
+      - generic [ref=e46]:
+        - generic [ref=e47]:
+          - generic [ref=e55]:
+            - img "Jotin Kumar Madugula - Professional portrait" [ref=e57]
+            - img "Jotin Kumar Madugula - Tech enthusiast portrait" [ref=e59]
+            - slider "Image comparison slider - drag to reveal different portraits" [ref=e61]
+            - generic [ref=e67]: Slider at 50%.Neutral center mode active
+          - generic [ref=e69]:
+            - link "Explore My Work" [ref=e70] [cursor=pointer]:
+              - /url: /about
+              - img
+              - text: Explore My Work
+            - link "Get In Touch" [ref=e71] [cursor=pointer]:
+              - /url: /contact
+              - img
+              - text: Get In Touch
+          - generic [ref=e73]:
+            - heading "Multi-faceted Professional" [level=3] [ref=e74]
+            - paragraph [ref=e75]: Drag the slider to explore both sides of my professional journey
+        - generic [ref=e80]:
+          - heading "Work Experience" [level=2] [ref=e81]
+          - generic [ref=e84]:
+            - generic [ref=e86]:
+              - generic [ref=e87]:
+                - generic [ref=e88]:
+                  - heading "Senior Business Process Analyst" [level=3] [ref=e89]
+                  - paragraph [ref=e90]:
+                    - img [ref=e91]
+                    - text: Tech Solutions Inc.
+                - generic [ref=e94]: Current
+              - generic [ref=e95]:
+                - paragraph [ref=e96]:
+                  - img [ref=e97]
+                  - text: Remote
+                - paragraph [ref=e100]:
+                  - img [ref=e101]
+                  - text: Jan 2022 - Present
+              - paragraph [ref=e103]: Led digital transformation initiatives for major clients.
+              - generic [ref=e104]:
+                - generic [ref=e105]: Process Optimization
+                - generic [ref=e106]: AI Integration
+                - generic [ref=e107]: Team Leadership
+            - generic [ref=e109]:
+              - generic [ref=e111]:
+                - heading "Process Improvement Manager" [level=3] [ref=e112]
+                - paragraph [ref=e113]:
+                  - img [ref=e114]
+                  - text: Innovation Corp
+              - generic [ref=e117]:
+                - paragraph [ref=e118]:
+                  - img [ref=e119]
+                  - text: New York, NY
+                - paragraph [ref=e122]:
+                  - img [ref=e123]
+                  - text: Mar 2020 - Dec 2021
+              - paragraph [ref=e125]: Streamlined operations and implemented automation solutions.
+              - generic [ref=e126]:
+                - generic [ref=e127]: Business Analysis
+                - generic [ref=e128]: Project Management
+                - generic [ref=e129]: RPA
+        - generic [ref=e132]:
+          - heading "Featured Articles" [level=2] [ref=e133]
+          - link "View All Articles" [ref=e134] [cursor=pointer]:
+            - /url: /articles
+            - button "View All Articles" [ref=e135]
+        - generic [ref=e138]:
+          - heading "Featured Projects" [level=2] [ref=e139]
+          - link "View All Projects" [ref=e140] [cursor=pointer]:
+            - /url: /projects
+            - button "View All Projects" [ref=e141]
+    - contentinfo [ref=e142]:
+      - generic [ref=e143]:
+        - generic [ref=e144]:
+          - generic [ref=e145]:
+            - generic [ref=e147]: Jotin Kumar
+            - paragraph [ref=e148]: Business Process Expert & Full Stack Developer passionate about transforming operations through intelligent automation.
+            - generic [ref=e149]:
+              - link "GitHub" [ref=e150] [cursor=pointer]:
+                - /url: https://github.com/jotin
+                - img
+                - generic [ref=e151] [cursor=pointer]: GitHub
+              - link "LinkedIn" [ref=e152] [cursor=pointer]:
+                - /url: https://linkedin.com/in/jotin
+                - img
+                - generic [ref=e153] [cursor=pointer]: LinkedIn
+              - link "Twitter" [ref=e154] [cursor=pointer]:
+                - /url: https://twitter.com/jotin
+                - img
+                - generic [ref=e155] [cursor=pointer]: Twitter
+              - link "Email" [ref=e156] [cursor=pointer]:
+                - /url: mailto:contact@jotin.in
+                - img
+                - generic [ref=e157] [cursor=pointer]: Email
+          - generic [ref=e158]:
+            - heading "Quick Links" [level=3] [ref=e159]
+            - list [ref=e160]:
+              - listitem [ref=e161]:
+                - link "Home" [ref=e162] [cursor=pointer]:
+                  - /url: /
+              - listitem [ref=e163]:
+                - link "Profile" [ref=e164] [cursor=pointer]:
+                  - /url: /profile
+              - listitem [ref=e165]:
+                - link "Articles" [ref=e166] [cursor=pointer]:
+                  - /url: /articles
+              - listitem [ref=e167]:
+                - link "Projects" [ref=e168] [cursor=pointer]:
+                  - /url: /projects
+          - generic [ref=e169]:
+            - heading "Resources" [level=3] [ref=e170]
+            - list [ref=e171]:
+              - listitem [ref=e172]:
+                - link "Resume" [ref=e173] [cursor=pointer]:
+                  - /url: /resume.pdf
+              - listitem [ref=e174]:
+                - link "Contact" [ref=e175] [cursor=pointer]:
+                  - /url: /contact
+              - listitem [ref=e176]:
+                - link "Newsletter" [ref=e177] [cursor=pointer]:
+                  - /url: /newsletter
+          - generic [ref=e178]:
+            - heading "Legal" [level=3] [ref=e179]
+            - list [ref=e180]:
+              - listitem [ref=e181]:
+                - link "Privacy Policy" [ref=e182] [cursor=pointer]:
+                  - /url: /privacy
+              - listitem [ref=e183]:
+                - link "Terms of Service" [ref=e184] [cursor=pointer]:
+                  - /url: /terms
+        - generic [ref=e185]:
+          - generic [ref=e187]: © 2025 Jotin Kumar Madugula. All rights reserved.
+          - generic [ref=e188]:
+            - generic [ref=e189]: Built with
+            - img [ref=e190]
+            - generic [ref=e192]: using Next.js & Tailwind CSS
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e198] [cursor=pointer]:
+    - img [ref=e199] [cursor=pointer]
+  - alert [ref=e202]
+```
