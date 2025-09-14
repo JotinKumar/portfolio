@@ -26,6 +26,8 @@
 
 # playwright
 playwright-report/
+test-results/
+tests/
 
 # debug
 npm-debug.log*
