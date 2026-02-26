@@ -3,8 +3,8 @@ import { Badge } from '@/components/ui/badge';
 import { prisma } from '@/lib/prisma';
 import { FileText, FolderOpen, Mail, User } from 'lucide-react';
 
-// Force dynamic rendering to avoid build-time database queries
-export const dynamic = 'force-dynamic';
+// Use Incremental Static Regeneration (ISR)
+export const revalidate = 60; // Revalidate every minute for admin dashboard
 
 export default async function AdminDashboard() {
   let articlesCount = 0;

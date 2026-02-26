@@ -4,45 +4,37 @@ import { FeaturedProjects } from "@/components/sections/featured-projects";
 import HeroSplit from "@/components/sections/hero/HeroSplit";
 import { prisma } from "@/lib/prisma";
 
-// Force dynamic rendering to avoid build-time database queries
-export const dynamic = "force-dynamic";
+// Use Incremental Static Regeneration (ISR) instead of force-dynamic
+export const revalidate = 3600; // Revalidate every hour
 
 export default async function Home() {
-  let experiences: any[] = [];
-  let featuredArticles: any[] = [];
-  let featuredProjects: any[] = [];
-
-  try {
-    // Fetch work experience data
-    experiences = await prisma.workExperience.findMany({
-      orderBy: { order: "asc" },
-    });
-  } catch (error) {
-    console.log(
-      "Database not available for work experiences, using empty state"
-    );
-  }
-
-  try {
-    // Fetch featured articles
-    featuredArticles = await prisma.article.findMany({
+  // Fetch data in parallel for better performance
+  const [experiencesResult, articlesResult, projectsResult] = await Promise.allSettled([
+    prisma.workExperience.findMany({ orderBy: { order: "asc" } }),
+    prisma.article.findMany({
       where: { featured: true, published: true },
       orderBy: { publishedAt: "desc" },
       take: 3,
-    });
-  } catch (error) {
-    console.log("Database not available for articles, using empty state");
-  }
-
-  try {
-    // Fetch featured projects
-    featuredProjects = await prisma.project.findMany({
+    }),
+    prisma.project.findMany({
       where: { featured: true },
       orderBy: { order: "asc" },
       take: 3,
-    });
-  } catch (error) {
-    console.log("Database not available for projects, using empty state");
+    }),
+  ]);
+
+  const experiences = experiencesResult.status === 'fulfilled' ? experiencesResult.value : [];
+  const featuredArticles = articlesResult.status === 'fulfilled' ? articlesResult.value : [];
+  const featuredProjects = projectsResult.status === 'fulfilled' ? projectsResult.value : [];
+
+  if (experiencesResult.status === 'rejected') {
+    console.error("Failed to fetch work experiences:", experiencesResult.reason);
+  }
+  if (articlesResult.status === 'rejected') {
+    console.error("Failed to fetch articles:", articlesResult.reason);
+  }
+  if (projectsResult.status === 'rejected') {
+    console.error("Failed to fetch projects:", projectsResult.reason);
   }
 
   // Transform data for the component

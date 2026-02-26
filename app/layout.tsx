@@ -31,8 +31,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Background>
+            <div className="fixed top-[10px] left-0 right-0 z-40 pointer-events-none">
+              <FloatingBlobsBar height={68} />
+            </div>
             <Header />
-            <FloatingBlobsBar />
             <main className="min-h-screen">
               <div className="max-w-[1280px] mx-auto">{children}</div>
             </main>
