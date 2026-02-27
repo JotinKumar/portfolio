@@ -43,8 +43,8 @@ export function ProfessionalHero({
       initial={false}
       animate={{
         gridTemplateColumns: current 
-          ? "1.2fr 1fr 0.1fr" 
-          : "1fr 336px 1fr"
+          ? "minmax(0, 1.2fr) minmax(0, 1fr) 0.1fr" 
+          : "minmax(0, 1fr) 336px minmax(0, 1fr)"
       }}
       transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
     >
@@ -52,7 +52,7 @@ export function ProfessionalHero({
       <div
         className={`flex justify-end items-center h-full transition-all duration-700 ${
           current || isInitial ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
-        } ${current ? "px-20" : "px-12"}`}
+        } ${current ? "px-12 md:px-20" : "px-4 md:px-6"}`}
       >
         <div className={`${current ? "h-[480px]" : "h-[432px]"} w-full max-w-xl flex flex-col py-2 overflow-hidden`}>
           {/* Top Section: Heading and Description */}
