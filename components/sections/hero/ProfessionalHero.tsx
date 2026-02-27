@@ -38,36 +38,36 @@ export function ProfessionalHero({
   const displaySkills = isInitial ? initialSkills : allSkills;
 
   return (
-    <div 
-      className="w-full h-full bg-background grid transition-all duration-700 ease-in-out items-center"
-      style={{
+    <motion.div 
+      className="w-full h-full bg-background grid items-center overflow-hidden"
+      initial={false}
+      animate={{
         gridTemplateColumns: current 
-          ? "1.2fr 1fr 0fr" 
-          : "minmax(0, 1fr) 336px minmax(0, 1fr)"
+          ? "1.2fr 1fr 0.1fr" 
+          : "1fr 336px 1fr"
       }}
+      transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
     >
       {/* Left: Professional Content */}
       <div
-        className={`flex justify-end items-center transition-all duration-700 ${
+        className={`flex justify-end items-center h-full transition-all duration-700 ${
           current || isInitial ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
         } ${current ? "px-20" : "px-12"}`}
       >
-        <motion.div 
-          layout
-          className={`${current ? "h-[480px]" : "h-[432px]"} w-full max-w-xl flex flex-col py-2`}
-        >
+        <div className={`${current ? "h-[480px]" : "h-[432px]"} w-full max-w-xl flex flex-col py-2 overflow-hidden`}>
           {/* Top Section: Heading and Description */}
-          <motion.div layout>
-            <AnimatePresence>
+          <div className="flex flex-col">
+            <AnimatePresence mode="wait">
               {current && (
                 <motion.div 
+                  key="prof-title"
                   initial={{ opacity: 0, height: 0, marginBottom: 0 }}
                   animate={{ opacity: 1, height: "auto", marginBottom: "1.5rem" }}
                   exit={{ opacity: 0, height: 0, marginBottom: 0 }}
                   transition={{ duration: 0.4, ease: "easeInOut" }}
                   className="overflow-hidden"
                 >
-                  <h1 className="text-2xl md:text-4xl font-black mb-1 text-foreground tracking-tighter uppercase">
+                  <h1 className="text-2xl md:text-4xl font-black mb-1 text-foreground tracking-tighter uppercase whitespace-nowrap">
                     Jotin Kumar Madugula
                   </h1>
                   <motion.div 
@@ -79,26 +79,14 @@ export function ProfessionalHero({
             </AnimatePresence>
             
             <div className="space-y-3">
-              <motion.h2 
-                layout
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.35 }}
-                className={`${isInitial ? "text-lg" : "text-xl md:text-2xl"} text-primary font-bold uppercase tracking-wide`}
-              >
+              <h2 className={`${isInitial ? "text-lg" : "text-xl md:text-2xl"} text-primary font-bold uppercase tracking-wide whitespace-nowrap`}>
                 Pricing and Solutions Director
-              </motion.h2>
-              <motion.p 
-                layout
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className={`${isInitial ? "text-base max-w-md" : "text-base md:text-lg max-w-2xl"} text-muted-foreground leading-relaxed`}
-              >
+              </h2>
+              <p className={`${isInitial ? "text-base max-w-md" : "text-base md:text-lg max-w-2xl"} text-muted-foreground leading-relaxed`}>
                 A seasoned professional with 21+ years of experience in the BPO/ITES industry, including 13 years in US Healthcare Operations and 8+ years in Pricing and Financial Strategy.
-              </motion.p>
+              </p>
             </div>
-          </motion.div>
+          </div>
 
           {/* Spacer to push skills/buttons down if expanded */}
           <div className="flex-1" />
@@ -117,11 +105,16 @@ export function ProfessionalHero({
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ delay: 0.35 + (index * 0.05) }}
+                    transition={{ 
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 30,
+                      delay: index * 0.02 
+                    }}
                   >
                     <Badge
                       variant="default"
-                      className={`rounded-full px-3 py-1 text-[8px] md:text-[9px] uppercase tracking-widest font-black text-white border-none shadow-md transition-transform hover:scale-110 ${
+                      className={`rounded-full px-3 py-1 text-[8px] md:text-[9px] uppercase tracking-widest font-black text-white border-none shadow-md whitespace-nowrap ${
                         professionalColors[index % professionalColors.length]
                       }`}
                     >
@@ -131,44 +124,39 @@ export function ProfessionalHero({
                 ))}
               </AnimatePresence>
             </motion.div>
-            <motion.div 
-              layout
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.4 }}
-              className={`flex flex-col sm:flex-row gap-4 ${isInitial ? "scale-90 origin-left" : ""}`}
-            >
+            <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 ${isInitial ? "scale-90 origin-left" : ""}`}>
               <Button asChild className="rounded-full px-8 py-5 text-base font-bold shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
                 <a href="/resume.pdf">Download Resume</a>
               </Button>
               <Button variant="outline" asChild className="rounded-full px-8 py-5 text-base font-bold border-2 hover:bg-primary/5 transition-all active:scale-95">
                 <a href="/contact">Get in Touch</a>
               </Button>
-            </motion.div>
+            </div>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* Middle/Right: Image Area */}
-      <div className="flex items-center justify-center h-full">
+      <div className="flex items-center justify-center h-full overflow-hidden">
         <motion.div 
           layout
+          transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
           className={`${current ? "w-[400px] h-[520px]" : "w-[336px] h-[432px]"} rounded-[2.5rem] overflow-hidden bg-muted relative shadow-[0_20px_50px_rgba(0,0,0,0.3)] group transition-all duration-700`}
         >
-          <motion.div layout className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
           <Image
             src="/images/professional-portrait.jpg"
             alt="Professional Portrait"
-            width={current ? 400 : 336}
-            height={current ? 520 : 432}
+            width={400}
+            height={520}
             className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
             priority
           />
         </motion.div>
       </div>
 
-      {/* Right Placeholder: Animate to 0fr */}
-      <div className="w-full h-full overflow-hidden transition-all duration-700" />
-    </div>
+      {/* Right Placeholder: Animate to nearly 0 */}
+      <div className="w-full h-full overflow-hidden" />
+    </motion.div>
   );
 }

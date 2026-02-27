@@ -4,6 +4,7 @@ import { ProfessionalHero } from "./ProfessionalHero";
 import { TechHero } from "./TechHero";
 import { Briefcase, Code, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function HeroSplit() {
   const [x, setX] = useState(0.5); // 0 = Tech fully shown, 1 = Professional fully shown
@@ -68,18 +69,24 @@ export default function HeroSplit() {
         </div>
 
         {/* Name Overlay */}
-        <div 
-          className={`absolute left-0 right-0 z-40 flex flex-col items-center pointer-events-none transition-all duration-700 ease-in-out ${
-            isInitial ? "top-[12%] opacity-100 scale-100" : "top-[5%] opacity-0 scale-90"
-          }`}
-        >
-          <div className="bg-background/20 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg">
-            <h1 className="text-xl md:text-3xl font-black text-foreground tracking-tight text-center uppercase">
-              Jotin Kumar Madugula
-            </h1>
-            <div className="h-1 w-10 bg-primary mx-auto mt-1 rounded-full" />
-          </div>
-        </div>
+        <AnimatePresence>
+          {isInitial && (
+            <motion.div 
+              initial={{ top: "12%", opacity: 0, scale: 0.9 }}
+              animate={{ top: "12%", opacity: 1, scale: 1 }}
+              exit={{ top: "5%", opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="absolute left-0 right-0 z-40 flex flex-col items-center pointer-events-none"
+            >
+              <div className="bg-background/20 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg p-2">
+                <h1 className="text-xl md:text-3xl font-black text-foreground tracking-tight text-center uppercase whitespace-nowrap">
+                  Jotin Kumar Madugula
+                </h1>
+                <div className="h-1 w-10 bg-primary mx-auto mt-1 rounded-full" />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Hero Content Container */}
         <div className="relative w-full h-full">
@@ -92,25 +99,29 @@ export default function HeroSplit() {
           </div>
 
           {/* Right content: TechHero (clipped) */}
-          <div
-            className="absolute inset-0 z-30 overflow-hidden transition-all duration-700 ease-in-out"
-            style={{
-              clipPath: `inset(0 0 0 calc(${x} * 100%))`,
+          <motion.div
+            className="absolute inset-0 z-30 overflow-hidden"
+            initial={false}
+            animate={{
+              clipPath: `inset(0 0 0 ${x * 100}%)`,
             }}
+            transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
           >
             <TechHero 
               current={isTech} 
               isInitial={isInitial}
             />
-          </div>
+          </motion.div>
         </div>
 
         {/* Thinner Separator Bar */}
-        <div
-          className="absolute top-0 h-full w-[1px] bg-primary/20 z-40 transition-all duration-700 ease-in-out"
-          style={{
-            left: `calc(${x} * 100%)`,
+        <motion.div
+          className="absolute top-0 h-full w-[2px] bg-primary/30 z-40 shadow-[0_0_15px_rgba(var(--primary),0.3)]"
+          initial={false}
+          animate={{
+            left: `${x * 100}%`,
           }}
+          transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
         />
       </div>
     </section>
