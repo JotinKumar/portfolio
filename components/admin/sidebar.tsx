@@ -64,7 +64,7 @@ export function AdminSidebar() {
       } else {
         toast.error('Logout failed');
       }
-    } catch (error) {
+    } catch {
       toast.error('An error occurred during logout');
     }
   }

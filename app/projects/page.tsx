@@ -1,11 +1,12 @@
 import { prisma } from '@/lib/prisma';
 import { ProjectCard } from '@/components/sections/project-card';
+import type { Project } from '@prisma/client';
 
 // Force dynamic rendering to avoid build-time database queries
 export const dynamic = 'force-dynamic';
 
 export default async function ProjectsPage() {
-  let projects: any[] = [];
+  let projects: Project[] = [];
   let uniqueCategories: string[] = [];
   
   try {
@@ -20,7 +21,7 @@ export default async function ProjectsPage() {
     });
 
     uniqueCategories = categories.map(c => c.category);
-  } catch (error) {
+  } catch {
     console.log('Database not available, using empty state');
   }
 

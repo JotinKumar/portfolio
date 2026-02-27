@@ -156,9 +156,9 @@ export function ProfessionalHero({
           <Image
             src="/images/professional-portrait.jpg"
             alt="Professional Portrait"
-            width={400}
-            height={520}
-            className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+            fill
+            sizes="(max-width: 768px) 336px, 400px"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
             priority
           />
         </motion.div>

@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Building } from "lucide-react";
@@ -20,9 +19,6 @@ interface Experience {
 }
 
 export function WorkTimeline({ experiences }: { experiences: Experience[] }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollXProgress } = useScroll({ container: containerRef });
-
   return (
     <section className="py-20">
       <div className="container mx-auto px-4">
@@ -36,7 +32,6 @@ export function WorkTimeline({ experiences }: { experiences: Experience[] }) {
 
           {/* Scrollable container */}
           <div
-            ref={containerRef}
             className="flex gap-8 overflow-x-auto pb-4 scrollbar-hide"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >

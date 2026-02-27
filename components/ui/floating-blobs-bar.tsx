@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useEffect, useCallback, useMemo } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
 
 interface Blob {
@@ -55,6 +55,7 @@ export const FloatingBlobsBar: React.FC<FloatingBlobsBarProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationIdRef = useRef<number>(0);
+  const isAnimatingRef = useRef(false);
   const blobsRef = useRef<Blob[]>([]);
   const dimensionsRef = useRef({ width: 0, height });
 
@@ -139,6 +140,21 @@ export const FloatingBlobsBar: React.FC<FloatingBlobsBarProps> = ({
     animationIdRef.current = requestAnimationFrame(animate);
   }, [draw, height]);
 
+  const startAnimation = useCallback(() => {
+    if (isAnimatingRef.current) return;
+    isAnimatingRef.current = true;
+    animationIdRef.current = requestAnimationFrame(animate);
+  }, [animate]);
+
+  const stopAnimation = useCallback(() => {
+    if (!isAnimatingRef.current) return;
+    isAnimatingRef.current = false;
+    if (animationIdRef.current) {
+      cancelAnimationFrame(animationIdRef.current);
+      animationIdRef.current = 0;
+    }
+  }, []);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -156,18 +172,26 @@ export const FloatingBlobsBar: React.FC<FloatingBlobsBarProps> = ({
     blobsRef.current = createBlobs(initialWidth, height);
 
     // Start animation
-    animate();
+    startAnimation();
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopAnimation();
+      } else {
+        startAnimation();
+      }
+    };
 
     // Add resize listener with cleanup
     window.addEventListener("resize", handleResize);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      if (animationIdRef.current) {
-        cancelAnimationFrame(animationIdRef.current);
-      }
+      stopAnimation();
       window.removeEventListener("resize", handleResize);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [height, blobCount, createBlobs, animate, handleResize]);
+  }, [height, blobCount, createBlobs, handleResize, startAnimation, stopAnimation]);
 
   return (
     <div

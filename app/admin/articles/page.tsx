@@ -3,19 +3,20 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { prisma } from '@/lib/prisma';
+import type { Article } from '@prisma/client';
 import { Plus, Edit, Trash, Eye } from 'lucide-react';
 
 // Force dynamic rendering to avoid build-time database queries
 export const dynamic = 'force-dynamic';
 
 export default async function ArticlesAdmin() {
-  let articles: any[] = [];
+  let articles: Article[] = [];
   
   try {
       articles = await prisma.article.findMany({
       orderBy: { createdAt: 'desc' },
     });
-  } catch (error) {
+  } catch {
     console.log('Database not available, using empty state');
   }
 

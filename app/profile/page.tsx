@@ -3,14 +3,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { prisma } from '@/lib/prisma';
+import type { Settings, WorkExperience } from '@prisma/client';
 import { Download, MapPin, Calendar, Mail, Linkedin, Github } from 'lucide-react';
 
 // Force dynamic rendering to avoid build-time database queries
 export const dynamic = 'force-dynamic';
 
 export default async function ProfilePage() {
-  let settings: any = null;
-  let experiences: any[] = [];
+  let settings: Settings | null = null;
+  let experiences: WorkExperience[] = [];
   
   try {
     // Fetch settings and work experience
@@ -20,7 +21,7 @@ export default async function ProfilePage() {
         orderBy: { order: 'asc' },
       })
     ]);
-  } catch (error) {
+  } catch {
     console.log('Database not available, using default values');
   }
 

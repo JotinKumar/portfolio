@@ -45,7 +45,7 @@ export default function HeroSplit() {
   };
 
   return (
-    <section className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden px-4 md:px-8">
+    <section className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden px-4">
       <div
         className="relative w-full max-w-7xl h-full md:h-[80vh] min-h-[600px] max-h-[800px] overflow-hidden md:rounded-[2.5rem] shadow-[0_18px_60px_rgba(15,23,42,0.14)] dark:shadow-[0_24px_80px_rgba(0,0,0,0.6)] border border-primary/10 dark:border-white/15"
       >

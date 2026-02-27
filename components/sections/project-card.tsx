@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,11 +15,13 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
   return (
     <Card className="h-full flex flex-col hover:shadow-lg transition-shadow">
-      <div className="aspect-video overflow-hidden rounded-t-lg">
-        <img 
+      <div className="relative aspect-video overflow-hidden rounded-t-lg">
+        <Image
           src={project.coverImage} 
           alt={project.title}
-          className="w-full h-full object-cover"
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="object-cover"
         />
       </div>
       

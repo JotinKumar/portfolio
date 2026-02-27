@@ -1,10 +1,30 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { prisma } from '@/lib/prisma';
+import type { Prisma } from '@prisma/client';
 import { FileText, FolderOpen, Mail, User } from 'lucide-react';
 
 // Use Incremental Static Regeneration (ISR)
 export const revalidate = 60; // Revalidate every minute for admin dashboard
+
+const recentArticleSelect = {
+  id: true,
+  title: true,
+  published: true,
+  createdAt: true,
+  category: true,
+} as const;
+
+const recentMessageSelect = {
+  id: true,
+  name: true,
+  email: true,
+  createdAt: true,
+  message: true,
+} as const;
+
+type RecentArticle = Prisma.ArticleGetPayload<{ select: typeof recentArticleSelect }>;
+type RecentMessage = Prisma.ContactGetPayload<{ select: typeof recentMessageSelect }>;
 
 export default async function AdminDashboard() {
   let articlesCount = 0;
@@ -12,8 +32,8 @@ export default async function AdminDashboard() {
   let projectsCount = 0;
   let messagesCount = 0;
   let experienceCount = 0;
-  let recentArticles: any[] = [];
-  let recentMessages: any[] = [];
+  let recentArticles: RecentArticle[] = [];
+  let recentMessages: RecentMessage[] = [];
   
   try {
     // Fetch dashboard stats
@@ -35,28 +55,16 @@ export default async function AdminDashboard() {
     recentArticles = await prisma.article.findMany({
       take: 5,
       orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        title: true,
-        published: true,
-        createdAt: true,
-        category: true,
-      },
+      select: recentArticleSelect,
     });
 
     // Fetch recent messages
     recentMessages = await prisma.contact.findMany({
       take: 5,
       orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        createdAt: true,
-        message: true,
-      },
+      select: recentMessageSelect,
     });
-  } catch (error) {
+  } catch {
     console.log('Database not available, using empty state');
   }
 

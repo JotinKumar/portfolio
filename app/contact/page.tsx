@@ -49,7 +49,7 @@ export default function ContactPage() {
         const error = await response.text();
         toast.error(error || 'Failed to send message');
       }
-    } catch (error) {
+    } catch {
       toast.error('An error occurred while sending your message');
     } finally {
       setIsLoading(false);
@@ -62,7 +62,7 @@ export default function ContactPage() {
         <div className="text-center space-y-4 mb-12">
           <h1 className="text-4xl md:text-5xl font-bold">Get in Touch</h1>
           <p className="text-xl text-muted-foreground">
-            Have a project in mind or just want to chat? I'd love to hear from you.
+            Have a project in mind or just want to chat? I&apos;d love to hear from you.
           </p>
         </div>
 
@@ -182,7 +182,7 @@ export default function ContactPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Let's Connect</CardTitle>
+                <CardTitle>Let&apos;s Connect</CardTitle>
                 <CardDescription>
                   Follow me on social media for updates and insights.
                 </CardDescription>

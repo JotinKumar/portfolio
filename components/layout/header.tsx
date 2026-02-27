@@ -9,11 +9,9 @@ import { Glassmorphism } from "@/components/ui/glassmorphism";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import {
   Moon,
@@ -21,7 +19,6 @@ import {
   Menu,
   Download,
   Mail,
-  Code,
   User,
   FileText,
   Briefcase,

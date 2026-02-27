@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { ArticleCard } from '@/components/sections/article-card';
+import type { Article } from '@prisma/client';
 
 // Force dynamic rendering to avoid build-time database queries
 export const dynamic = 'force-dynamic';
@@ -10,7 +11,7 @@ interface ArticlesPageProps {
 
 export default async function ArticlesPage({ searchParams }: ArticlesPageProps) {
   const params = await searchParams;
-  let articles: any[] = [];
+  let articles: Article[] = [];
   let uniqueCategories: string[] = [];
   
   try {
@@ -36,7 +37,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
     });
 
     uniqueCategories = categories.map(c => c.category);
-  } catch (error) {
+  } catch {
     console.log('Database not available, using empty state');
   }
 

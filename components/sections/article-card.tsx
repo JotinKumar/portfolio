@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import Image from 'next/image';
+import { Card, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock } from 'lucide-react';
 import { Article } from '@prisma/client';
@@ -12,11 +13,13 @@ export function ArticleCard({ article }: ArticleCardProps) {
   return (
     <Card className="h-full flex flex-col hover:shadow-lg transition-shadow">
       {article.coverImage && (
-        <div className="aspect-video overflow-hidden rounded-t-lg">
-          <img 
+        <div className="relative aspect-video overflow-hidden rounded-t-lg">
+          <Image
             src={article.coverImage} 
             alt={article.title}
-            className="w-full h-full object-cover"
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className="object-cover"
           />
         </div>
       )}

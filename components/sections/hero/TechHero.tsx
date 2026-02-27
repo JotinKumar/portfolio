@@ -64,9 +64,9 @@ export function TechHero({
           <Image
             src="/images/tech-portrait.jpg"
             alt="Tech Hero"
-            width={400}
-            height={520}
-            className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+            fill
+            sizes="(max-width: 768px) 336px, 400px"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
             priority
           />
         </motion.div>
@@ -107,7 +107,7 @@ export function TechHero({
                 Self-Taught Tech Enthusiast
               </h2>
               <p className={`${isInitial ? "text-base max-w-md" : "text-lg md:text-xl max-w-2xl"} text-muted-foreground leading-relaxed`}>
-                An enthusiastic explorer of modern technologies, self-learning AI, Machine Learning, and Full Stack frameworks. Passionate about understanding how things work and building projects to stay on the pulse of innovation.
+                A self-taught tech enthusiast driven by curiosity and a constant desire to learn. Actively exploring modern technologies including AI, machine learning, and full-stack development, with a strong focus on understanding systems deeply and applying knowledge through hands-on projects to stay aligned with the latest innovations.
               </p>
             </div>
           </div>
