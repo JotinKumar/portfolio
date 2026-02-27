@@ -6,9 +6,11 @@ import { motion, AnimatePresence } from "framer-motion";
 export function TechHero({
   current = false,
   isInitial = false,
+  skillsExitEarly = false,
 }: {
   current?: boolean;
   isInitial?: boolean;
+  skillsExitEarly?: boolean;
 }) {
   const techColors = [
     "bg-rose-500 hover:bg-rose-600",
@@ -39,11 +41,11 @@ export function TechHero({
 
   return (
     <motion.div 
-      className="w-full h-full bg-background grid items-center overflow-hidden"
+      className="w-full h-full grid items-center overflow-hidden"
       initial={false}
       animate={{
         gridTemplateColumns: current 
-          ? "0.1fr minmax(0, 1fr) minmax(0, 1.2fr)" 
+          ? "minmax(0px, 0.1fr) 400px minmax(0, 1.2fr)" 
           : "minmax(0, 1fr) 336px minmax(0, 1fr)"
       }}
       transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
@@ -54,8 +56,9 @@ export function TechHero({
       {/* Left/Middle: Image Area */}
       <div className="flex items-center justify-center h-full overflow-hidden">
         <motion.div 
-          layout="position"
-          className={`${current ? "w-[400px] h-[520px]" : "w-[336px] h-[432px]"} rounded-[2.5rem] overflow-hidden bg-muted relative shadow-[0_20px_50px_rgba(0,0,0,0.3)] group transition-all duration-700`}
+          layout
+          transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+          className={`${current ? "w-[400px] h-[520px]" : "w-[336px] h-[432px]"} rounded-[2.5rem] overflow-hidden bg-muted relative shadow-[0_20px_50px_rgba(0,0,0,0.3)] group`}
         >
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
           <Image
@@ -125,7 +128,14 @@ export function TechHero({
                     layout
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
+                    exit={{
+                      opacity: 0,
+                      scale: 0.8,
+                      transition: {
+                        duration: skillsExitEarly ? 0.16 : 0.28,
+                        ease: "easeIn",
+                      },
+                    }}
                     transition={{ 
                       type: "spring",
                       stiffness: 300,
