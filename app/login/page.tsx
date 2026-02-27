@@ -35,7 +35,10 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
+  const hasSupabaseConfig = Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -46,8 +49,14 @@ export default function LoginPage() {
   });
 
   async function onSubmit(data: LoginFormValues) {
+    if (!hasSupabaseConfig) {
+      toast.error("Authentication is not configured");
+      return;
+    }
+
     setIsLoading(true);
     try {
+      const supabase = createClient();
       const { data: authData, error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
@@ -70,15 +79,21 @@ export default function LoginPage() {
   }
 
   async function handleGoogleLogin() {
+    if (!hasSupabaseConfig) {
+      toast.error("Authentication is not configured");
+      return;
+    }
+
     setIsLoading(true);
     try {
+      const supabase = createClient();
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
       });
       if (error) {
         toast.error(error.message || "Google login failed");
       }
-    } catch (error) {
+    } catch {
       toast.error("An error occurred during Google login");
     } finally {
       setIsLoading(false);
@@ -133,7 +148,11 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isLoading || !hasSupabaseConfig}
+              >
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
             </form>
@@ -143,7 +162,7 @@ export default function LoginPage() {
                 className="w-full"
                 variant="outline"
                 onClick={handleGoogleLogin}
-                disabled={isLoading}
+                disabled={isLoading || !hasSupabaseConfig}
               >
                 Login with Google
               </Button>

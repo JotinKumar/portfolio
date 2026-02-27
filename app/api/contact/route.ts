@@ -2,15 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Resend } from 'resend';
 import { z } from 'zod';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { getClientIp, rateLimit } from '@/lib/rate-limit';
 
 // Define schema for contact form validation
 const contactSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  message: z.string().min(10, 'Message must be at least 10 characters'),
-});
+  name: z.string().trim().min(2, 'Name must be at least 2 characters').max(100, 'Name is too long'),
+  email: z.string().trim().email('Invalid email address').max(254, 'Email is too long'),
+  message: z.string().trim().min(10, 'Message must be at least 10 characters').max(5000, 'Message is too long'),
+}).strict();
+
+const getResendClient = () => {
+  const apiKey = process.env.RESEND_API_KEY;
+  return apiKey ? new Resend(apiKey) : null;
+};
 
 // Simple sanitization function to prevent basic script injection in emails
 const sanitizeHtml = (str: string) => {
@@ -24,12 +28,18 @@ const sanitizeHtml = (str: string) => {
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const rateLimitResult = rateLimit(`contact:${ip}`, { limit: 5, windowMs: 60_000 });
+    if (!rateLimitResult.success) {
+      return NextResponse.json({ error: 'Too many requests. Please try again in a minute.' }, { status: 429 });
+    }
+
     const body = await req.json();
     
     // Validate request body
     const result = contactSchema.safeParse(body);
     if (!result.success) {
-      return NextResponse.json({ error: result.error.errors[0].message }, { status: 400 });
+      return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
     }
 
     const { name, email, message } = result.data;
@@ -45,6 +55,12 @@ export async function POST(req: NextRequest) {
 
     // Send email notification using Resend
     try {
+      const resend = getResendClient();
+      if (!resend) {
+        console.warn('RESEND_API_KEY is not set; skipping email notification.');
+        return NextResponse.json({ message: 'Message sent successfully' }, { status: 200 });
+      }
+
       // Sanitize inputs for email display
       const sanitizedName = sanitizeHtml(name);
       const sanitizedEmail = sanitizeHtml(email);

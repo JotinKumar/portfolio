@@ -8,34 +8,59 @@ import { prisma } from "@/lib/prisma";
 export const revalidate = 3600; // Revalidate every hour
 
 export default async function Home() {
-  // Fetch data in parallel for better performance
-  const [experiencesResult, articlesResult, projectsResult] = await Promise.allSettled([
-    prisma.workExperience.findMany({ orderBy: { order: "asc" } }),
-    prisma.article.findMany({
-      where: { featured: true, published: true },
-      orderBy: { publishedAt: "desc" },
-      take: 3,
-    }),
-    prisma.project.findMany({
-      where: { featured: true },
-      orderBy: { order: "asc" },
-      take: 3,
-    }),
+  if (!process.env.DATABASE_URL) {
+    return (
+      <div>
+        <HeroSplit />
+        <WorkTimeline experiences={[]} />
+        <FeaturedArticles articles={[]} />
+        <FeaturedProjects projects={[]} />
+      </div>
+    );
+  }
+
+  const safeQuery = async <T,>(label: string, query: () => Promise<T>, fallback: T): Promise<T> => {
+    try {
+      return await query();
+    } catch (error) {
+      console.error(`Failed to fetch ${label}:`, error);
+      return fallback;
+    }
+  };
+
+  // Fetch data in parallel with resilient fallbacks per query
+  const [experiences, featuredArticles, featuredProjects] = await Promise.all([
+    safeQuery("work experiences", () => prisma.workExperience.findMany({ orderBy: { order: "asc" } }), []),
+    safeQuery(
+      "featured articles",
+      () =>
+        prisma.article.findMany({
+          where: { featured: true, published: true },
+          orderBy: { publishedAt: "desc" },
+          take: 3,
+        }),
+      []
+    ),
+    safeQuery(
+      "featured projects",
+      () =>
+        prisma.project.findMany({
+          where: { featured: true },
+          orderBy: { order: "asc" },
+          take: 3,
+        }),
+      []
+    ),
   ]);
 
-  const experiences = experiencesResult.status === 'fulfilled' ? experiencesResult.value : [];
-  const featuredArticles = articlesResult.status === 'fulfilled' ? articlesResult.value : [];
-  const featuredProjects = projectsResult.status === 'fulfilled' ? projectsResult.value : [];
-
-  if (experiencesResult.status === 'rejected') {
-    console.error("Failed to fetch work experiences:", experiencesResult.reason);
-  }
-  if (articlesResult.status === 'rejected') {
-    console.error("Failed to fetch articles:", articlesResult.reason);
-  }
-  if (projectsResult.status === 'rejected') {
-    console.error("Failed to fetch projects:", projectsResult.reason);
-  }
+  const parseStringArray = (value: string): string[] => {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
 
   // Transform data for the component
   const formattedExperiences = experiences.map((exp) => ({
@@ -53,8 +78,8 @@ export default async function Home() {
     }),
     current: exp.current,
     description: exp.description,
-    achievements: exp.achievements,
-    skills: exp.skills,
+    achievements: parseStringArray(exp.achievements),
+    skills: parseStringArray(exp.skills),
   }));
 
   return (
