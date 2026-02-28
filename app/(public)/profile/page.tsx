@@ -87,6 +87,7 @@ export default async function ProfilePage() {
   const displaySummary = RESUME_SUMMARY;
   const displayEmail = settings?.emailAddress || "JotinMadugula@gmail.com";
   const displayResumeUrl = RESUME_DOWNLOAD_PATH;
+  const summaryLead = displaySummary.split(".")[0]?.trim() || displaySummary;
   const yearsExperience = deriveYearsExperience(experiences);
   const currentRole = experiences.find((exp) => exp.current)?.role || displayTitle;
 
@@ -101,7 +102,9 @@ export default async function ProfilePage() {
               <div className="space-y-3">
                 <h1 className="text-3xl font-black tracking-tight md:text-5xl">{displayName}</h1>
                 <p className="text-lg font-semibold text-primary md:text-2xl">{displayTitle}</p>
-                <p className="text-base leading-relaxed text-muted-foreground md:text-lg">{displaySummary}</p>
+                <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
+                  {summaryLead}.
+                </p>
               </div>
               <div className="flex flex-wrap gap-3 pt-2">
                 <Button asChild>
