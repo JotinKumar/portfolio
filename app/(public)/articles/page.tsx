@@ -6,7 +6,7 @@ import type { Article } from '@/lib/db-types';
 export const dynamic = 'force-dynamic';
 
 interface ArticlesPageProps {
-  searchParams: Promise<{ category?: string; search?: string }>;
+  searchParams: Promise<{ category?: string; search?: string; tag?: string }>;
 }
 
 export default async function ArticlesPage({ searchParams }: ArticlesPageProps) {
@@ -15,7 +15,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
   let uniqueCategories: string[] = [];
   
   try {
-    articles = (await getPublishedArticles(params.category, params.search)) as Article[];
+    articles = (await getPublishedArticles(params.category, params.search, params.tag)) as Article[];
     uniqueCategories = await getPublishedArticleCategories();
   } catch {
     console.log('Database not available, using empty state');
@@ -37,7 +37,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
             <a 
               href="/articles"
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                !params.category 
+                !params.category && !params.tag
                   ? 'bg-primary text-primary-foreground' 
                   : 'bg-muted hover:bg-muted/80'
               }`}
@@ -60,6 +60,21 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
           </div>
         )}
 
+        {params.tag ? (
+          <div className="flex items-center justify-center gap-2 text-sm">
+            <span className="text-muted-foreground">Tag:</span>
+            <a
+              href={`/articles?tag=${encodeURIComponent(params.tag)}`}
+              className="rounded-full bg-primary px-3 py-1 text-primary-foreground"
+            >
+              #{params.tag}
+            </a>
+            <a href="/articles" className="text-muted-foreground underline hover:text-foreground">
+              Clear
+            </a>
+          </div>
+        ) : null}
+
         {/* Articles Grid */}
         {articles.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -71,7 +86,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
           <div className="text-center py-12">
             <h3 className="text-xl font-semibold mb-2">No articles found</h3>
             <p className="text-muted-foreground">
-              {params.search || params.category
+              {params.search || params.category || params.tag
                 ? 'Try adjusting your filters to see more articles.'
                 : 'Articles will appear here once they are published.'}
             </p>

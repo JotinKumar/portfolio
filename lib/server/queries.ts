@@ -101,7 +101,7 @@ export const getProfileData = cache(async (): Promise<{
 });
 
 export const getPublishedArticles = cache(
-  async (category?: string, search?: string): Promise<ArticleCardData[]> => {
+  async (category?: string, search?: string, tag?: string): Promise<ArticleCardData[]> => {
     const supabase = await createServerSupabaseClient();
     let query = supabase
       .from("Article")
@@ -116,6 +116,11 @@ export const getPublishedArticles = cache(
     if (search) {
       const escaped = search.replace(/,/g, "\\,");
       query = query.or(`title.ilike.%${escaped}%,excerpt.ilike.%${escaped}%`);
+    }
+
+    if (tag) {
+      const escapedTag = tag.replace(/,/g, "\\,");
+      query = query.ilike("tags", `%${escapedTag}%`);
     }
 
     const { data, error } = await query;
