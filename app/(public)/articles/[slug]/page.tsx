@@ -31,7 +31,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
 
   if (!article) {
     return (
-      <div className="container mx-auto px-4 py-12">
+      <section className="py-12">
         <Card className="max-w-2xl mx-auto">
           <CardHeader>
             <CardTitle>Article not found</CardTitle>
@@ -45,21 +45,23 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
             </Link>
           </CardContent>
         </Card>
-      </div>
+      </section>
     );
   }
 
   return (
-    <article className="container mx-auto px-4 py-12 max-w-3xl">
-      <div className="space-y-4 mb-8">
-        <Badge variant="secondary">{article.category}</Badge>
-        <h1 className="text-3xl md:text-4xl font-bold">{article.title}</h1>
-        <div className="text-sm text-muted-foreground">
-          {new Date(article.publishedAt || article.createdAt).toLocaleDateString()} · {article.readTime} min read
+    <article className="py-12">
+      <div className="w-full max-w-3xl mx-auto">
+        <div className="space-y-4 mb-8">
+          <Badge variant="secondary">{article.category}</Badge>
+          <h1 className="text-3xl md:text-4xl font-bold">{article.title}</h1>
+          <div className="text-sm text-muted-foreground">
+            {new Date(article.publishedAt || article.createdAt).toLocaleDateString()} - {article.readTime} min read
+          </div>
         </div>
-      </div>
-      <div className="prose prose-neutral max-w-none whitespace-pre-wrap dark:prose-invert">
-        {article.content}
+        <div className="prose prose-neutral max-w-none whitespace-pre-wrap dark:prose-invert">
+          {article.content}
+        </div>
       </div>
     </article>
   );

@@ -66,8 +66,8 @@ export default async function ProfilePage() {
       : RESUME_EXPERIENCES;
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <section className="py-12">
+      <div className="w-full max-w-6xl mx-auto space-y-8">
         <div className="text-center space-y-6">
           <div className="mx-auto w-32 h-32 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
             <span className="text-4xl font-bold text-white">JK</span>
@@ -217,6 +217,6 @@ export default async function ProfilePage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </section>
   );
 }
