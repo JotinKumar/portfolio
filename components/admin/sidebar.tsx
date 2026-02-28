@@ -70,7 +70,7 @@ export function AdminSidebar() {
   }
 
   return (
-    <div className="flex h-full w-64 flex-col border-r bg-background">
+    <div className="flex h-full w-64 shrink-0 flex-col border-r bg-muted/20">
       <div className="flex h-14 items-center border-b px-4">
         <Link href="/admin/dashboard" className="flex items-center space-x-2">
           <span className="text-lg font-bold">Admin Panel</span>

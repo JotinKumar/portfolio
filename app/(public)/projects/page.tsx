@@ -33,7 +33,7 @@ export default async function ProjectsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <section className="py-12">
       <div className="space-y-8">
         <div className="text-center space-y-4">
           <h1 className="text-4xl md:text-5xl font-bold">Projects</h1>
@@ -79,6 +79,6 @@ export default async function ProjectsPage() {
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 }
