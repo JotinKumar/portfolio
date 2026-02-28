@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Card, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock } from 'lucide-react';
-import { Article } from '@prisma/client';
+import type { Article } from '@/lib/db-types';
 
 interface ArticleCardProps {
   article: Article;
@@ -58,3 +58,4 @@ export function ArticleCard({ article }: ArticleCardProps) {
     </Card>
   );
 }
+

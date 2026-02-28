@@ -2,8 +2,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { prisma } from '@/lib/prisma';
-import type { Settings, WorkExperience } from '@prisma/client';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
+import type { Settings, WorkExperience } from '@/lib/db-types';
 import { Download, MapPin, Calendar, Mail, Linkedin, Github } from 'lucide-react';
 
 // Force dynamic rendering to avoid build-time database queries
@@ -14,16 +14,35 @@ export default async function ProfilePage() {
   let experiences: WorkExperience[] = [];
   
   try {
+    const supabase = await createServerSupabaseClient();
+
     // Fetch settings and work experience
-    [settings, experiences] = await Promise.all([
-      prisma.settings.findFirst(),
-      prisma.workExperience.findMany({
-        orderBy: { order: 'asc' },
-      })
+    const [settingsResult, experiencesResult] = await Promise.all([
+      supabase.from('Settings').select('*').limit(1).maybeSingle(),
+      supabase.from('WorkExperience').select('*').order('order', { ascending: true }),
     ]);
+
+    if (settingsResult.error) {
+      throw settingsResult.error;
+    }
+    if (experiencesResult.error) {
+      throw experiencesResult.error;
+    }
+
+    settings = (settingsResult.data as Settings | null) ?? null;
+    experiences = (experiencesResult.data ?? []) as WorkExperience[];
   } catch {
     console.log('Database not available, using default values');
   }
+
+  const parseStringArray = (value: string): string[] => {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -120,8 +139,8 @@ export default async function ProfilePage() {
                   <div className="text-right text-sm text-muted-foreground">
                     <div className="flex items-center">
                       <Calendar className="w-4 h-4 mr-1" />
-                      {exp.startDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} - 
-                      {exp.endDate ? exp.endDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Present'}
+                      {new Date(exp.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} - 
+                      {exp.endDate ? new Date(exp.endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Present'}
                     </div>
                     <div className="flex items-center mt-1">
                       <MapPin className="w-4 h-4 mr-1" />
@@ -136,7 +155,7 @@ export default async function ProfilePage() {
                 <div className="mb-4">
                   <h4 className="text-sm font-medium mb-2">Key Skills:</h4>
                   <div className="flex flex-wrap gap-1">
-                    {JSON.parse(exp.skills).map((skill: string) => (
+                    {parseStringArray(exp.skills).map((skill) => (
                       <Badge key={skill} variant="secondary" className="text-xs">
                         {skill}
                       </Badge>
@@ -148,7 +167,7 @@ export default async function ProfilePage() {
                 <div>
                   <h4 className="text-sm font-medium mb-2">Key Achievements:</h4>
                   <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    {JSON.parse(exp.achievements).map((achievement: string, idx: number) => (
+                    {parseStringArray(exp.achievements).map((achievement, idx) => (
                       <li key={idx}>{achievement}</li>
                     ))}
                   </ul>

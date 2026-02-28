@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { Resend } from 'resend';
 import { z } from 'zod';
 import { getClientIp, rateLimit } from '@/lib/rate-limit';
@@ -45,13 +45,17 @@ export async function POST(req: NextRequest) {
     const { name, email, message } = result.data;
 
     // Save contact message to database
-    await prisma.contact.create({
-      data: {
+    const supabase = await createServerSupabaseClient();
+    const { error: insertError } = await supabase
+      .from('Contact')
+      .insert({
         name,
         email,
         message,
-      },
-    });
+      });
+    if (insertError) {
+      throw insertError;
+    }
 
     // Send email notification using Resend
     try {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArticleCard } from "./article-card";
-import { Article } from "@prisma/client";
+import type { Article } from "@/lib/db-types";
 
 interface FeaturedArticlesProps {
   articles: Article[];

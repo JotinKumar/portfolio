@@ -1,30 +1,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { prisma } from '@/lib/prisma';
-import type { Prisma } from '@prisma/client';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
+import type { Article, Contact } from '@/lib/db-types';
 import { FileText, FolderOpen, Mail, User } from 'lucide-react';
 
 // Use Incremental Static Regeneration (ISR)
 export const revalidate = 60; // Revalidate every minute for admin dashboard
 
-const recentArticleSelect = {
-  id: true,
-  title: true,
-  published: true,
-  createdAt: true,
-  category: true,
-} as const;
-
-const recentMessageSelect = {
-  id: true,
-  name: true,
-  email: true,
-  createdAt: true,
-  message: true,
-} as const;
-
-type RecentArticle = Prisma.ArticleGetPayload<{ select: typeof recentArticleSelect }>;
-type RecentMessage = Prisma.ContactGetPayload<{ select: typeof recentMessageSelect }>;
+type RecentArticle = Pick<Article, 'id' | 'title' | 'published' | 'createdAt' | 'category'>;
+type RecentMessage = Pick<Contact, 'id' | 'name' | 'email' | 'createdAt' | 'message'>;
 
 export default async function AdminDashboard() {
   let articlesCount = 0;
@@ -36,34 +20,68 @@ export default async function AdminDashboard() {
   let recentMessages: RecentMessage[] = [];
   
   try {
+    const supabase = await createServerSupabaseClient();
+
     // Fetch dashboard stats
-    [
-      articlesCount,
-      publishedArticlesCount,
-      projectsCount,
-      messagesCount,
-      experienceCount,
-    ] = await Promise.all([
-      prisma.article.count(),
-      prisma.article.count({ where: { published: true } }),
-      prisma.project.count(),
-      prisma.contact.count(),
-      prisma.workExperience.count(),
-    ]);
+    const [articlesCountResult, publishedCountResult, projectsCountResult, messagesCountResult, experienceCountResult] =
+      await Promise.all([
+        supabase.from('Article').select('*', { count: 'exact', head: true }),
+        supabase.from('Article').select('*', { count: 'exact', head: true }).eq('published', true),
+        supabase.from('Project').select('*', { count: 'exact', head: true }),
+        supabase.from('Contact').select('*', { count: 'exact', head: true }),
+        supabase.from('WorkExperience').select('*', { count: 'exact', head: true }),
+      ]);
+
+    const countErrors = [
+      articlesCountResult.error,
+      publishedCountResult.error,
+      projectsCountResult.error,
+      messagesCountResult.error,
+      experienceCountResult.error,
+    ].filter(Boolean);
+    if (countErrors.length > 0) {
+      throw countErrors[0];
+    }
+
+    articlesCount = articlesCountResult.count ?? 0;
+    publishedArticlesCount = publishedCountResult.count ?? 0;
+    projectsCount = projectsCountResult.count ?? 0;
+    messagesCount = messagesCountResult.count ?? 0;
+    experienceCount = experienceCountResult.count ?? 0;
 
     // Fetch recent articles
-    recentArticles = await prisma.article.findMany({
-      take: 5,
-      orderBy: { createdAt: 'desc' },
-      select: recentArticleSelect,
-    });
+    const { data: recentArticleRows, error: recentArticlesError } = await supabase
+      .from('Article')
+      .select('*')
+      .order('createdAt', { ascending: false })
+      .limit(5);
+    if (recentArticlesError) {
+      throw recentArticlesError;
+    }
+    recentArticles = ((recentArticleRows ?? []) as Article[]).map((article) => ({
+      id: article.id,
+      title: article.title,
+      published: article.published,
+      createdAt: article.createdAt,
+      category: article.category,
+    }));
 
     // Fetch recent messages
-    recentMessages = await prisma.contact.findMany({
-      take: 5,
-      orderBy: { createdAt: 'desc' },
-      select: recentMessageSelect,
-    });
+    const { data: recentMessageRows, error: recentMessagesError } = await supabase
+      .from('Contact')
+      .select('*')
+      .order('createdAt', { ascending: false })
+      .limit(5);
+    if (recentMessagesError) {
+      throw recentMessagesError;
+    }
+    recentMessages = ((recentMessageRows ?? []) as Contact[]).map((message) => ({
+      id: message.id,
+      name: message.name,
+      email: message.email,
+      createdAt: message.createdAt,
+      message: message.message,
+    }));
   } catch {
     console.log('Database not available, using empty state');
   }

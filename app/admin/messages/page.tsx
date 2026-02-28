@@ -1,13 +1,22 @@
-import { prisma } from "@/lib/prisma";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import type { Contact } from "@/lib/db-types";
 
 export const dynamic = "force-dynamic";
 
 export default async function MessagesPage() {
-  const messages = await prisma.contact.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 20,
-  });
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from("Contact")
+    .select("*")
+    .order("createdAt", { ascending: false })
+    .limit(20);
+
+  if (error) {
+    throw error;
+  }
+
+  const messages = (data ?? []) as Contact[];
 
   return (
     <div className="space-y-8">

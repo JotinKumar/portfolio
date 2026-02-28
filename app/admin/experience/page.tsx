@@ -1,12 +1,21 @@
-import { prisma } from "@/lib/prisma";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import type { WorkExperience } from "@/lib/db-types";
 
 export const dynamic = "force-dynamic";
 
 export default async function ExperiencePage() {
-  const experiences = await prisma.workExperience.findMany({
-    orderBy: { order: "asc" },
-  });
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from("WorkExperience")
+    .select("*")
+    .order("order", { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  const experiences = (data ?? []) as WorkExperience[];
 
   return (
     <div className="space-y-8">
@@ -25,14 +34,10 @@ export default async function ExperiencePage() {
               </p>
               <p>{exp.description}</p>
               <p className="text-xs mt-2">
-                {exp.startDate instanceof Date
-                  ? exp.startDate.toLocaleDateString()
-                  : exp.startDate}{" "}
+                {new Date(exp.startDate).toLocaleDateString()}{" "}
                 -{" "}
                 {exp.endDate
-                  ? exp.endDate instanceof Date
-                    ? exp.endDate.toLocaleDateString()
-                    : exp.endDate
+                  ? new Date(exp.endDate).toLocaleDateString()
                   : "Present"}
               </p>
             </CardContent>

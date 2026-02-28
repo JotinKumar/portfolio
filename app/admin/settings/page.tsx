@@ -1,10 +1,18 @@
-import { prisma } from "@/lib/prisma";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import type { Settings } from "@/lib/db-types";
 
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
-  const settings = await prisma.settings.findFirst();
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await supabase.from("Settings").select("*").limit(1).maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  const settings = (data as Settings | null) ?? null;
 
   return (
     <div className="space-y-8">

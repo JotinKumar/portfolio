@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, Github } from 'lucide-react';
-import { Project } from '@prisma/client';
+import type { Project } from '@/lib/db-types';
 
 interface ProjectCardProps {
   project: Project;
@@ -78,3 +78,4 @@ export function ProjectCard({ project }: ProjectCardProps) {
     </Card>
   );
 }
+

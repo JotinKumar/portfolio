@@ -2,13 +2,14 @@ import { WorkTimeline } from "@/components/sections/work-timeline";
 import { FeaturedArticles } from "@/components/sections/featured-articles";
 import { FeaturedProjects } from "@/components/sections/featured-projects";
 import HeroSplit from "@/components/sections/hero/HeroSplit";
-import { prisma } from "@/lib/prisma";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
+import type { Article, Project, WorkExperience } from "@/lib/db-types";
 
 // Use Incremental Static Regeneration (ISR) instead of force-dynamic
 export const revalidate = 3600; // Revalidate every hour
 
 export default async function Home() {
-  if (!process.env.DATABASE_URL) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     return (
       <div>
         <HeroSplit />
@@ -18,6 +19,8 @@ export default async function Home() {
       </div>
     );
   }
+
+  const supabase = await createServerSupabaseClient();
 
   const safeQuery = async <T,>(label: string, query: () => Promise<T>, fallback: T): Promise<T> => {
     try {
@@ -30,26 +33,42 @@ export default async function Home() {
 
   // Fetch data in parallel with resilient fallbacks per query
   const [experiences, featuredArticles, featuredProjects] = await Promise.all([
-    safeQuery("work experiences", () => prisma.workExperience.findMany({ orderBy: { order: "asc" } }), []),
+    safeQuery("work experiences", async () => {
+      const { data, error } = await supabase
+        .from("WorkExperience")
+        .select("*")
+        .order("order", { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as WorkExperience[];
+    }, [] as WorkExperience[]),
     safeQuery(
       "featured articles",
-      () =>
-        prisma.article.findMany({
-          where: { featured: true, published: true },
-          orderBy: { publishedAt: "desc" },
-          take: 3,
-        }),
-      []
+      async () => {
+        const { data, error } = await supabase
+          .from("Article")
+          .select("*")
+          .eq("featured", true)
+          .eq("published", true)
+          .order("publishedAt", { ascending: false, nullsFirst: false })
+          .limit(3);
+        if (error) throw error;
+        return (data ?? []) as Article[];
+      },
+      [] as Article[]
     ),
     safeQuery(
       "featured projects",
-      () =>
-        prisma.project.findMany({
-          where: { featured: true },
-          orderBy: { order: "asc" },
-          take: 3,
-        }),
-      []
+      async () => {
+        const { data, error } = await supabase
+          .from("Project")
+          .select("*")
+          .eq("featured", true)
+          .order("order", { ascending: true })
+          .limit(3);
+        if (error) throw error;
+        return (data ?? []) as Project[];
+      },
+      [] as Project[]
     ),
   ]);
 
@@ -68,14 +87,14 @@ export default async function Home() {
     company: exp.company,
     role: exp.role,
     location: exp.location,
-    startDate: exp.startDate.toLocaleDateString("en-US", {
+    startDate: new Date(exp.startDate).toLocaleDateString("en-US", {
       month: "short",
       year: "numeric",
     }),
-    endDate: exp.endDate?.toLocaleDateString("en-US", {
+    endDate: exp.endDate ? new Date(exp.endDate).toLocaleDateString("en-US", {
       month: "short",
       year: "numeric",
-    }),
+    }) : undefined,
     current: exp.current,
     description: exp.description,
     achievements: parseStringArray(exp.achievements),

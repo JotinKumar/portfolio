@@ -1,6 +1,6 @@
-import { prisma } from '@/lib/prisma';
 import { ProjectCard } from '@/components/sections/project-card';
-import type { Project } from '@prisma/client';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
+import type { Project } from '@/lib/db-types';
 
 // Force dynamic rendering to avoid build-time database queries
 export const dynamic = 'force-dynamic';
@@ -10,17 +10,24 @@ export default async function ProjectsPage() {
   let uniqueCategories: string[] = [];
   
   try {
-    projects = await prisma.project.findMany({
-      orderBy: { order: 'asc' },
-    });
+    const supabase = await createServerSupabaseClient();
+    const { data: projectRows, error: projectsError } = await supabase
+      .from('Project')
+      .select('*')
+      .order('order', { ascending: true });
+    if (projectsError) {
+      throw projectsError;
+    }
+    projects = (projectRows ?? []) as Project[];
 
     // Get unique categories for filter
-    const categories = await prisma.project.findMany({
-      select: { category: true },
-      distinct: ['category'],
-    });
-
-    uniqueCategories = categories.map(c => c.category);
+    const { data: categoryRows, error: categoriesError } = await supabase
+      .from('Project')
+      .select('category');
+    if (categoriesError) {
+      throw categoriesError;
+    }
+    uniqueCategories = Array.from(new Set((categoryRows ?? []).map((c) => c.category)));
   } catch {
     console.log('Database not available, using empty state');
   }

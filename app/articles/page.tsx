@@ -1,6 +1,6 @@
-import { prisma } from '@/lib/prisma';
 import { ArticleCard } from '@/components/sections/article-card';
-import type { Article } from '@prisma/client';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
+import type { Article } from '@/lib/db-types';
 
 // Force dynamic rendering to avoid build-time database queries
 export const dynamic = 'force-dynamic';
@@ -15,28 +15,37 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
   let uniqueCategories: string[] = [];
   
   try {
-    articles = await prisma.article.findMany({
-    where: {
-      published: true,
-      ...(params.category && { category: params.category }),
-      ...(params.search && {
-        OR: [
-          { title: { contains: params.search } },
-          { excerpt: { contains: params.search } },
-        ],
-      }),
-    },
-    orderBy: { publishedAt: 'desc' },
-  });
+    const supabase = await createServerSupabaseClient();
+    let articlesQuery = supabase
+      .from('Article')
+      .select('*')
+      .eq('published', true)
+      .order('publishedAt', { ascending: false, nullsFirst: false });
+
+    if (params.category) {
+      articlesQuery = articlesQuery.eq('category', params.category);
+    }
+
+    if (params.search) {
+      const escaped = params.search.replace(/,/g, '\\,');
+      articlesQuery = articlesQuery.or(`title.ilike.%${escaped}%,excerpt.ilike.%${escaped}%`);
+    }
+
+    const { data: articleRows, error: articleError } = await articlesQuery;
+    if (articleError) {
+      throw articleError;
+    }
+    articles = (articleRows ?? []) as Article[];
 
     // Get unique categories for filter
-    const categories = await prisma.article.findMany({
-      where: { published: true },
-      select: { category: true },
-      distinct: ['category'],
-    });
-
-    uniqueCategories = categories.map(c => c.category);
+    const { data: categoryRows, error: categoryError } = await supabase
+      .from('Article')
+      .select('category')
+      .eq('published', true);
+    if (categoryError) {
+      throw categoryError;
+    }
+    uniqueCategories = Array.from(new Set((categoryRows ?? []).map((c) => c.category)));
   } catch {
     console.log('Database not available, using empty state');
   }

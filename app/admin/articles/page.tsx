@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { prisma } from '@/lib/prisma';
-import type { Article } from '@prisma/client';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
+import type { Article } from '@/lib/db-types';
 import { Plus, Edit, Trash, Eye } from 'lucide-react';
 
 // Force dynamic rendering to avoid build-time database queries
@@ -13,9 +13,15 @@ export default async function ArticlesAdmin() {
   let articles: Article[] = [];
   
   try {
-      articles = await prisma.article.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
+    const supabase = await createServerSupabaseClient();
+    const { data, error } = await supabase
+      .from('Article')
+      .select('*')
+      .order('createdAt', { ascending: false });
+    if (error) {
+      throw error;
+    }
+    articles = (data ?? []) as Article[];
   } catch {
     console.log('Database not available, using empty state');
   }

@@ -1,12 +1,21 @@
-import { prisma } from "@/lib/prisma";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import type { Project } from "@/lib/db-types";
 
 export const dynamic = "force-dynamic";
 
 export default async function ProjectsPage() {
-  const projects = await prisma.project.findMany({
-    orderBy: { order: "asc" },
-  });
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from("Project")
+    .select("*")
+    .order("order", { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  const projects = (data ?? []) as Project[];
 
   return (
     <div className="space-y-8">

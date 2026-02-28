@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ProjectCard } from "./project-card";
-import { Project } from "@prisma/client";
+import type { Project } from "@/lib/db-types";
 
 interface FeaturedProjectsProps {
   projects: Project[];
