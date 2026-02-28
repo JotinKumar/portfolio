@@ -153,6 +153,20 @@ export const getProjectCategories = cache(async (): Promise<string[]> => {
   return Array.from(new Set((data ?? []).map((row) => row.category)));
 });
 
+export const getProjectBySlug = cache(async (slug: string): Promise<Project | null> => {
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from("Project")
+    .select(
+      "id,title,slug,description,shortDesc,category,status,order,featured,liveUrl,githubUrl,coverImage,screenshots,techStack,tags,createdAt,updatedAt"
+    )
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (error) throw error;
+  return (data as Project | null) ?? null;
+});
+
 export const getPublishedArticleBySlug = cache(async (slug: string): Promise<Article | null> => {
   const supabase = await createServerSupabaseClient();
   const { data, error } = await supabase

@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, Github } from 'lucide-react';
+import { ExternalLink, FileImage, Github } from 'lucide-react';
 import type { ProjectCardData } from '@/lib/server/queries';
 
 interface ProjectCardProps {
@@ -18,15 +18,22 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
   return (
     <Card className="h-full flex flex-col hover:shadow-lg transition-shadow [content-visibility:auto]">
-      <div className="relative aspect-video overflow-hidden rounded-t-lg">
-        <Image
-          src={project.coverImage} 
-          alt={project.title}
-          fill
-          sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover"
-        />
-      </div>
+      <Link href={`/projects/${project.slug}`} className="relative aspect-video overflow-hidden rounded-t-lg bg-muted">
+        {project.coverImage ? (
+          <Image
+            src={project.coverImage}
+            alt={project.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-muted to-muted/60 text-muted-foreground">
+            <FileImage className="h-6 w-6" />
+            <span className="text-xs uppercase tracking-wide">No cover image</span>
+          </div>
+        )}
+      </Link>
       
       <CardHeader className="flex-1">
         <div className="space-y-2">
@@ -40,7 +47,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
               {project.status}
             </Badge>
           </div>
-          <h3 className="font-semibold text-xl">{project.title}</h3>
+          <h3 className="font-semibold text-xl">
+            <Link href={`/projects/${project.slug}`} className="hover:underline">
+              {project.title}
+            </Link>
+          </h3>
           <p className="text-muted-foreground">{project.shortDesc}</p>
         </div>
       </CardHeader>
