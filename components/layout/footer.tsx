@@ -18,7 +18,7 @@ const footerLinks = {
     { name: "Projects", href: "/projects" },
   ],
   Resources: [
-    { name: "Resume", href: "/resume.pdf" },
+    { name: "Resume", href: "/jotin-madugula-resume.pdf" },
     { name: "Contact", href: "/contact" },
     { name: "Newsletter", href: "/newsletter" },
   ],

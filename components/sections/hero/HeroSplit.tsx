@@ -4,7 +4,14 @@ import { ProfessionalHero } from "./ProfessionalHero";
 import { TechHero } from "./TechHero";
 import { Briefcase, Code, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence, useSpring, useTransform, useMotionTemplate } from "framer-motion";
+import { Glassmorphism } from "@/components/ui/glassmorphism";
+import {
+  motion,
+  AnimatePresence,
+  useSpring,
+  useTransform,
+  useMotionTemplate,
+} from "framer-motion";
 
 export default function HeroSplit() {
   const [x, setX] = useState(0.5); // 0 = Tech fully shown, 1 = Professional fully shown
@@ -45,12 +52,13 @@ export default function HeroSplit() {
   };
 
   return (
-    <section className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden px-4">
-      <div
-        className="relative w-full max-w-7xl h-full md:h-[80vh] min-h-[600px] max-h-[800px] overflow-hidden md:rounded-[2.5rem] shadow-[0_18px_60px_rgba(15,23,42,0.14)] dark:shadow-[0_24px_80px_rgba(0,0,0,0.6)] border border-primary/10 dark:border-white/15"
+    <section className="relative w-full flex flex-col items-center overflow-hidden px-4 py-1">
+      <Glassmorphism
+        noShadow
+        className="relative w-full max-w-7xl h-[600px] md:h-[80vh] min-h-[600px] max-h-[600px] overflow-hidden md:rounded-[2.5rem]"
       >
         {/* Navigation Buttons Layer */}
-        <div className="absolute top-6 left-8 right-8 z-50 flex justify-between pointer-events-none">
+        <div className="absolute top-6 left-8 right-8 z-40 flex justify-between pointer-events-none">
           <div className="pointer-events-auto">
             {(isInitial || isTech) && (
               <Button
@@ -103,10 +111,10 @@ export default function HeroSplit() {
         {/* Name Overlay */}
         <AnimatePresence>
           {isInitial && (
-            <motion.div 
-              initial={{ top: "9%", opacity: 0, scale: 0.9 }}
-              animate={{ top: "9%", opacity: 1, scale: 1 }}
-              exit={{ top: "5%", opacity: 0, scale: 0.9 }}
+            <motion.div
+              initial={{ top: "6%", opacity: 0, scale: 0.9 }}
+              animate={{ top: "6%", opacity: 1, scale: 1 }}
+              exit={{ top: "3%", opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="absolute left-0 right-0 z-40 flex flex-col items-center pointer-events-none"
             >
@@ -121,16 +129,22 @@ export default function HeroSplit() {
         </AnimatePresence>
 
         {/* Hero Content Container */}
-        <div className="relative w-full h-full pt-4 pb-2">
+        <div
+          className={`relative w-full h-full pb-2 ${
+            isInitial ? "pt-36 md:pt-40" : "pt-16 md:pt-20"
+          }`}
+        >
           {/* Left content: ProfessionalHero */}
           <motion.div
-            className="absolute inset-0 z-20"
+            className={`absolute inset-0 z-20 ${
+              isInitial ? "translate-y-5 md:translate-y-6" : ""
+            }`}
             initial={false}
             animate={{ opacity: isTech ? 0 : 1 }}
             transition={{ duration: 0.35, ease: "easeOut" }}
           >
-            <ProfessionalHero 
-              current={isProfessional} 
+            <ProfessionalHero
+              current={isProfessional}
               isInitial={isInitial}
               skillsExitEarly={skillsExitEarly}
             />
@@ -138,12 +152,14 @@ export default function HeroSplit() {
 
           {/* Right content: TechHero (clipped) */}
           <motion.div
-            className="absolute inset-0 z-30 overflow-hidden"
+            className={`absolute inset-0 z-30 overflow-hidden ${
+              isInitial ? "translate-y-5 md:translate-y-6" : ""
+            }`}
             initial={false}
             style={{ clipPath: techClipPath }}
           >
-            <TechHero 
-              current={isTech} 
+            <TechHero
+              current={isTech}
               isInitial={isInitial}
               skillsExitEarly={skillsExitEarly}
             />
@@ -156,7 +172,7 @@ export default function HeroSplit() {
           initial={false}
           style={{ left: splitPercent }}
         />
-      </div>
+      </Glassmorphism>
     </section>
   );
 }

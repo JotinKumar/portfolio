@@ -1,13 +1,13 @@
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import type { WorkExperience } from "@/lib/db-types";
+import type { WorkExperienceCard } from "@/lib/db-types";
 
 export const dynamic = "force-dynamic";
 
 export default async function ExperiencePage() {
   const supabase = await createServerSupabaseClient();
   const { data, error } = await supabase
-    .from("WorkExperience")
+    .from("WorkExperienceCard")
     .select("*")
     .order("order", { ascending: true });
 
@@ -15,7 +15,7 @@ export default async function ExperiencePage() {
     throw error;
   }
 
-  const experiences = (data ?? []) as WorkExperience[];
+  const experiences = (data ?? []) as WorkExperienceCard[];
 
   return (
     <div className="space-y-8">
@@ -34,11 +34,7 @@ export default async function ExperiencePage() {
               </p>
               <p>{exp.description}</p>
               <p className="text-xs mt-2">
-                {new Date(exp.startDate).toLocaleDateString()}{" "}
-                -{" "}
-                {exp.endDate
-                  ? new Date(exp.endDate).toLocaleDateString()
-                  : "Present"}
+                {exp.startDate} - {exp.endDate || "Present"}
               </p>
             </CardContent>
           </Card>

@@ -1,38 +1,43 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-import type { Settings, WorkExperience } from '@/lib/db-types';
-import { Download, MapPin, Calendar, Mail, Linkedin, Github } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
+import type { Settings, WorkExperienceCard } from "@/lib/db-types";
+import { Download, MapPin, Calendar, Mail, Linkedin, Github } from "lucide-react";
+import {
+  RESUME_CORE_COMPETENCIES,
+  RESUME_EXPERIENCES,
+  RESUME_LOCATION,
+  RESUME_NAME,
+  RESUME_SUMMARY,
+  RESUME_TITLE,
+} from "@/lib/resume-data";
 
-// Force dynamic rendering to avoid build-time database queries
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export default async function ProfilePage() {
   let settings: Settings | null = null;
-  let experiences: WorkExperience[] = [];
-  
+  let experienceCards: WorkExperienceCard[] = [];
+
   try {
     const supabase = await createServerSupabaseClient();
-
-    // Fetch settings and work experience
-    const [settingsResult, experiencesResult] = await Promise.all([
-      supabase.from('Settings').select('*').limit(1).maybeSingle(),
-      supabase.from('WorkExperience').select('*').order('order', { ascending: true }),
+    const [settingsResult, experienceResult] = await Promise.all([
+      supabase.from("Settings").select("*").limit(1).maybeSingle(),
+      supabase.from("WorkExperienceCard").select("*").order("order", { ascending: true }),
     ]);
 
     if (settingsResult.error) {
       throw settingsResult.error;
     }
-    if (experiencesResult.error) {
-      throw experiencesResult.error;
+    if (experienceResult.error) {
+      throw experienceResult.error;
     }
 
     settings = (settingsResult.data as Settings | null) ?? null;
-    experiences = (experiencesResult.data ?? []) as WorkExperience[];
+    experienceCards = (experienceResult.data ?? []) as WorkExperienceCard[];
   } catch {
-    console.log('Database not available, using default values');
+    console.log("Database not available, using default values");
   }
 
   const parseStringArray = (value: string): string[] => {
@@ -44,28 +49,43 @@ export default async function ProfilePage() {
     }
   };
 
+  const experiences =
+    experienceCards.length > 0
+      ? experienceCards.map((exp) => ({
+          id: exp.id,
+          company: exp.company,
+          role: exp.role,
+          location: exp.location,
+          startDate: exp.startDate,
+          endDate: exp.endDate ?? undefined,
+          current: exp.current,
+          description: exp.description,
+          achievements: parseStringArray(exp.achievements),
+          skills: parseStringArray(exp.skills),
+        }))
+      : RESUME_EXPERIENCES;
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto space-y-8">
-        {/* Header */}
         <div className="text-center space-y-6">
           <div className="mx-auto w-32 h-32 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
             <span className="text-4xl font-bold text-white">JK</span>
           </div>
           <div>
-            <h1 className="text-4xl font-bold mb-2">{settings?.heroTitle || 'Jotin Kumar Madugula'}</h1>
+            <h1 className="text-4xl font-bold mb-2">{settings?.heroTitle || RESUME_NAME}</h1>
             <p className="text-xl text-muted-foreground mb-4">
-              {settings?.heroSubtitle || 'Business Process Expert & AI Enthusiast'}
+              {settings?.heroSubtitle || RESUME_TITLE}
             </p>
             <div className="flex justify-center gap-4">
               <Button asChild>
-                <a href={settings?.resumeUrl || '/resume.pdf'} target="_blank">
+                <a href={settings?.resumeUrl || "/jotin-madugula-resume.pdf"} target="_blank">
                   <Download className="w-4 h-4 mr-2" />
                   Download Resume
                 </a>
               </Button>
               <Button variant="outline" asChild>
-                <a href={`mailto:${settings?.emailAddress || 'contact@jotin.in'}`}>
+                <a href={`mailto:${settings?.emailAddress || "JotinMadugula@gmail.com"}`}>
                   <Mail className="w-4 h-4 mr-2" />
                   Contact Me
                 </a>
@@ -74,19 +94,17 @@ export default async function ProfilePage() {
           </div>
         </div>
 
-        {/* About */}
         <Card>
           <CardHeader>
-            <CardTitle>About Me</CardTitle>
+            <CardTitle>Professional Summary</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground leading-relaxed">
-              {settings?.aboutMe || 'Transforming operations through intelligent automation...'}
+              {settings?.aboutMe || RESUME_SUMMARY}
             </p>
           </CardContent>
         </Card>
 
-        {/* Contact Information */}
         <Card>
           <CardHeader>
             <CardTitle>Contact Information</CardTitle>
@@ -94,11 +112,11 @@ export default async function ProfilePage() {
           <CardContent className="space-y-4">
             <div className="flex items-center space-x-3">
               <Mail className="w-5 h-5 text-primary" />
-              <span>{settings?.emailAddress || 'contact@jotin.in'}</span>
+              <span>{settings?.emailAddress || "JotinMadugula@gmail.com"}</span>
             </div>
             <div className="flex items-center space-x-3">
               <MapPin className="w-5 h-5 text-primary" />
-              <span>Remote • Available Globally</span>
+              <span>{RESUME_LOCATION}</span>
             </div>
             <Separator />
             <div className="flex space-x-4">
@@ -122,15 +140,14 @@ export default async function ProfilePage() {
           </CardContent>
         </Card>
 
-        {/* Work Experience */}
         <Card>
           <CardHeader>
             <CardTitle>Work Experience</CardTitle>
-            <CardDescription>My professional journey and key achievements</CardDescription>
+            <CardDescription>Professional journey and key achievements</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {experiences.map((exp, index) => (
-              <div key={exp.id} className={index > 0 ? 'border-t pt-6' : ''}>
+              <div key={exp.id} className={index > 0 ? "border-t pt-6" : ""}>
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <h3 className="font-semibold text-lg">{exp.role}</h3>
@@ -139,8 +156,7 @@ export default async function ProfilePage() {
                   <div className="text-right text-sm text-muted-foreground">
                     <div className="flex items-center">
                       <Calendar className="w-4 h-4 mr-1" />
-                      {new Date(exp.startDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} - 
-                      {exp.endDate ? new Date(exp.endDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Present'}
+                      {exp.startDate} - {exp.endDate || "Present"}
                     </div>
                     <div className="flex items-center mt-1">
                       <MapPin className="w-4 h-4 mr-1" />
@@ -148,14 +164,13 @@ export default async function ProfilePage() {
                     </div>
                   </div>
                 </div>
-                
+
                 <p className="mb-4 text-muted-foreground">{exp.description}</p>
-                
-                {/* Skills */}
+
                 <div className="mb-4">
-                  <h4 className="text-sm font-medium mb-2">Key Skills:</h4>
+                  <h4 className="text-sm font-medium mb-2">Key Skills</h4>
                   <div className="flex flex-wrap gap-1">
-                    {parseStringArray(exp.skills).map((skill) => (
+                    {exp.skills.map((skill) => (
                       <Badge key={skill} variant="secondary" className="text-xs">
                         {skill}
                       </Badge>
@@ -163,11 +178,10 @@ export default async function ProfilePage() {
                   </div>
                 </div>
 
-                {/* Achievements */}
                 <div>
-                  <h4 className="text-sm font-medium mb-2">Key Achievements:</h4>
+                  <h4 className="text-sm font-medium mb-2">Key Achievements</h4>
                   <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    {parseStringArray(exp.achievements).map((achievement, idx) => (
+                    {exp.achievements.map((achievement, idx) => (
                       <li key={idx}>{achievement}</li>
                     ))}
                   </ul>
@@ -177,7 +191,6 @@ export default async function ProfilePage() {
           </CardContent>
         </Card>
 
-        {/* Core Competencies */}
         <Card>
           <CardHeader>
             <CardTitle>Core Competencies</CardTitle>
@@ -185,21 +198,19 @@ export default async function ProfilePage() {
           <CardContent>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="font-semibold mb-3">Business Process Optimization</h3>
+                <h3 className="font-semibold mb-3">Commercial & Delivery</h3>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• Process Analysis & Mapping</li>
-                  <li>• Workflow Automation</li>
-                  <li>• Performance Metrics & KPIs</li>
-                  <li>• Continuous Improvement</li>
+                  {RESUME_CORE_COMPETENCIES.slice(0, 5).map((item) => (
+                    <li key={item}>- {item}</li>
+                  ))}
                 </ul>
               </div>
               <div>
-                <h3 className="font-semibold mb-3">Technology & Innovation</h3>
+                <h3 className="font-semibold mb-3">Operations & Technology</h3>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• AI & Machine Learning</li>
-                  <li>• Robotic Process Automation</li>
-                  <li>• Digital Transformation</li>
-                  <li>• Data Analytics</li>
+                  {RESUME_CORE_COMPETENCIES.slice(5).map((item) => (
+                    <li key={item}>- {item}</li>
+                  ))}
                 </ul>
               </div>
             </div>

@@ -1,13 +1,20 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-const prisma = new PrismaClient();
+const connectionString = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error('Missing DIRECT_URL or DATABASE_URL for Prisma seed.');
+}
+
+const adapter = new PrismaPg({ connectionString });
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log('Seeding database...');
 
   const settingsData = {
     id: 'default',
-    resumeUrl: '/resume.pdf',
+    resumeUrl: '/jotin-madugula-resume.pdf',
     linkedinUrl: 'https://linkedin.com/in/jotin',
     githubUrl: 'https://github.com/jotin',
     twitterUrl: '',

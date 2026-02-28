@@ -24,6 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase";
+import { isAdminEmail } from "@/lib/admin-auth";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -66,6 +67,11 @@ export default function LoginPage() {
         return;
       }
       if (authData.user) {
+        if (!isAdminEmail(authData.user.email)) {
+          await supabase.auth.signOut();
+          toast.error("This account is not authorized for admin access");
+          return;
+        }
         toast.success("Login successful!");
         router.push("/admin/dashboard");
         router.refresh();
@@ -87,8 +93,12 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const supabase = createClient();
+      const origin = window.location.origin;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
+        options: {
+          redirectTo: `${origin}/auth/callback?next=/`,
+        },
       });
       if (error) {
         toast.error(error.message || "Google login failed");

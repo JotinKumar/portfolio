@@ -46,7 +46,7 @@ export function Header() {
   }
 
   return (
-    <header className="fixed top-4 left-4 right-4 z-50">
+    <header className="fixed top-4 left-4 right-4 z-[100]">
       <Glassmorphism className="max-w-[1280px] mx-auto">
         <div className="flex h-14 items-center px-4">
           <div className="mr-4 flex">
@@ -100,7 +100,7 @@ export function Header() {
               className="hidden md:flex"
               asChild
             >
-              <Link href="/resume.pdf" target="_blank">
+              <Link href="/jotin-madugula-resume.pdf" target="_blank">
                 <Download className="w-4 h-4 mr-2" />
                 Resume
               </Link>
@@ -127,7 +127,7 @@ export function Header() {
                     </Link>
                   ))}
                   <Button variant="outline" className="justify-start" asChild>
-                    <Link href="/resume.pdf" target="_blank">
+                    <Link href="/jotin-madugula-resume.pdf" target="_blank">
                       <Download className="w-4 h-4 mr-2" />
                       Download Resume
                     </Link>

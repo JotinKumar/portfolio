@@ -3,7 +3,8 @@ import { FeaturedArticles } from "@/components/sections/featured-articles";
 import { FeaturedProjects } from "@/components/sections/featured-projects";
 import HeroSplit from "@/components/sections/hero/HeroSplit";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
-import type { Article, Project, WorkExperience } from "@/lib/db-types";
+import type { Article, Project, WorkExperienceCard } from "@/lib/db-types";
+import { RESUME_EXPERIENCES } from "@/lib/resume-data";
 
 // Use Incremental Static Regeneration (ISR) instead of force-dynamic
 export const revalidate = 3600; // Revalidate every hour
@@ -31,16 +32,16 @@ export default async function Home() {
     }
   };
 
-  // Fetch data in parallel with resilient fallbacks per query
-  const [experiences, featuredArticles, featuredProjects] = await Promise.all([
-    safeQuery("work experiences", async () => {
+  // Fetch content in parallel with resilient fallbacks per query
+  const [workExperienceCards, featuredArticles, featuredProjects] = await Promise.all([
+    safeQuery("work experience cards", async () => {
       const { data, error } = await supabase
-        .from("WorkExperience")
+        .from("WorkExperienceCard")
         .select("*")
         .order("order", { ascending: true });
       if (error) throw error;
-      return (data ?? []) as WorkExperience[];
-    }, [] as WorkExperience[]),
+      return (data ?? []) as WorkExperienceCard[];
+    }, [] as WorkExperienceCard[]),
     safeQuery(
       "featured articles",
       async () => {
@@ -81,25 +82,21 @@ export default async function Home() {
     }
   };
 
-  // Transform data for the component
-  const formattedExperiences = experiences.map((exp) => ({
-    id: exp.id,
-    company: exp.company,
-    role: exp.role,
-    location: exp.location,
-    startDate: new Date(exp.startDate).toLocaleDateString("en-US", {
-      month: "short",
-      year: "numeric",
-    }),
-    endDate: exp.endDate ? new Date(exp.endDate).toLocaleDateString("en-US", {
-      month: "short",
-      year: "numeric",
-    }) : undefined,
-    current: exp.current,
-    description: exp.description,
-    achievements: parseStringArray(exp.achievements),
-    skills: parseStringArray(exp.skills),
-  }));
+  const formattedExperiences =
+    workExperienceCards.length > 0
+      ? workExperienceCards.map((exp) => ({
+          id: exp.id,
+          company: exp.company,
+          role: exp.role,
+          location: exp.location,
+          startDate: exp.startDate,
+          endDate: exp.endDate ?? undefined,
+          current: exp.current,
+          description: exp.description,
+          achievements: parseStringArray(exp.achievements),
+          skills: parseStringArray(exp.skills),
+        }))
+      : RESUME_EXPERIENCES;
 
   return (
     <div>

@@ -20,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased">
+      <body suppressHydrationWarning className="antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -32,7 +32,7 @@ export default function RootLayout({
               <FloatingBlobsBar height={68} />
             </div>
             <Header />
-            <main className="min-h-screen">
+            <main className="min-h-screen pt-20">
               <div className="max-w-[1280px] mx-auto">{children}</div>
             </main>
             <Footer />

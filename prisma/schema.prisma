@@ -3,9 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
 }
 
 model Article {
@@ -70,6 +68,24 @@ model WorkExperience {
   updatedAt    DateTime  @updatedAt
 
   @@index([current, order])
+}
+
+model WorkExperienceCard {
+  id           String   @id @default(cuid())
+  company      String
+  role         String
+  location     String
+  description  String
+  achievements String
+  skills       String
+  startDate    String
+  endDate      String?
+  current      Boolean  @default(false)
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([order])
 }
 
 model Contact {

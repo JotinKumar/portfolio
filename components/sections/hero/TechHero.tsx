@@ -41,7 +41,7 @@ export function TechHero({
 
   return (
     <motion.div 
-      className="w-full h-full grid items-center overflow-hidden"
+      className="w-full h-full grid items-center overflow-hidden bg-background/50"
       initial={false}
       animate={{
         gridTemplateColumns: current 
@@ -58,7 +58,7 @@ export function TechHero({
         <motion.div 
           layout
           transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-          className={`${current ? "w-[400px] h-[520px]" : "w-[336px] h-[432px]"} rounded-[2.5rem] overflow-hidden bg-muted relative shadow-[0_20px_50px_rgba(0,0,0,0.3)] group`}
+          className={`${current ? "w-[400px] h-[520px]" : "w-[336px] h-[432px]"} rounded-[2.5rem] overflow-hidden bg-muted relative group`}
         >
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
           <Image
@@ -74,7 +74,7 @@ export function TechHero({
 
       {/* Right: Tech Content */}
       <div
-        className={`flex justify-start items-center h-full transition-all duration-700 ${
+        className={`flex ${current ? "justify-end" : "justify-start"} items-center h-full transition-all duration-700 ${
           current || isInitial ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
         } ${current ? "px-12 md:px-20" : "px-4 md:px-6"}`}
       >

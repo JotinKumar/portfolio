@@ -1,8 +1,14 @@
+import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { isTrustedStateChangingRequest } from '@/lib/request-security';
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
+    if (!isTrustedStateChangingRequest(req)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const supabase = await createServerSupabaseClient();
     
     // Sign out with Supabase Auth

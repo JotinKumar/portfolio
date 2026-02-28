@@ -1,0 +1,66 @@
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
+import type { Article } from "@/lib/db-types";
+
+export const dynamic = "force-dynamic";
+
+interface ArticleDetailPageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export default async function ArticleDetailPage({ params }: ArticleDetailPageProps) {
+  const { slug } = await params;
+  let article: Article | null = null;
+
+  try {
+    const supabase = await createServerSupabaseClient();
+    const { data, error } = await supabase
+      .from("Article")
+      .select("*")
+      .eq("slug", slug)
+      .eq("published", true)
+      .maybeSingle();
+
+    if (error) throw error;
+    article = (data as Article | null) ?? null;
+  } catch {
+    article = null;
+  }
+
+  if (!article) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle>Article not found</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-muted-foreground">
+              This article does not exist or is not published yet.
+            </p>
+            <Link href="/articles" className="text-primary hover:underline">
+              Back to all articles
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <article className="container mx-auto px-4 py-12 max-w-3xl">
+      <div className="space-y-4 mb-8">
+        <Badge variant="secondary">{article.category}</Badge>
+        <h1 className="text-3xl md:text-4xl font-bold">{article.title}</h1>
+        <div className="text-sm text-muted-foreground">
+          {new Date(article.publishedAt || article.createdAt).toLocaleDateString()} · {article.readTime} min read
+        </div>
+      </div>
+      <div className="prose prose-neutral max-w-none whitespace-pre-wrap dark:prose-invert">
+        {article.content}
+      </div>
+    </article>
+  );
+}

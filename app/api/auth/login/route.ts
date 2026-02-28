@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { z } from 'zod';
 import { getClientIp, rateLimit } from '@/lib/rate-limit';
+import { isTrustedStateChangingRequest } from '@/lib/request-security';
 
 const loginSchema = z.object({
   email: z.string().trim().email('Invalid email address').max(254, 'Email is too long'),
@@ -10,6 +11,10 @@ const loginSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    if (!isTrustedStateChangingRequest(req)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const ip = getClientIp(req);
     const rateLimitResult = rateLimit(`login:${ip}`, { limit: 10, windowMs: 60_000 });
     if (!rateLimitResult.success) {

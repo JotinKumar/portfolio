@@ -29,7 +29,7 @@ export default async function AdminDashboard() {
         supabase.from('Article').select('*', { count: 'exact', head: true }).eq('published', true),
         supabase.from('Project').select('*', { count: 'exact', head: true }),
         supabase.from('Contact').select('*', { count: 'exact', head: true }),
-        supabase.from('WorkExperience').select('*', { count: 'exact', head: true }),
+        supabase.from('WorkExperienceCard').select('*', { count: 'exact', head: true }),
       ]);
 
     const countErrors = [

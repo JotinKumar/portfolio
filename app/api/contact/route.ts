@@ -3,6 +3,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { Resend } from 'resend';
 import { z } from 'zod';
 import { getClientIp, rateLimit } from '@/lib/rate-limit';
+import { isTrustedStateChangingRequest } from '@/lib/request-security';
 
 // Define schema for contact form validation
 const contactSchema = z.object({
@@ -28,6 +29,10 @@ const sanitizeHtml = (str: string) => {
 
 export async function POST(req: NextRequest) {
   try {
+    if (!isTrustedStateChangingRequest(req)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const ip = getClientIp(req);
     const rateLimitResult = rateLimit(`contact:${ip}`, { limit: 5, windowMs: 60_000 });
     if (!rateLimitResult.success) {

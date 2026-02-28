@@ -1,13 +1,41 @@
 import Link from 'next/link';
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createServerSupabaseClient, getUser } from '@/lib/supabase-server';
 import type { Article } from '@/lib/db-types';
 import { Plus, Edit, Trash, Eye } from 'lucide-react';
+import { isAdminEmail } from "@/lib/admin-auth";
 
 // Force dynamic rendering to avoid build-time database queries
 export const dynamic = 'force-dynamic';
+
+async function deleteArticle(formData: FormData) {
+  "use server";
+
+  const user = await getUser();
+  if (!user || !isAdminEmail(user.email)) {
+    redirect("/login");
+  }
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) {
+    redirect("/admin/articles?error=invalid_article_id");
+  }
+
+  const supabase = await createServerSupabaseClient();
+  const { error } = await supabase.from("Article").delete().eq("id", id);
+
+  if (error) {
+    redirect("/admin/articles?error=article_delete_failed");
+  }
+
+  revalidatePath("/admin/articles");
+  revalidatePath("/articles");
+  redirect("/admin/articles?success=article_deleted");
+}
 
 export default async function ArticlesAdmin() {
   let articles: Article[] = [];
@@ -86,9 +114,12 @@ export default async function ArticlesAdmin() {
                       <Edit className="w-4 h-4" />
                     </Link>
                   </Button>
-                  <Button size="sm" variant="destructive">
-                    <Trash className="w-4 h-4" />
-                  </Button>
+                  <form action={deleteArticle}>
+                    <input type="hidden" name="id" value={article.id} />
+                    <Button size="sm" variant="destructive" type="submit">
+                      <Trash className="w-4 h-4" />
+                    </Button>
+                  </form>
                 </div>
               </div>
             </Card>

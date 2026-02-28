@@ -53,6 +53,22 @@ export interface WorkExperience {
   updatedAt: string;
 }
 
+export interface WorkExperienceCard {
+  id: string;
+  company: string;
+  role: string;
+  location: string;
+  description: string;
+  achievements: string;
+  skills: string;
+  startDate: string;
+  endDate: string | null;
+  current: boolean;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Contact {
   id: string;
   name: string;
