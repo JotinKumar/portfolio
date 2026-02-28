@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Github, Linkedin, Twitter, Mail, Heart } from "lucide-react";
+import { RESUME_DOWNLOAD_PATH } from "@/lib/resume-data";
 
 const socialLinks = [
   { name: "GitHub", href: "https://github.com/jotin", icon: Github },
@@ -18,7 +19,7 @@ const footerLinks = {
     { name: "Projects", href: "/projects" },
   ],
   Resources: [
-    { name: "Resume", href: "/jotin-madugula-resume.pdf" },
+    { name: "Resume", href: RESUME_DOWNLOAD_PATH },
     { name: "Contact", href: "/contact" },
     { name: "Newsletter", href: "/newsletter" },
   ],

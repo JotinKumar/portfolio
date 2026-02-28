@@ -14,6 +14,7 @@ export interface ResumeExperience {
 export const RESUME_NAME = "Jotin Kumar Madugula";
 export const RESUME_TITLE = "Pricing and Solutions Director";
 export const RESUME_LOCATION = "Hyderabad, India";
+export const RESUME_DOWNLOAD_PATH = "/jotin-madugula-resume.pdf";
 
 export const RESUME_SUMMARY =
   "A seasoned professional with 21+ years of experience in the BPO/ITES industry, including 13 years in US Healthcare Operations and 8+ years in Pricing and Financial Strategy. As a Director in Pricing and Solutioning, he has hands-on experience in end-to-end RFX pricing, multi-geo cost modelling, and crafting financial narratives to drive multi-million-dollar deal closures. He has also led global delivery operations, scaling teams and driving SLA/KPI excellence through automation, process re-engineering, and analytics.";

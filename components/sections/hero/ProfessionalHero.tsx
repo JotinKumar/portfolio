@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
+import { RESUME_DOWNLOAD_PATH } from "@/lib/resume-data";
 
 export function ProfessionalHero({
   current = false,
@@ -135,7 +136,7 @@ export function ProfessionalHero({
             </motion.div>
             <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 ${isInitial ? "scale-90 origin-left" : ""}`}>
               <Button asChild className="rounded-full px-8 py-5 text-base font-bold shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
-                <a href="/jotin-madugula-resume.pdf">Download Resume</a>
+                <a href={RESUME_DOWNLOAD_PATH}>Download Resume</a>
               </Button>
               <Button variant="outline" asChild className="rounded-full px-8 py-5 text-base font-bold border-2 hover:bg-primary/5 transition-all active:scale-95">
                 <a href="/contact">Get in Touch</a>

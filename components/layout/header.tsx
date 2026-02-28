@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Glassmorphism } from "@/components/ui/glassmorphism";
+import { RESUME_DOWNLOAD_PATH } from "@/lib/resume-data";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   NavigationMenu,
@@ -90,7 +91,7 @@ export function Header() {
               className="hidden md:flex"
               asChild
             >
-              <Link href="/jotin-madugula-resume.pdf" target="_blank">
+              <Link href={RESUME_DOWNLOAD_PATH} target="_blank">
                 <Download className="w-4 h-4 mr-2" />
                 Resume
               </Link>
@@ -117,7 +118,7 @@ export function Header() {
                     </Link>
                   ))}
                   <Button variant="outline" className="justify-start" asChild>
-                    <Link href="/jotin-madugula-resume.pdf" target="_blank">
+                    <Link href={RESUME_DOWNLOAD_PATH} target="_blank">
                       <Download className="w-4 h-4 mr-2" />
                       Download Resume
                     </Link>

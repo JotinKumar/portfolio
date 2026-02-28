@@ -6,6 +6,7 @@ import type { Settings, WorkExperienceCard } from "@/lib/db-types";
 import {
   RESUME_CORE_COMPETENCIES,
   RESUME_EXPERIENCES,
+  RESUME_DOWNLOAD_PATH,
   RESUME_LOCATION,
   RESUME_NAME,
   RESUME_SUMMARY,
@@ -53,6 +54,14 @@ const deriveYearsExperience = (experiences: { startDate: string }[]): number => 
   return Math.max(0, currentYear - firstYear);
 };
 
+const resolveResumeUrl = (value?: string | null): string => {
+  if (!value) return RESUME_DOWNLOAD_PATH;
+  if (value.startsWith("https://") || value.startsWith("http://") || value.startsWith("/")) {
+    return value;
+  }
+  return `/${value.replace(/^\.?\//, "")}`;
+};
+
 export default async function ProfilePage() {
   let settings: Settings | null = null;
   let experienceCards: WorkExperienceCard[] = [];
@@ -85,7 +94,7 @@ export default async function ProfilePage() {
   const displayTitle = settings?.heroSubtitle || RESUME_TITLE;
   const displaySummary = settings?.aboutMe || RESUME_SUMMARY;
   const displayEmail = settings?.emailAddress || "JotinMadugula@gmail.com";
-  const displayResumeUrl = settings?.resumeUrl || "/jotin-madugula-resume.pdf";
+  const displayResumeUrl = resolveResumeUrl(settings?.resumeUrl);
   const yearsExperience = deriveYearsExperience(experiences);
   const currentRole = experiences.find((exp) => exp.current)?.role || displayTitle;
 
