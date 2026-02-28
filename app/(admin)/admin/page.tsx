@@ -33,7 +33,7 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-export default function LoginPage() {
+export default function AdminLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const hasSupabaseConfig = Boolean(
@@ -62,10 +62,12 @@ export default function LoginPage() {
         email: data.email,
         password: data.password,
       });
+
       if (error) {
         toast.error(error.message || "Login failed");
         return;
       }
+
       if (authData.user) {
         if (!isAdminEmail(authData.user.email)) {
           await supabase.auth.signOut();
@@ -76,47 +78,20 @@ export default function LoginPage() {
         router.push("/admin/dashboard");
         router.refresh();
       }
-    } catch (error) {
-      console.error("Login error:", error);
+    } catch {
       toast.error("An error occurred during login");
     } finally {
       setIsLoading(false);
     }
   }
 
-  async function handleGoogleLogin() {
-    if (!hasSupabaseConfig) {
-      toast.error("Authentication is not configured");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const supabase = createClient();
-      const origin = window.location.origin;
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${origin}/auth/callback?next=/`,
-        },
-      });
-      if (error) {
-        toast.error(error.message || "Google login failed");
-      }
-    } catch {
-      toast.error("An error occurred during Google login");
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="min-h-screen flex items-center justify-center bg-background py-12">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">Admin Login</CardTitle>
           <CardDescription className="text-center">
-            Enter your credentials to access the admin dashboard
+            Enter your admin credentials to continue
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -166,17 +141,6 @@ export default function LoginPage() {
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
             </form>
-            <div className="mt-6">
-              <Button
-                type="button"
-                className="w-full"
-                variant="outline"
-                onClick={handleGoogleLogin}
-                disabled={isLoading || !hasSupabaseConfig}
-              >
-                Login with Google
-              </Button>
-            </div>
           </Form>
         </CardContent>
       </Card>
