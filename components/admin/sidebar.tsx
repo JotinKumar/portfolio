@@ -60,7 +60,7 @@ export function AdminSidebar() {
 
       if (response.ok) {
         toast.success('Logged out successfully');
-        router.push('/login');
+        router.push('/admin');
       } else {
         toast.error('Logout failed');
       }

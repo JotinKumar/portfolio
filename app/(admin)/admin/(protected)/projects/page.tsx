@@ -16,7 +16,7 @@ async function deleteProject(formData: FormData) {
 
   const user = await getUser();
   if (!user || !isAdminEmail(user.email)) {
-    redirect("/login");
+    redirect("/admin");
   }
 
   const id = String(formData.get("id") ?? "");

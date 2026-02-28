@@ -22,7 +22,7 @@ async function createProject(formData: FormData) {
 
   const user = await getUser();
   if (!user || !isAdminEmail(user.email)) {
-    redirect("/login");
+    redirect("/admin");
   }
 
   const title = String(formData.get("title") ?? "").trim();

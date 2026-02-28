@@ -12,7 +12,7 @@ export default async function AdminLayout({
 }) {
   const user = await getUser();
   if (!user || !isAdminEmail(user.email)) {
-    redirect("/login");
+    redirect("/admin");
   }
 
   return (
