@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArticleCard } from "./article-card";
-import type { Article } from "@/lib/db-types";
+import type { ArticleCardData } from "@/lib/server/queries";
 
 interface FeaturedArticlesProps {
-  articles: Article[];
+  articles: ArticleCardData[];
 }
 
 export function FeaturedArticles({ articles }: FeaturedArticlesProps) {

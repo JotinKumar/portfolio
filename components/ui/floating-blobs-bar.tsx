@@ -58,6 +58,7 @@ export const FloatingBlobsBar: React.FC<FloatingBlobsBarProps> = ({
   const isAnimatingRef = useRef(false);
   const blobsRef = useRef<Blob[]>([]);
   const dimensionsRef = useRef({ width: 0, height });
+  const prefersReducedMotionRef = useRef(false);
 
   // Memoize blob creation function
   const createBlobs = useCallback(
@@ -132,6 +133,7 @@ export const FloatingBlobsBar: React.FC<FloatingBlobsBarProps> = ({
   const animate = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    if (prefersReducedMotionRef.current) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -141,6 +143,14 @@ export const FloatingBlobsBar: React.FC<FloatingBlobsBarProps> = ({
   }, [draw, height]);
 
   const startAnimation = useCallback(() => {
+    if (prefersReducedMotionRef.current) {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      draw(ctx, dimensionsRef.current.width, height);
+      return;
+    }
     if (isAnimatingRef.current) return;
     isAnimatingRef.current = true;
     animationIdRef.current = requestAnimationFrame(animate);
@@ -171,6 +181,9 @@ export const FloatingBlobsBar: React.FC<FloatingBlobsBarProps> = ({
     // Create initial blobs
     blobsRef.current = createBlobs(initialWidth, height);
 
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    prefersReducedMotionRef.current = motionQuery.matches;
+
     // Start animation
     startAnimation();
 
@@ -182,14 +195,25 @@ export const FloatingBlobsBar: React.FC<FloatingBlobsBarProps> = ({
       }
     };
 
+    const handleReducedMotionChange = (event: MediaQueryListEvent) => {
+      prefersReducedMotionRef.current = event.matches;
+      if (event.matches) {
+        stopAnimation();
+      } else {
+        startAnimation();
+      }
+    };
+
     // Add resize listener with cleanup
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize, { passive: true });
     document.addEventListener("visibilitychange", handleVisibilityChange);
+    motionQuery.addEventListener("change", handleReducedMotionChange);
 
     return () => {
       stopAnimation();
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      motionQuery.removeEventListener("change", handleReducedMotionChange);
     };
   }, [height, blobCount, createBlobs, handleResize, startAnimation, stopAnimation]);
 

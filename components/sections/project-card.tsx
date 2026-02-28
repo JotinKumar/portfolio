@@ -4,17 +4,20 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, Github } from 'lucide-react';
-import type { Project } from '@/lib/db-types';
+import type { ProjectCardData } from '@/lib/server/queries';
 
 interface ProjectCardProps {
-  project: Project;
+  project: ProjectCardData;
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
-  const techStack = project.techStack.split(',').map(tech => tech.trim());
+  const techStack = project.techStack
+    .split(",")
+    .map((tech) => tech.trim())
+    .filter(Boolean);
 
   return (
-    <Card className="h-full flex flex-col hover:shadow-lg transition-shadow">
+    <Card className="h-full flex flex-col hover:shadow-lg transition-shadow [content-visibility:auto]">
       <div className="relative aspect-video overflow-hidden rounded-t-lg">
         <Image
           src={project.coverImage} 

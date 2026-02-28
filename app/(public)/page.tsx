@@ -1,9 +1,9 @@
 import { WorkTimeline } from "@/components/sections/work-timeline";
 import { FeaturedArticles } from "@/components/sections/featured-articles";
 import { FeaturedProjects } from "@/components/sections/featured-projects";
-import HeroSplit from "@/components/sections/hero/HeroSplit";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
-import type { Article, Project, WorkExperienceCard } from "@/lib/db-types";
+import { HeroSplitClient } from "@/components/sections/hero/HeroSplitClient";
+import { getFeaturedArticles, getFeaturedProjects, getWorkExperienceCards } from "@/lib/server/queries";
+import type { WorkExperienceCard } from "@/lib/db-types";
 import { RESUME_EXPERIENCES } from "@/lib/resume-data";
 
 // Use Incremental Static Regeneration (ISR) instead of force-dynamic
@@ -13,15 +13,13 @@ export default async function Home() {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     return (
       <div>
-        <HeroSplit />
+        <HeroSplitClient />
         <WorkTimeline experiences={[]} />
         <FeaturedArticles articles={[]} />
         <FeaturedProjects projects={[]} />
       </div>
     );
   }
-
-  const supabase = await createServerSupabaseClient();
 
   const safeQuery = async <T,>(label: string, query: () => Promise<T>, fallback: T): Promise<T> => {
     try {
@@ -34,43 +32,9 @@ export default async function Home() {
 
   // Fetch content in parallel with resilient fallbacks per query
   const [workExperienceCards, featuredArticles, featuredProjects] = await Promise.all([
-    safeQuery("work experience cards", async () => {
-      const { data, error } = await supabase
-        .from("WorkExperienceCard")
-        .select("*")
-        .order("order", { ascending: true });
-      if (error) throw error;
-      return (data ?? []) as WorkExperienceCard[];
-    }, [] as WorkExperienceCard[]),
-    safeQuery(
-      "featured articles",
-      async () => {
-        const { data, error } = await supabase
-          .from("Article")
-          .select("*")
-          .eq("featured", true)
-          .eq("published", true)
-          .order("publishedAt", { ascending: false, nullsFirst: false })
-          .limit(3);
-        if (error) throw error;
-        return (data ?? []) as Article[];
-      },
-      [] as Article[]
-    ),
-    safeQuery(
-      "featured projects",
-      async () => {
-        const { data, error } = await supabase
-          .from("Project")
-          .select("*")
-          .eq("featured", true)
-          .order("order", { ascending: true })
-          .limit(3);
-        if (error) throw error;
-        return (data ?? []) as Project[];
-      },
-      [] as Project[]
-    ),
+    safeQuery("work experience cards", getWorkExperienceCards, [] as WorkExperienceCard[]),
+    safeQuery("featured articles", () => getFeaturedArticles(3), [] as Awaited<ReturnType<typeof getFeaturedArticles>>),
+    safeQuery("featured projects", () => getFeaturedProjects(3), [] as Awaited<ReturnType<typeof getFeaturedProjects>>),
   ]);
 
   const parseStringArray = (value: string): string[] => {
@@ -100,7 +64,7 @@ export default async function Home() {
 
   return (
     <div>
-      <HeroSplit />
+      <HeroSplitClient />
       <WorkTimeline experiences={formattedExperiences} />
       <FeaturedArticles articles={featuredArticles} />
       <FeaturedProjects projects={featuredProjects} />

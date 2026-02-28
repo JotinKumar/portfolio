@@ -19,6 +19,18 @@ interface Experience {
 }
 
 export function WorkTimeline({ experiences }: { experiences: Experience[] }) {
+  const parseSkills = (skills: Experience["skills"]): string[] => {
+    if (Array.isArray(skills)) {
+      return skills;
+    }
+    try {
+      const parsed = JSON.parse(skills || "[]");
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
   return (
     <section className="py-10 md:py-12">
       <div className="container mx-auto px-4">
@@ -38,7 +50,7 @@ export function WorkTimeline({ experiences }: { experiences: Experience[] }) {
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="flex-shrink-0 w-80 h-full"
+                className="flex-shrink-0 w-80 h-full [content-visibility:auto]"
               >
                 <Card className="h-[470px] p-6 grid grid-rows-[auto_auto_auto_1fr_auto] gap-4 hover:shadow-lg transition-shadow">
                   <div className="min-h-6 flex items-start justify-end">
@@ -77,20 +89,15 @@ export function WorkTimeline({ experiences }: { experiences: Experience[] }) {
                   </p>
 
                   <div className="min-h-[52px] flex flex-wrap content-start gap-1">
-                    {(() => {
-                      const skills = Array.isArray(exp.skills)
-                        ? exp.skills
-                        : JSON.parse(exp.skills || "[]");
-                      return skills.slice(0, 3).map((skill: string) => (
-                        <Badge
-                          key={skill}
-                          variant="secondary"
-                          className="text-xs whitespace-nowrap"
-                        >
-                          {skill}
-                        </Badge>
-                      ));
-                    })()}
+                    {parseSkills(exp.skills).slice(0, 3).map((skill) => (
+                      <Badge
+                        key={skill}
+                        variant="secondary"
+                        className="text-xs whitespace-nowrap"
+                      >
+                        {skill}
+                      </Badge>
+                    ))}
                   </div>
                 </Card>
               </motion.div>

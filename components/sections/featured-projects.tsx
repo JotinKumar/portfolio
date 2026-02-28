@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ProjectCard } from "./project-card";
-import type { Project } from "@/lib/db-types";
+import type { ProjectCardData } from "@/lib/server/queries";
 
 interface FeaturedProjectsProps {
-  projects: Project[];
+  projects: ProjectCardData[];
 }
 
 export function FeaturedProjects({ projects }: FeaturedProjectsProps) {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { getPublishedArticleBySlug } from "@/lib/server/queries";
 import type { Article } from "@/lib/db-types";
 
 export const dynamic = "force-dynamic";
@@ -15,16 +15,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
   let article: Article | null = null;
 
   try {
-    const supabase = await createServerSupabaseClient();
-    const { data, error } = await supabase
-      .from("Article")
-      .select("*")
-      .eq("slug", slug)
-      .eq("published", true)
-      .maybeSingle();
-
-    if (error) throw error;
-    article = (data as Article | null) ?? null;
+    article = await getPublishedArticleBySlug(slug);
   } catch {
     article = null;
   }

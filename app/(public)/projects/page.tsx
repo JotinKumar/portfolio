@@ -1,5 +1,5 @@
 import { ProjectCard } from '@/components/sections/project-card';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getProjectCategories, getProjects } from '@/lib/server/queries';
 import type { Project } from '@/lib/db-types';
 
 // Force dynamic rendering to avoid build-time database queries
@@ -10,24 +10,8 @@ export default async function ProjectsPage() {
   let uniqueCategories: string[] = [];
   
   try {
-    const supabase = await createServerSupabaseClient();
-    const { data: projectRows, error: projectsError } = await supabase
-      .from('Project')
-      .select('*')
-      .order('order', { ascending: true });
-    if (projectsError) {
-      throw projectsError;
-    }
-    projects = (projectRows ?? []) as Project[];
-
-    // Get unique categories for filter
-    const { data: categoryRows, error: categoriesError } = await supabase
-      .from('Project')
-      .select('category');
-    if (categoriesError) {
-      throw categoriesError;
-    }
-    uniqueCategories = Array.from(new Set((categoryRows ?? []).map((c) => c.category)));
+    projects = (await getProjects()) as Project[];
+    uniqueCategories = await getProjectCategories();
   } catch {
     console.log('Database not available, using empty state');
   }

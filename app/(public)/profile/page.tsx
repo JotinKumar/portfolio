@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { getProfileData } from "@/lib/server/queries";
 import type { Settings, WorkExperienceCard } from "@/lib/db-types";
 import { Download, MapPin, Calendar, Mail, Linkedin, Github } from "lucide-react";
 import {
@@ -21,21 +21,9 @@ export default async function ProfilePage() {
   let experienceCards: WorkExperienceCard[] = [];
 
   try {
-    const supabase = await createServerSupabaseClient();
-    const [settingsResult, experienceResult] = await Promise.all([
-      supabase.from("Settings").select("*").limit(1).maybeSingle(),
-      supabase.from("WorkExperienceCard").select("*").order("order", { ascending: true }),
-    ]);
-
-    if (settingsResult.error) {
-      throw settingsResult.error;
-    }
-    if (experienceResult.error) {
-      throw experienceResult.error;
-    }
-
-    settings = (settingsResult.data as Settings | null) ?? null;
-    experienceCards = (experienceResult.data ?? []) as WorkExperienceCard[];
+    const profileData = await getProfileData();
+    settings = profileData.settings;
+    experienceCards = profileData.experienceCards;
   } catch {
     console.log("Database not available, using default values");
   }

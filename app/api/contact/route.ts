@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { after, NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { Resend } from 'resend';
 import { z } from 'zod';
@@ -27,6 +27,40 @@ const sanitizeHtml = (str: string) => {
     .replace(/'/g, '&#039;');
 };
 
+const sendContactNotification = async (name: string, email: string, message: string) => {
+  const resend = getResendClient();
+  if (!resend) {
+    console.warn('RESEND_API_KEY is not set; skipping email notification.');
+    return;
+  }
+
+  const sanitizedName = sanitizeHtml(name);
+  const sanitizedEmail = sanitizeHtml(email);
+  const sanitizedMessage = sanitizeHtml(message).replace(/\n/g, '<br>');
+
+  await resend.emails.send({
+    from: 'Portfolio Contact <noreply@jotin.in>',
+    to: ['contact@jotin.in'],
+    subject: `New Contact Form Message from ${name}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
+          New Contact Form Submission
+        </h2>
+        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #007bff; margin-top: 0;">Contact Details:</h3>
+          <p><strong>Name:</strong> ${sanitizedName}</p>
+          <p><strong>Email:</strong> ${sanitizedEmail}</p>
+        </div>
+        <div style="background-color: #ffffff; padding: 20px; border-left: 4px solid #007bff; margin: 20px 0;">
+          <h3 style="color: #333; margin-top: 0;">Message:</h3>
+          <p style="line-height: 1.6; color: #555;">${sanitizedMessage}</p>
+        </div>
+      </div>
+    `,
+  });
+};
+
 export async function POST(req: NextRequest) {
   try {
     if (!isTrustedStateChangingRequest(req)) {
@@ -49,7 +83,6 @@ export async function POST(req: NextRequest) {
 
     const { name, email, message } = result.data;
 
-    // Save contact message to database
     const supabase = await createServerSupabaseClient();
     const { error: insertError } = await supabase
       .from('Contact')
@@ -62,52 +95,13 @@ export async function POST(req: NextRequest) {
       throw insertError;
     }
 
-    // Send email notification using Resend
-    try {
-      const resend = getResendClient();
-      if (!resend) {
-        console.warn('RESEND_API_KEY is not set; skipping email notification.');
-        return NextResponse.json({ message: 'Message sent successfully' }, { status: 200 });
+    after(async () => {
+      try {
+        await sendContactNotification(name, email, message);
+      } catch (emailError) {
+        console.error('Failed to send email via Resend:', emailError);
       }
-
-      // Sanitize inputs for email display
-      const sanitizedName = sanitizeHtml(name);
-      const sanitizedEmail = sanitizeHtml(email);
-      const sanitizedMessage = sanitizeHtml(message).replace(/\n/g, '<br>');
-
-      await resend.emails.send({
-        from: 'Portfolio Contact <noreply@jotin.in>',
-        to: ['contact@jotin.in'], // Your email address
-        subject: `New Contact Form Message from ${name}`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
-              New Contact Form Submission
-            </h2>
-            
-            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <h3 style="color: #007bff; margin-top: 0;">Contact Details:</h3>
-              <p><strong>Name:</strong> ${sanitizedName}</p>
-              <p><strong>Email:</strong> ${sanitizedEmail}</p>
-            </div>
-            
-            <div style="background-color: #ffffff; padding: 20px; border-left: 4px solid #007bff; margin: 20px 0;">
-              <h3 style="color: #333; margin-top: 0;">Message:</h3>
-              <p style="line-height: 1.6; color: #555;">${sanitizedMessage}</p>
-            </div>
-            
-            <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-            <p style="color: #666; font-size: 14px; text-align: center;">
-              This message was sent from your portfolio contact form.
-            </p>
-          </div>
-        `,
-      });
-      
-      console.log('Email sent successfully via Resend');
-    } catch (emailError) {
-      console.error('Failed to send email via Resend:', emailError);
-    }
+    });
 
     return NextResponse.json({ message: 'Message sent successfully' }, { status: 200 });
   } catch (error) {

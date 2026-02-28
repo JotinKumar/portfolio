@@ -3,15 +3,19 @@ import Image from 'next/image';
 import { Card, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock } from 'lucide-react';
-import type { Article } from '@/lib/db-types';
+import type { ArticleCardData } from '@/lib/server/queries';
 
 interface ArticleCardProps {
-  article: Article;
+  article: ArticleCardData;
 }
 
 export function ArticleCard({ article }: ArticleCardProps) {
+  const publishedDate = new Date(
+    article.publishedAt || article.createdAt
+  ).toLocaleDateString();
+
   return (
-    <Card className="h-full flex flex-col hover:shadow-lg transition-shadow">
+    <Card className="h-full flex flex-col hover:shadow-lg transition-shadow [content-visibility:auto]">
       {article.coverImage && (
         <div className="relative aspect-video overflow-hidden rounded-t-lg">
           <Image
@@ -46,7 +50,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-1">
               <Calendar className="w-3 h-3" />
-              <span>{new Date(article.publishedAt || article.createdAt).toLocaleDateString()}</span>
+              <span>{publishedDate}</span>
             </div>
             <div className="flex items-center space-x-1">
               <Clock className="w-3 h-3" />

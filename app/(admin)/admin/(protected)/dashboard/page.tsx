@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getDashboardData } from '@/lib/server/queries';
 import type { Article, Contact } from '@/lib/db-types';
 import { FileText, FolderOpen, Mail, User } from 'lucide-react';
 
@@ -20,68 +20,14 @@ export default async function AdminDashboard() {
   let recentMessages: RecentMessage[] = [];
   
   try {
-    const supabase = await createServerSupabaseClient();
-
-    // Fetch dashboard stats
-    const [articlesCountResult, publishedCountResult, projectsCountResult, messagesCountResult, experienceCountResult] =
-      await Promise.all([
-        supabase.from('Article').select('*', { count: 'exact', head: true }),
-        supabase.from('Article').select('*', { count: 'exact', head: true }).eq('published', true),
-        supabase.from('Project').select('*', { count: 'exact', head: true }),
-        supabase.from('Contact').select('*', { count: 'exact', head: true }),
-        supabase.from('WorkExperienceCard').select('*', { count: 'exact', head: true }),
-      ]);
-
-    const countErrors = [
-      articlesCountResult.error,
-      publishedCountResult.error,
-      projectsCountResult.error,
-      messagesCountResult.error,
-      experienceCountResult.error,
-    ].filter(Boolean);
-    if (countErrors.length > 0) {
-      throw countErrors[0];
-    }
-
-    articlesCount = articlesCountResult.count ?? 0;
-    publishedArticlesCount = publishedCountResult.count ?? 0;
-    projectsCount = projectsCountResult.count ?? 0;
-    messagesCount = messagesCountResult.count ?? 0;
-    experienceCount = experienceCountResult.count ?? 0;
-
-    // Fetch recent articles
-    const { data: recentArticleRows, error: recentArticlesError } = await supabase
-      .from('Article')
-      .select('*')
-      .order('createdAt', { ascending: false })
-      .limit(5);
-    if (recentArticlesError) {
-      throw recentArticlesError;
-    }
-    recentArticles = ((recentArticleRows ?? []) as Article[]).map((article) => ({
-      id: article.id,
-      title: article.title,
-      published: article.published,
-      createdAt: article.createdAt,
-      category: article.category,
-    }));
-
-    // Fetch recent messages
-    const { data: recentMessageRows, error: recentMessagesError } = await supabase
-      .from('Contact')
-      .select('*')
-      .order('createdAt', { ascending: false })
-      .limit(5);
-    if (recentMessagesError) {
-      throw recentMessagesError;
-    }
-    recentMessages = ((recentMessageRows ?? []) as Contact[]).map((message) => ({
-      id: message.id,
-      name: message.name,
-      email: message.email,
-      createdAt: message.createdAt,
-      message: message.message,
-    }));
+    const dashboard = await getDashboardData();
+    articlesCount = dashboard.counts.articlesCount;
+    publishedArticlesCount = dashboard.counts.publishedArticlesCount;
+    projectsCount = dashboard.counts.projectsCount;
+    messagesCount = dashboard.counts.messagesCount;
+    experienceCount = dashboard.counts.experienceCount;
+    recentArticles = dashboard.recentArticles as RecentArticle[];
+    recentMessages = dashboard.recentMessages as RecentMessage[];
   } catch {
     console.log('Database not available, using empty state');
   }

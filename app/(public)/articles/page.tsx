@@ -1,5 +1,5 @@
 import { ArticleCard } from '@/components/sections/article-card';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getPublishedArticleCategories, getPublishedArticles } from '@/lib/server/queries';
 import type { Article } from '@/lib/db-types';
 
 // Force dynamic rendering to avoid build-time database queries
@@ -15,37 +15,8 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
   let uniqueCategories: string[] = [];
   
   try {
-    const supabase = await createServerSupabaseClient();
-    let articlesQuery = supabase
-      .from('Article')
-      .select('*')
-      .eq('published', true)
-      .order('publishedAt', { ascending: false, nullsFirst: false });
-
-    if (params.category) {
-      articlesQuery = articlesQuery.eq('category', params.category);
-    }
-
-    if (params.search) {
-      const escaped = params.search.replace(/,/g, '\\,');
-      articlesQuery = articlesQuery.or(`title.ilike.%${escaped}%,excerpt.ilike.%${escaped}%`);
-    }
-
-    const { data: articleRows, error: articleError } = await articlesQuery;
-    if (articleError) {
-      throw articleError;
-    }
-    articles = (articleRows ?? []) as Article[];
-
-    // Get unique categories for filter
-    const { data: categoryRows, error: categoryError } = await supabase
-      .from('Article')
-      .select('category')
-      .eq('published', true);
-    if (categoryError) {
-      throw categoryError;
-    }
-    uniqueCategories = Array.from(new Set((categoryRows ?? []).map((c) => c.category)));
+    articles = (await getPublishedArticles(params.category, params.search)) as Article[];
+    uniqueCategories = await getPublishedArticleCategories();
   } catch {
     console.log('Database not available, using empty state');
   }
