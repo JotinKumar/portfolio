@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { Card, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import type { ArticleCardData } from '@/lib/server/queries';
 
 interface ArticleCardProps {
@@ -16,8 +17,8 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
   return (
     <Card className="h-full flex flex-col hover:shadow-lg transition-shadow [content-visibility:auto]">
-      {article.coverImage && (
-        <div className="relative aspect-video overflow-hidden rounded-t-lg">
+      <div className="relative aspect-video overflow-hidden rounded-t-lg bg-muted">
+        {article.coverImage ? (
           <Image
             src={article.coverImage} 
             alt={article.title}
@@ -25,8 +26,13 @@ export function ArticleCard({ article }: ArticleCardProps) {
             sizes="(max-width: 768px) 100vw, 33vw"
             className="object-cover"
           />
-        </div>
-      )}
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-muted to-muted/60 text-muted-foreground">
+            <FileText className="h-6 w-6" />
+            <span className="text-xs font-medium tracking-wide uppercase">No Cover Image</span>
+          </div>
+        )}
+      </div>
       <CardHeader className="flex-1">
         <div className="space-y-2">
           <Badge variant="secondary" className="w-fit">
