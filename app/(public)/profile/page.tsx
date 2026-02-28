@@ -54,14 +54,6 @@ const deriveYearsExperience = (experiences: { startDate: string }[]): number => 
   return Math.max(0, currentYear - firstYear);
 };
 
-const resolveResumeUrl = (value?: string | null): string => {
-  if (!value) return RESUME_DOWNLOAD_PATH;
-  if (value.startsWith("https://") || value.startsWith("http://") || value.startsWith("/")) {
-    return value;
-  }
-  return `/${value.replace(/^\.?\//, "")}`;
-};
-
 export default async function ProfilePage() {
   let settings: Settings | null = null;
   let experienceCards: WorkExperienceCard[] = [];
@@ -92,9 +84,9 @@ export default async function ProfilePage() {
 
   const displayName = settings?.heroTitle || RESUME_NAME;
   const displayTitle = settings?.heroSubtitle || RESUME_TITLE;
-  const displaySummary = settings?.aboutMe || RESUME_SUMMARY;
+  const displaySummary = RESUME_SUMMARY;
   const displayEmail = settings?.emailAddress || "JotinMadugula@gmail.com";
-  const displayResumeUrl = resolveResumeUrl(settings?.resumeUrl);
+  const displayResumeUrl = RESUME_DOWNLOAD_PATH;
   const yearsExperience = deriveYearsExperience(experiences);
   const currentRole = experiences.find((exp) => exp.current)?.role || displayTitle;
 
