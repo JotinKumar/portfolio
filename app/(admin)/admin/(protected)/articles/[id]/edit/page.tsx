@@ -101,6 +101,7 @@ export default async function EditArticlePage({ params }: EditArticlePageProps) 
             <Input name="coverImage" defaultValue={article.coverImage ?? ""} placeholder="Cover image URL (optional)" />
             <Input name="excerpt" defaultValue={article.excerpt} required />
             <textarea
+              aria-label="article content"
               name="content"
               className="min-h-[280px] w-full rounded-md border bg-background px-3 py-2 text-sm"
               defaultValue={article.content}

@@ -83,6 +83,7 @@ export default function NewArticlePage() {
             <Input name="coverImage" placeholder="Cover image URL (optional)" />
             <Input name="excerpt" placeholder="Short excerpt" required />
             <textarea
+              aria-label="article content"
               name="content"
               className="min-h-[280px] w-full rounded-md border bg-background px-3 py-2 text-sm"
               placeholder="Article content"

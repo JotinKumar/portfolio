@@ -99,6 +99,7 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
             <Input name="slug" defaultValue={project.slug} required />
             <Input name="shortDesc" defaultValue={project.shortDesc} required />
             <textarea
+              aria-label="project description"
               name="description"
               className="min-h-[160px] w-full rounded-md border bg-background px-3 py-2 text-sm"
               defaultValue={project.description}

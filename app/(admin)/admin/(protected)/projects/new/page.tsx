@@ -82,6 +82,7 @@ export default function NewProjectPage() {
             <Input name="slug" placeholder="Slug (optional, auto-generated)" />
             <Input name="shortDesc" placeholder="Short description" required />
             <textarea
+              aria-label="project description"
               name="description"
               className="min-h-[160px] w-full rounded-md border bg-background px-3 py-2 text-sm"
               placeholder="Full description"

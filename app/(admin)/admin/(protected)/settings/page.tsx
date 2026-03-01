@@ -600,7 +600,12 @@ export default async function SettingsPage() {
             <Input name="id" placeholder="Unique ID (example: HEADER-99)" required />
             <Input name="label" placeholder="Label" required />
             <Input name="href" placeholder="Href" required />
-            <select name="position" defaultValue="HEADER" className="h-10 rounded-md border bg-background px-3 text-sm">
+            <select
+              aria-label="navigation position"
+              name="position"
+              defaultValue="HEADER"
+              className="h-10 rounded-md border bg-background px-3 text-sm"
+            >
               <option value="HEADER">HEADER</option>
               <option value="FOOTER_QUICK">FOOTER_QUICK</option>
               <option value="FOOTER_RESOURCE">FOOTER_RESOURCE</option>
@@ -626,6 +631,7 @@ export default async function SettingsPage() {
               <Input name="label" defaultValue={item.label} required />
               <Input name="href" defaultValue={item.href} required />
               <select
+                aria-label="navigation position"
                 name="position"
                 defaultValue={item.position}
                 className="h-10 rounded-md border bg-background px-3 text-sm"
@@ -667,7 +673,12 @@ export default async function SettingsPage() {
             <Input name="platform" placeholder="Platform" required />
             <Input name="label" placeholder="Label" required />
             <Input name="url" placeholder="URL" required />
-            <select name="position" defaultValue="FOOTER" className="h-10 rounded-md border bg-background px-3 text-sm">
+            <select
+              aria-label="social position"
+              name="position"
+              defaultValue="FOOTER"
+              className="h-10 rounded-md border bg-background px-3 text-sm"
+            >
               <option value="FOOTER">FOOTER</option>
               <option value="CONTACT">CONTACT</option>
             </select>
@@ -686,6 +697,7 @@ export default async function SettingsPage() {
               <Input name="label" defaultValue={item.label} required />
               <Input name="url" defaultValue={item.url} required />
               <select
+                aria-label="social position"
                 name="position"
                 defaultValue={item.position}
                 className="h-10 rounded-md border bg-background px-3 text-sm"

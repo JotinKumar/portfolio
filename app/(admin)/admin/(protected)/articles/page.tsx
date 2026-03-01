@@ -40,7 +40,7 @@ async function deleteArticle(formData: FormData) {
 
 export default async function ArticlesAdmin() {
   let articles: Article[] = [];
-  
+
   try {
     const supabase = await createServerSupabaseClient();
     const { data, error } = await supabase
@@ -89,9 +89,9 @@ export default async function ArticlesAdmin() {
                   </p>
                   <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                     <span>Category: {article.category}</span>
-                    <span>•</span>
+                    <span>&bull;</span>
                     <span>Read time: {article.readTime} min</span>
-                    <span>•</span>
+                    <span>&bull;</span>
                     <span>Created: {new Date(article.createdAt).toLocaleDateString()}</span>
                   </div>
                   <div className="flex flex-wrap gap-1 mt-2">
@@ -105,20 +105,23 @@ export default async function ArticlesAdmin() {
                 <div className="flex gap-2 ml-4">
                   {article.published && (
                     <Button size="sm" variant="outline" asChild>
-                      <Link href={`/articles/${article.slug}`} target="_blank">
+                      <Link href={`/articles/${article.slug}`} target="_blank" aria-label={`View article ${article.title}`}>
                         <Eye className="w-4 h-4" />
+                        <span className="sr-only">View article</span>
                       </Link>
                     </Button>
                   )}
                   <Button size="sm" variant="outline" asChild>
-                    <Link href={`/admin/articles/${article.id}/edit`}>
+                    <Link href={`/admin/articles/${article.id}/edit`} aria-label={`Edit article ${article.title}`}>
                       <Edit className="w-4 h-4" />
+                      <span className="sr-only">Edit article</span>
                     </Link>
                   </Button>
                   <form action={deleteArticle}>
                     <input type="hidden" name="id" value={article.id} />
-                    <Button size="sm" variant="destructive" type="submit">
+                    <Button size="sm" variant="destructive" type="submit" aria-label={`Delete article ${article.title}`}>
                       <Trash className="w-4 h-4" />
+                      <span className="sr-only">Delete article</span>
                     </Button>
                   </form>
                 </div>
