@@ -2,12 +2,15 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
+import type { HeroContent } from "@/lib/db-types";
 
 export function TechHero({
+  heroContent,
   current = false,
   isInitial = false,
   skillsExitEarly = false,
 }: {
+  heroContent: HeroContent;
   current?: boolean;
   isInitial?: boolean;
   skillsExitEarly?: boolean;
@@ -23,20 +26,8 @@ export function TechHero({
     "bg-orange-500 hover:bg-orange-600",
   ];
 
-  const allSkills = [
-    "Python",
-    "Node.js",
-    "React",
-    "Next.js",
-    "TypeScript",
-    "AI & ML",
-    "Excel & VBA",
-    "RPA & Automation",
-    "Full Stack",
-    "UI Design",
-  ];
-
-  const initialSkills = ["AI & ML", "Next.js", "Python", "Full Stack"];
+  const allSkills = heroContent.techSkills;
+  const initialSkills = heroContent.techInitialSkills;
   const displaySkills = isInitial ? initialSkills : allSkills;
 
   return (
@@ -62,7 +53,7 @@ export function TechHero({
         >
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
           <Image
-            src="/images/tech-portrait.jpg"
+            src={heroContent.techImageUrl}
             alt="Tech Hero"
             fill
             sizes="(max-width: 768px) 336px, 400px"
@@ -92,7 +83,7 @@ export function TechHero({
                   className="overflow-hidden flex flex-col items-start"
                 >
                   <h1 className="text-2xl md:text-4xl font-black mb-1 text-foreground tracking-tighter uppercase whitespace-nowrap">
-                    Jotin Kumar Madugula
+                    {heroContent.displayName}
                   </h1>
                   <motion.div 
                     layoutId="tech-underline"
@@ -104,10 +95,10 @@ export function TechHero({
             
             <div className={`space-y-3 flex flex-col ${current ? "items-start" : "items-end"}`}>
               <h2 className={`${isInitial ? "text-lg" : "text-xl md:text-2xl"} text-primary font-bold uppercase tracking-wide whitespace-nowrap`}>
-                Self-Taught Tech Enthusiast
+                {heroContent.techTitle}
               </h2>
               <p className={`${isInitial ? "text-base max-w-md" : "text-lg md:text-xl max-w-2xl"} text-muted-foreground leading-relaxed`}>
-                A self-taught tech enthusiast driven by curiosity and a constant desire to learn. Actively exploring modern technologies including AI, machine learning, and full-stack development, with a strong focus on understanding systems deeply and applying knowledge through hands-on projects to stay aligned with the latest innovations.
+                {heroContent.techSubtitle}
               </p>
             </div>
           </div>
@@ -157,10 +148,10 @@ export function TechHero({
             </motion.div>
             <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 ${isInitial ? "scale-90 origin-right" : ""}`}>
               <Button variant="outline" asChild className="rounded-full px-8 py-5 text-base font-bold border-2 hover:bg-primary/5 transition-all active:scale-95">
-                <a href="/projects">View Projects</a>
+                <a href="/projects">{heroContent.viewProjectsLabel}</a>
               </Button>
               <Button asChild className="rounded-full px-8 py-5 text-base font-bold shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
-                <a href="/articles">View Articles</a>
+                <a href="/articles">{heroContent.viewArticlesLabel}</a>
               </Button>
             </div>
           </div>

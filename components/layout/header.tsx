@@ -5,8 +5,8 @@ import Image from "next/image";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Glassmorphism } from "@/components/ui/glassmorphism";
-import { RESUME_DOWNLOAD_PATH } from "@/lib/resume-data";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import type { NavigationItem, SiteConfig } from "@/lib/db-types";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -25,16 +25,28 @@ import {
   Home,
 } from "lucide-react";
 
-const navigationItems = [
-  { name: "Home", href: "/", icon: Home },
-  { name: "Profile", href: "/profile", icon: User },
-  { name: "Articles", href: "/articles", icon: FileText },
-  { name: "Projects", href: "/projects", icon: Briefcase },
-  { name: "Contact", href: "/contact", icon: Mail },
-];
+const iconForLabel = (label: string) => {
+  const normalized = label.toLowerCase();
+  if (normalized.includes("home")) return Home;
+  if (normalized.includes("profile")) return User;
+  if (normalized.includes("article")) return FileText;
+  if (normalized.includes("project")) return Briefcase;
+  if (normalized.includes("contact")) return Mail;
+  return FileText;
+};
 
-export function Header() {
+export function Header({
+  siteConfig,
+  navigationItems,
+}: {
+  siteConfig: SiteConfig | null;
+  navigationItems: NavigationItem[];
+}) {
   const { resolvedTheme, setTheme } = useTheme();
+  const resumeUrl = siteConfig?.resumeUrl;
+  const logoUrl = siteConfig?.logoUrl ?? "/images/logo.png";
+  const logoAlt = siteConfig?.logoAlt ?? "Portfolio Logo";
+  const items = navigationItems;
 
   return (
     <header className="fixed top-4 left-4 right-4 z-[100]">
@@ -43,8 +55,8 @@ export function Header() {
           <div className="mr-4 flex">
             <Link href="/" className="mr-6 flex items-center space-x-2">
               <Image
-                src="/images/logo.png"
-                alt="Jotin Portfolio Logo"
+                src={logoUrl}
+                alt={logoAlt}
                 width={32}
                 height={32}
                 className="rounded-sm"
@@ -54,21 +66,25 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:flex-1">
-            <NavigationMenu>
+              <NavigationMenu>
               <NavigationMenuList>
-                {navigationItems.map((item) => (
-                  <NavigationMenuItem key={item.name}>
+                {items.map((item) => {
+                  const Icon = iconForLabel(item.label);
+                  return (
+                  <NavigationMenuItem key={item.id}>
                     <NavigationMenuLink asChild>
                       <Link
                         href={item.href}
+                        target={item.openInNewTab ? "_blank" : undefined}
+                        rel={item.openInNewTab ? "noopener noreferrer" : undefined}
                         className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50"
                       >
-                        <item.icon className="w-4 h-4 mr-2" />
-                        {item.name}
+                        <Icon className="w-4 h-4 mr-2" />
+                        {item.label}
                       </Link>
                     </NavigationMenuLink>
                   </NavigationMenuItem>
-                ))}
+                )})}
               </NavigationMenuList>
             </NavigationMenu>
           </div>
@@ -85,17 +101,19 @@ export function Header() {
               <span className="sr-only">Toggle theme</span>
             </Button>
 
-            <Button
-              variant="outline"
-              size="sm"
-              className="hidden md:flex"
-              asChild
-            >
-              <Link href={RESUME_DOWNLOAD_PATH} target="_blank">
-                <Download className="w-4 h-4 mr-2" />
-                Resume
-              </Link>
-            </Button>
+            {resumeUrl ? (
+              <Button
+                variant="outline"
+                size="sm"
+                className="hidden md:flex"
+                asChild
+              >
+                <Link href={resumeUrl} target="_blank">
+                  <Download className="w-4 h-4 mr-2" />
+                  Resume
+                </Link>
+              </Button>
+            ) : null}
 
             {/* Mobile Navigation */}
             <Sheet>
@@ -107,22 +125,28 @@ export function Header() {
               </SheetTrigger>
               <SheetContent side="right">
                 <div className="flex flex-col space-y-4 mt-8">
-                  {navigationItems.map((item) => (
+                  {items.map((item) => {
+                    const Icon = iconForLabel(item.label);
+                    return (
                     <Link
-                      key={item.name}
+                      key={`mobile-${item.id}`}
                       href={item.href}
+                      target={item.openInNewTab ? "_blank" : undefined}
+                      rel={item.openInNewTab ? "noopener noreferrer" : undefined}
                       className="flex items-center space-x-2 text-lg font-medium"
                     >
-                      <item.icon className="w-5 h-5" />
-                      <span>{item.name}</span>
+                      <Icon className="w-5 h-5" />
+                      <span>{item.label}</span>
                     </Link>
-                  ))}
-                  <Button variant="outline" className="justify-start" asChild>
-                    <Link href={RESUME_DOWNLOAD_PATH} target="_blank">
-                      <Download className="w-4 h-4 mr-2" />
-                      Download Resume
-                    </Link>
-                  </Button>
+                  )})}
+                  {resumeUrl ? (
+                    <Button variant="outline" className="justify-start" asChild>
+                      <Link href={resumeUrl} target="_blank">
+                        <Download className="w-4 h-4 mr-2" />
+                        Download Resume
+                      </Link>
+                    </Button>
+                  ) : null}
                 </div>
               </SheetContent>
             </Sheet>

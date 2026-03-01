@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 
@@ -32,6 +33,237 @@ async function main() {
     update: settingsData,
     create: settingsData,
   });
+
+  const siteConfigData = {
+    id: 'default',
+    siteName: 'Jotin Kumar Madugula',
+    siteTagline: 'Business Process Expert & Full Stack Developer',
+    logoUrl: '/images/logo.png',
+    logoAlt: 'Jotin Portfolio Logo',
+    resumeUrl: '/jotin-madugula-resume.pdf',
+    primaryEmail: 'contact@jotin.in',
+    locationLabel: 'Hyderabad, India',
+    defaultTitle: 'Jotin Kumar Madugula - Portfolio',
+    defaultDescription: 'Business Process Expert & Full Stack Developer',
+  };
+
+  await (prisma as any).siteConfig.upsert({
+    where: { id: 'default' },
+    update: siteConfigData,
+    create: siteConfigData,
+  });
+
+  const navigationItems = [
+    { label: 'Home', href: '/', position: 'HEADER', order: 1 },
+    { label: 'Profile', href: '/profile', position: 'HEADER', order: 2 },
+    { label: 'Articles', href: '/articles', position: 'HEADER', order: 3 },
+    { label: 'Projects', href: '/projects', position: 'HEADER', order: 4 },
+    { label: 'Contact', href: '/contact', position: 'HEADER', order: 5 },
+    { label: 'Home', href: '/', position: 'FOOTER_QUICK', order: 1 },
+    { label: 'Profile', href: '/profile', position: 'FOOTER_QUICK', order: 2 },
+    { label: 'Articles', href: '/articles', position: 'FOOTER_QUICK', order: 3 },
+    { label: 'Projects', href: '/projects', position: 'FOOTER_QUICK', order: 4 },
+    { label: 'Resume', href: '/jotin-madugula-resume.pdf', position: 'FOOTER_RESOURCE', order: 1 },
+    { label: 'Contact', href: '/contact', position: 'FOOTER_RESOURCE', order: 2 },
+    { label: 'Privacy Policy', href: '/privacy', position: 'FOOTER_LEGAL', order: 1 },
+    { label: 'Terms of Service', href: '/terms', position: 'FOOTER_LEGAL', order: 2 },
+  ] as const;
+
+  for (const item of navigationItems) {
+    await (prisma as any).navigationItem.upsert({
+      where: { id: `${item.position}-${item.order}` },
+      update: { ...item },
+      create: { id: `${item.position}-${item.order}`, ...item },
+    });
+  }
+
+  const socialLinks = [
+    { id: 'social-github', platform: 'github', label: 'GitHub', url: 'https://github.com/jotin', position: 'FOOTER', order: 1 },
+    { id: 'social-linkedin', platform: 'linkedin', label: 'LinkedIn', url: 'https://linkedin.com/in/jotin', position: 'FOOTER', order: 2 },
+    { id: 'social-twitter', platform: 'twitter', label: 'Twitter', url: 'https://twitter.com/jotin', position: 'FOOTER', order: 3 },
+    { id: 'social-email', platform: 'email', label: 'Email', url: 'mailto:contact@jotin.in', position: 'FOOTER', order: 4 },
+    { id: 'contact-linkedin', platform: 'linkedin', label: 'LinkedIn', url: 'https://linkedin.com/in/jotin', position: 'CONTACT', order: 1 },
+    { id: 'contact-github', platform: 'github', label: 'GitHub', url: 'https://github.com/jotin', position: 'CONTACT', order: 2 },
+    { id: 'contact-twitter', platform: 'twitter', label: 'Twitter', url: 'https://twitter.com/jotin', position: 'CONTACT', order: 3 },
+  ] as const;
+
+  for (const item of socialLinks) {
+    await (prisma as any).socialLink.upsert({
+      where: { id: item.id },
+      update: { ...item },
+      create: { ...item },
+    });
+  }
+
+  const heroContent = {
+    id: 'default',
+    displayName: 'Jotin Kumar Madugula',
+    professionalTitle: 'Pricing and Solutions Director',
+    professionalSubtitle:
+      'A seasoned professional with 21+ years of experience in the BPO/ITES industry, including 13 years in US Healthcare Operations and 8+ years in Pricing and Financial Strategy.',
+    techTitle: 'Self-Taught Tech Enthusiast',
+    techSubtitle:
+      'A self-taught tech enthusiast driven by curiosity and a constant desire to learn. Actively exploring modern technologies including AI, machine learning, and full-stack development.',
+    professionalSkills: [
+      'Pricing & RFX',
+      'Ops Leadership',
+      'Cost Modeling',
+      'Process Re-engineering',
+      'Financial Analysis',
+      'RPA & Automation',
+      'Price-to-Win Strategy',
+      'US Healthcare',
+      'Analytics & MIS',
+      'Global Governance',
+    ],
+    professionalInitialSkills: ['Pricing & RFX', 'Ops Leadership', 'Financial Analysis', 'US Healthcare'],
+    techSkills: ['Python', 'Node.js', 'React', 'Next.js', 'TypeScript', 'AI & ML', 'Excel & VBA', 'RPA & Automation', 'Full Stack', 'UI Design'],
+    techInitialSkills: ['AI & ML', 'Next.js', 'Python', 'Full Stack'],
+    professionalImageUrl: '/images/professional-portrait.jpg',
+    techImageUrl: '/images/tech-portrait.jpg',
+    exploreProfessionalLabel: 'Explore Professional',
+    exploreTechLabel: 'Explore Tech Side',
+    resetViewLabel: 'Reset View',
+    downloadResumeLabel: 'Download Resume',
+    getInTouchLabel: 'Get in Touch',
+    viewProjectsLabel: 'View Projects',
+    viewArticlesLabel: 'View Articles',
+    homeWorkSectionTitle: 'Work Experience',
+    homeFeaturedArticlesTitle: 'Featured Articles',
+    homeFeaturedProjectsTitle: 'Featured Projects',
+    homeViewAllArticlesLabel: 'View All Articles',
+    homeViewAllProjectsLabel: 'View All Projects',
+  };
+
+  await (prisma as any).heroContent.upsert({
+    where: { id: 'default' },
+    update: heroContent,
+    create: heroContent,
+  });
+
+  const pageContentRows = [
+    {
+      page: 'HOME',
+      title: 'Home',
+      subtitle: 'Business and technology perspectives, projects, and career highlights.',
+      emptyTitle: null,
+      emptyMessage: null,
+      primaryCta: null,
+      secondaryCta: null,
+      content: null,
+    },
+    {
+      page: 'PROFILE',
+      title: 'Jotin Kumar Madugula',
+      subtitle: 'Pricing and Solutions Director',
+      emptyTitle: null,
+      emptyMessage: null,
+      primaryCta: 'Download Resume',
+      secondaryCta: 'Contact Me',
+      content: {
+        summary:
+          'A seasoned professional with 21+ years of experience in the BPO/ITES industry, including 13 years in US Healthcare Operations and 8+ years in Pricing and Financial Strategy.',
+        profileIntroBadge: 'Hybrid Resume Profile',
+        professionalSummaryTitle: 'Professional Summary',
+        professionalSummarySubtitle: 'Executive overview tailored for pricing, operations, and transformation leadership.',
+        timelineTitle: 'Experience Timeline',
+        timelineSubtitle: 'Role progression with delivery impact, capabilities, and measurable contributions.',
+        quickFactsTitle: 'Quick Facts',
+        quickFactLocationLabel: 'Location',
+        quickFactExperienceLabel: 'Experience',
+        quickFactFocusLabel: 'Current Focus',
+        achievementsTitle: 'Key Achievements',
+        skillsTitle: 'Skills',
+        commercialDeliveryTitle: 'Commercial & Delivery',
+        operationsTechnologyTitle: 'Operations & Technology',
+        contactLinksTitle: 'Contact & Links',
+        contactLinksSubtitle: 'Available for consulting, leadership opportunities, and strategic partnerships.',
+      },
+    },
+    {
+      page: 'ARTICLES',
+      title: 'Articles',
+      subtitle: 'Thoughts on business processes, technology, and the future of work.',
+      emptyTitle: 'No articles found',
+      emptyMessage: 'Try adjusting your filters to see more articles.',
+      primaryCta: 'All',
+      secondaryCta: 'Clear',
+      content: {
+        tagLabel: 'Tag:',
+        defaultEmptyMessage: 'Articles will appear here once they are published.',
+      },
+    },
+    {
+      page: 'PROJECTS',
+      title: 'Projects',
+      subtitle: 'A showcase of my latest work in web development, automation, and digital transformation.',
+      emptyTitle: 'No projects yet',
+      emptyMessage: 'Projects will appear here once they are added.',
+      primaryCta: 'All',
+      secondaryCta: null,
+      content: null,
+    },
+    {
+      page: 'CONTACT',
+      title: 'Get in Touch',
+      subtitle: "Have a project in mind or just want to chat? I'd love to hear from you.",
+      emptyTitle: null,
+      emptyMessage: null,
+      primaryCta: 'Send Message',
+      secondaryCta: 'Sending...',
+      content: {
+        formTitle: 'Send a Message',
+        formSubtitle: "Fill out the form below and I'll get back to you within 24 hours.",
+        nameLabel: 'Name',
+        emailLabel: 'Email',
+        messageLabel: 'Message',
+        namePlaceholder: 'Your full name',
+        emailPlaceholder: 'your.email@example.com',
+        messagePlaceholder: 'Tell me about your project or just say hello!',
+        infoTitle: 'Contact Information',
+        infoSubtitle: 'Prefer a different way to reach out? Here are some alternatives.',
+        infoEmailLabel: 'Email',
+        infoLocationLabel: 'Location',
+        infoLocationValue: 'Remote • Available Globally',
+        infoResponseTimeLabel: 'Response Time',
+        infoResponseTimeValue: 'Within 24 hours',
+        socialTitle: "Let's Connect",
+        socialSubtitle: 'Follow me on social media for updates and insights.',
+        successMessage: "Message sent successfully! I'll get back to you soon.",
+        errorMessage: 'Failed to send message',
+        unexpectedErrorMessage: 'An error occurred while sending your message',
+      },
+    },
+  ] as const;
+
+  for (const row of pageContentRows) {
+    await (prisma as any).pageContent.upsert({
+      where: { page: row.page },
+      update: row,
+      create: row,
+    });
+  }
+
+  const competencies = [
+    { name: 'Strategic Pricing & RFX Ownership', category: 'COMMERCIAL_DELIVERY', order: 1 },
+    { name: 'Multi-Geo Cost Modelling', category: 'COMMERCIAL_DELIVERY', order: 2 },
+    { name: 'Executive Financial Storytelling', category: 'COMMERCIAL_DELIVERY', order: 3 },
+    { name: 'Price-to-Win Strategy', category: 'COMMERCIAL_DELIVERY', order: 4 },
+    { name: 'US Healthcare Life Cycle Expertise', category: 'COMMERCIAL_DELIVERY', order: 5 },
+    { name: 'Operations Leadership', category: 'OPERATIONS_TECH', order: 1 },
+    { name: 'Process Re-engineering', category: 'OPERATIONS_TECH', order: 2 },
+    { name: 'RPA and Automation', category: 'OPERATIONS_TECH', order: 3 },
+    { name: 'MIS & Performance Analytics', category: 'OPERATIONS_TECH', order: 4 },
+    { name: 'Global Stakeholder Governance', category: 'OPERATIONS_TECH', order: 5 },
+  ] as const;
+
+  for (const item of competencies) {
+    await (prisma as any).competency.upsert({
+      where: { id: `${item.category}-${item.order}` },
+      update: item,
+      create: { id: `${item.category}-${item.order}`, ...item },
+    });
+  }
 
   const work1Data = {
     id: 'work1',

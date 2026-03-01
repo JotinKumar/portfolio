@@ -1,6 +1,19 @@
 import { cache } from "react";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
-import type { Article, Contact, Project, Settings, WorkExperienceCard } from "@/lib/db-types";
+import type {
+  Article,
+  Competency,
+  Contact,
+  HeroContent,
+  NavigationItem,
+  PageContent,
+  Project,
+  PublicPage,
+  Settings,
+  SiteConfig,
+  SocialLink,
+  WorkExperienceCard,
+} from "@/lib/db-types";
 
 export type ArticleCardData = Pick<
   Article,
@@ -32,6 +45,15 @@ export type DashboardData = {
   };
   recentArticles: Pick<Article, "id" | "title" | "published" | "createdAt" | "category">[];
   recentMessages: Pick<Contact, "id" | "name" | "email" | "createdAt" | "message">[];
+};
+
+export type SiteShellData = {
+  siteConfig: SiteConfig | null;
+  headerNav: NavigationItem[];
+  footerQuickLinks: NavigationItem[];
+  footerResourceLinks: NavigationItem[];
+  footerLegalLinks: NavigationItem[];
+  footerSocialLinks: SocialLink[];
 };
 
 export const getFeaturedArticles = cache(async (limit = 3): Promise<ArticleCardData[]> => {
@@ -98,6 +120,97 @@ export const getProfileData = cache(async (): Promise<{
     settings: (settingsResult.data as Settings | null) ?? null,
     experienceCards: (experienceResult.data ?? []) as WorkExperienceCard[],
   };
+});
+
+export const getSiteShellData = cache(async (): Promise<SiteShellData> => {
+  const supabase = await createServerSupabaseClient();
+  const [siteConfigResult, navResult, socialResult] = await Promise.all([
+    supabase
+      .from("SiteConfig")
+      .select(
+        "id,siteName,siteTagline,logoUrl,logoAlt,resumeUrl,primaryEmail,locationLabel,defaultTitle,defaultDescription,updatedAt"
+      )
+      .eq("id", "default")
+      .maybeSingle(),
+    supabase
+      .from("NavigationItem")
+      .select("id,label,href,order,position,visible,isExternal,openInNewTab,createdAt,updatedAt")
+      .eq("visible", true)
+      .order("order", { ascending: true }),
+    supabase
+      .from("SocialLink")
+      .select("id,platform,label,url,position,order,visible,createdAt,updatedAt")
+      .eq("visible", true)
+      .order("order", { ascending: true }),
+  ]);
+
+  if (siteConfigResult.error) throw siteConfigResult.error;
+  if (navResult.error) throw navResult.error;
+  if (socialResult.error) throw socialResult.error;
+
+  const navItems = (navResult.data ?? []) as NavigationItem[];
+  const socialItems = (socialResult.data ?? []) as SocialLink[];
+
+  return {
+    siteConfig: (siteConfigResult.data as SiteConfig | null) ?? null,
+    headerNav: navItems.filter((item) => item.position === "HEADER"),
+    footerQuickLinks: navItems.filter((item) => item.position === "FOOTER_QUICK"),
+    footerResourceLinks: navItems.filter((item) => item.position === "FOOTER_RESOURCE"),
+    footerLegalLinks: navItems.filter((item) => item.position === "FOOTER_LEGAL"),
+    footerSocialLinks: socialItems.filter((item) => item.position === "FOOTER"),
+  };
+});
+
+export const getHeroContent = cache(async (): Promise<HeroContent | null> => {
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from("HeroContent")
+    .select(
+      "id,displayName,professionalTitle,professionalSubtitle,techTitle,techSubtitle,professionalSkills,professionalInitialSkills,techSkills,techInitialSkills,professionalImageUrl,techImageUrl,exploreProfessionalLabel,exploreTechLabel,resetViewLabel,downloadResumeLabel,getInTouchLabel,viewProjectsLabel,viewArticlesLabel,homeWorkSectionTitle,homeFeaturedArticlesTitle,homeFeaturedProjectsTitle,homeViewAllArticlesLabel,homeViewAllProjectsLabel,updatedAt"
+    )
+    .eq("id", "default")
+    .maybeSingle();
+
+  if (error) throw error;
+  return (data as HeroContent | null) ?? null;
+});
+
+export const getPageContent = cache(async (page: PublicPage): Promise<PageContent | null> => {
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from("PageContent")
+    .select("id,page,title,subtitle,emptyTitle,emptyMessage,primaryCta,secondaryCta,content,createdAt,updatedAt")
+    .eq("page", page)
+    .maybeSingle();
+
+  if (error) throw error;
+  return (data as PageContent | null) ?? null;
+});
+
+export const getCompetencies = cache(async (): Promise<Competency[]> => {
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from("Competency")
+    .select("id,name,category,order,visible,createdAt,updatedAt")
+    .eq("visible", true)
+    .order("category", { ascending: true })
+    .order("order", { ascending: true });
+
+  if (error) throw error;
+  return (data ?? []) as Competency[];
+});
+
+export const getSocialLinksByPosition = cache(async (position: "FOOTER" | "CONTACT"): Promise<SocialLink[]> => {
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from("SocialLink")
+    .select("id,platform,label,url,position,order,visible,createdAt,updatedAt")
+    .eq("position", position)
+    .eq("visible", true)
+    .order("order", { ascending: true });
+
+  if (error) throw error;
+  return (data ?? []) as SocialLink[];
 });
 
 export const getPublishedArticles = cache(

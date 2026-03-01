@@ -1,5 +1,5 @@
 import { ArticleCard } from '@/components/sections/article-card';
-import { getPublishedArticleCategories, getPublishedArticles } from '@/lib/server/queries';
+import { getPageContent, getPublishedArticleCategories, getPublishedArticles } from '@/lib/server/queries';
 import type { Article } from '@/lib/db-types';
 
 // Force dynamic rendering to avoid build-time database queries
@@ -13,21 +13,28 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
   const params = await searchParams;
   let articles: Article[] = [];
   let uniqueCategories: string[] = [];
+  let pageContent: Awaited<ReturnType<typeof getPageContent>> = null;
   
   try {
     articles = (await getPublishedArticles(params.category, params.search, params.tag)) as Article[];
     uniqueCategories = await getPublishedArticleCategories();
+    pageContent = await getPageContent("ARTICLES");
   } catch {
     console.log('Database not available, using empty state');
   }
+
+  const content = (pageContent?.content as Record<string, unknown> | null) ?? null;
+  const defaultEmptyMessage =
+    typeof content?.defaultEmptyMessage === "string" ? content.defaultEmptyMessage : "Articles will appear here once they are published.";
+  const tagLabel = typeof content?.tagLabel === "string" ? content.tagLabel : "Tag:";
 
   return (
     <section className="py-12">
       <div className="space-y-8">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold">Articles</h1>
+          <h1 className="text-4xl md:text-5xl font-bold">{pageContent?.title ?? "Articles"}</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Thoughts on business processes, technology, and the future of work.
+            {pageContent?.subtitle ?? ""}
           </p>
         </div>
 
@@ -42,7 +49,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
                   : 'bg-muted hover:bg-muted/80'
               }`}
             >
-              All
+              {pageContent?.primaryCta ?? "All"}
             </a>
             {uniqueCategories.map((category) => (
               <a 
@@ -62,7 +69,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
 
         {params.tag ? (
           <div className="flex items-center justify-center gap-2 text-sm">
-            <span className="text-muted-foreground">Tag:</span>
+            <span className="text-muted-foreground">{tagLabel}</span>
             <a
               href={`/articles?tag=${encodeURIComponent(params.tag)}`}
               className="rounded-full bg-primary px-3 py-1 text-primary-foreground"
@@ -70,7 +77,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
               #{params.tag}
             </a>
             <a href="/articles" className="text-muted-foreground underline hover:text-foreground">
-              Clear
+              {pageContent?.secondaryCta ?? "Clear"}
             </a>
           </div>
         ) : null}
@@ -84,11 +91,11 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
           </div>
         ) : (
           <div className="text-center py-12">
-            <h3 className="text-xl font-semibold mb-2">No articles found</h3>
+            <h3 className="text-xl font-semibold mb-2">{pageContent?.emptyTitle ?? "No articles found"}</h3>
             <p className="text-muted-foreground">
               {params.search || params.category || params.tag
-                ? 'Try adjusting your filters to see more articles.'
-                : 'Articles will appear here once they are published.'}
+                ? pageContent?.emptyMessage ?? 'Try adjusting your filters to see more articles.'
+                : defaultEmptyMessage}
             </p>
           </div>
         )}

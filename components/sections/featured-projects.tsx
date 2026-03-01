@@ -5,18 +5,20 @@ import type { ProjectCardData } from "@/lib/server/queries";
 
 interface FeaturedProjectsProps {
   projects: ProjectCardData[];
+  title: string;
+  viewAllLabel: string;
 }
 
-export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
+export function FeaturedProjects({ projects, title, viewAllLabel }: FeaturedProjectsProps) {
   return (
     <section className="py-10 md:py-12">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-3xl font-bold tracking-tight">
-            Featured Projects
+            {title}
           </h2>
           <Link href="/projects" passHref>
-            <Button variant="outline">View All Projects</Button>
+            <Button variant="outline">{viewAllLabel}</Button>
           </Link>
         </div>
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">

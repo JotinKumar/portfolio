@@ -2,13 +2,17 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
-import { RESUME_DOWNLOAD_PATH } from "@/lib/resume-data";
+import type { HeroContent, SiteConfig } from "@/lib/db-types";
 
 export function ProfessionalHero({
+  heroContent,
+  siteConfig,
   current = false,
   isInitial = false,
   skillsExitEarly = false,
 }: {
+  heroContent: HeroContent;
+  siteConfig: SiteConfig | null;
   current?: boolean;
   isInitial?: boolean;
   skillsExitEarly?: boolean;
@@ -24,21 +28,10 @@ export function ProfessionalHero({
     "bg-blue-900",
   ];
 
-  const allSkills = [
-    "Pricing & RFX",
-    "Ops Leadership",
-    "Cost Modeling",
-    "Process Re-engineering",
-    "Financial Analysis",
-    "RPA & Automation",
-    "Price-to-Win Strategy",
-    "US Healthcare",
-    "Analytics & MIS",
-    "Global Governance",
-  ];
-
-  const initialSkills = ["Pricing & RFX", "Ops Leadership", "Financial Analysis", "US Healthcare"];
+  const allSkills = heroContent.professionalSkills;
+  const initialSkills = heroContent.professionalInitialSkills;
   const displaySkills = isInitial ? initialSkills : allSkills;
+  const resumeUrl = siteConfig?.resumeUrl ?? "#";
 
   return (
     <motion.div 
@@ -71,7 +64,7 @@ export function ProfessionalHero({
                   className="overflow-hidden"
                 >
                   <h1 className="text-2xl md:text-4xl font-black mb-1 text-foreground tracking-tighter uppercase whitespace-nowrap">
-                    Jotin Kumar Madugula
+                    {heroContent.displayName}
                   </h1>
                   <motion.div 
                     layoutId="prof-underline"
@@ -83,10 +76,10 @@ export function ProfessionalHero({
             
             <div className="space-y-3">
               <h2 className={`${isInitial ? "text-lg" : "text-xl md:text-2xl"} text-primary font-bold uppercase tracking-wide whitespace-nowrap`}>
-                Pricing and Solutions Director
+                {heroContent.professionalTitle}
               </h2>
               <p className={`${isInitial ? "text-base max-w-md" : "text-base md:text-lg max-w-2xl"} text-muted-foreground leading-relaxed`}>
-                A seasoned professional with 21+ years of experience in the BPO/ITES industry, including 13 years in US Healthcare Operations and 8+ years in Pricing and Financial Strategy.
+                {heroContent.professionalSubtitle}
               </p>
             </div>
           </div>
@@ -136,10 +129,10 @@ export function ProfessionalHero({
             </motion.div>
             <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 ${isInitial ? "scale-90 origin-left" : ""}`}>
               <Button asChild className="rounded-full px-8 py-5 text-base font-bold shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
-                <a href={RESUME_DOWNLOAD_PATH}>Download Resume</a>
+                <a href={resumeUrl}>{heroContent.downloadResumeLabel}</a>
               </Button>
               <Button variant="outline" asChild className="rounded-full px-8 py-5 text-base font-bold border-2 hover:bg-primary/5 transition-all active:scale-95">
-                <a href="/contact">Get in Touch</a>
+                <a href="/contact">{heroContent.getInTouchLabel}</a>
               </Button>
             </div>
           </div>
@@ -155,7 +148,7 @@ export function ProfessionalHero({
         >
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
           <Image
-            src="/images/professional-portrait.jpg"
+            src={heroContent.professionalImageUrl}
             alt="Professional Portrait"
             fill
             sizes="(max-width: 768px) 336px, 400px"

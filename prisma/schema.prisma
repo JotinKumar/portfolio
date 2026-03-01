@@ -6,6 +6,26 @@ datasource db {
   provider = "postgresql"
 }
 
+enum NavPosition {
+  HEADER
+  FOOTER_QUICK
+  FOOTER_RESOURCE
+  FOOTER_LEGAL
+}
+
+enum SocialPosition {
+  FOOTER
+  CONTACT
+}
+
+enum PublicPage {
+  HOME
+  PROFILE
+  ARTICLES
+  PROJECTS
+  CONTACT
+}
+
 model Article {
   id          String    @id @default(cuid())
   title       String
@@ -112,5 +132,102 @@ model Settings {
   aboutMe          String
   profileImage     String
   updatedAt        DateTime @updatedAt
+}
+
+model SiteConfig {
+  id                 String   @id @default("default")
+  siteName           String
+  siteTagline        String
+  logoUrl            String
+  logoAlt            String
+  resumeUrl          String
+  primaryEmail       String
+  locationLabel      String
+  defaultTitle       String
+  defaultDescription String
+  updatedAt          DateTime @updatedAt
+}
+
+model NavigationItem {
+  id           String      @id @default(cuid())
+  label        String
+  href         String
+  order        Int         @default(0)
+  position     NavPosition
+  visible      Boolean     @default(true)
+  isExternal   Boolean     @default(false)
+  openInNewTab Boolean     @default(false)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([position, order, visible])
+}
+
+model SocialLink {
+  id        String         @id @default(cuid())
+  platform  String
+  label     String
+  url       String
+  position  SocialPosition
+  order     Int            @default(0)
+  visible   Boolean        @default(true)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([position, order, visible])
+}
+
+model HeroContent {
+  id                            String   @id @default("default")
+  displayName                   String
+  professionalTitle             String
+  professionalSubtitle          String
+  techTitle                     String
+  techSubtitle                  String
+  professionalSkills            String[]
+  professionalInitialSkills     String[]
+  techSkills                    String[]
+  techInitialSkills             String[]
+  professionalImageUrl          String
+  techImageUrl                  String
+  exploreProfessionalLabel      String
+  exploreTechLabel              String
+  resetViewLabel                String
+  downloadResumeLabel           String
+  getInTouchLabel               String
+  viewProjectsLabel             String
+  viewArticlesLabel             String
+  homeWorkSectionTitle          String
+  homeFeaturedArticlesTitle     String
+  homeFeaturedProjectsTitle     String
+  homeViewAllArticlesLabel      String
+  homeViewAllProjectsLabel      String
+  updatedAt                     DateTime @updatedAt
+}
+
+model PageContent {
+  id             String     @id @default(cuid())
+  page           PublicPage @unique
+  title          String
+  subtitle       String
+  emptyTitle     String?
+  emptyMessage   String?
+  primaryCta     String?
+  secondaryCta   String?
+  content        Json?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Competency {
+  id        String   @id @default(cuid())
+  name      String
+  category  String
+  order     Int      @default(0)
+  visible   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category, order, visible])
 }
 

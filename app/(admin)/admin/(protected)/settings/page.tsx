@@ -1,42 +1,123 @@
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createSupabaseSecretClient } from "@/lib/supabase-secret";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import type { Settings } from "@/lib/db-types";
 
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
-  const supabase = await createServerSupabaseClient();
-  const { data, error } = await supabase.from("Settings").select("*").limit(1).maybeSingle();
+  const supabase = createSupabaseSecretClient();
 
-  if (error) {
-    throw error;
-  }
+  const [siteConfigResult, heroResult, pagesResult, navResult, socialResult, competencyResult] = await Promise.all([
+    supabase.from("SiteConfig").select("*").eq("id", "default").maybeSingle(),
+    supabase.from("HeroContent").select("*").eq("id", "default").maybeSingle(),
+    supabase.from("PageContent").select("page,title,subtitle,updatedAt").order("page", { ascending: true }),
+    supabase.from("NavigationItem").select("id,label,href,position,order,visible").order("position", { ascending: true }).order("order", { ascending: true }),
+    supabase.from("SocialLink").select("id,label,url,platform,position,order,visible").order("position", { ascending: true }).order("order", { ascending: true }),
+    supabase.from("Competency").select("id,name,category,order,visible").order("category", { ascending: true }).order("order", { ascending: true }),
+  ]);
 
-  const settings = (data as Settings | null) ?? null;
+  if (siteConfigResult.error) throw siteConfigResult.error;
+  if (heroResult.error) throw heroResult.error;
+  if (pagesResult.error) throw pagesResult.error;
+  if (navResult.error) throw navResult.error;
+  if (socialResult.error) throw socialResult.error;
+  if (competencyResult.error) throw competencyResult.error;
+
+  const siteConfig = siteConfigResult.data;
+  const hero = heroResult.data;
+  const pages = pagesResult.data ?? [];
+  const navItems = navResult.data ?? [];
+  const socialLinks = socialResult.data ?? [];
+  const competencies = competencyResult.data ?? [];
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold mb-4">Settings</h1>
-      {settings ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Portfolio Settings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm mb-2">Resume: {settings.resumeUrl}</p>
-            <p className="text-sm mb-2">LinkedIn: {settings.linkedinUrl}</p>
-            <p className="text-sm mb-2">GitHub: {settings.githubUrl}</p>
-            <p className="text-sm mb-2">Email: {settings.emailAddress}</p>
-            <p className="text-sm mb-2">Hero Title: {settings.heroTitle}</p>
-            <p className="text-sm mb-2">
-              Hero Subtitle: {settings.heroSubtitle}
+      <h1 className="text-2xl font-bold">Settings</h1>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Site Config</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          <p>Site Name: {siteConfig?.siteName}</p>
+          <p>Tagline: {siteConfig?.siteTagline}</p>
+          <p>Resume URL: {siteConfig?.resumeUrl}</p>
+          <p>Primary Email: {siteConfig?.primaryEmail}</p>
+          <p>Location: {siteConfig?.locationLabel}</p>
+          <p>Default Title: {siteConfig?.defaultTitle}</p>
+          <p>Default Description: {siteConfig?.defaultDescription}</p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Hero Content</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          <p>Name: {hero?.displayName}</p>
+          <p>Professional Title: {hero?.professionalTitle}</p>
+          <p>Tech Title: {hero?.techTitle}</p>
+          <p>Explore Professional CTA: {hero?.exploreProfessionalLabel}</p>
+          <p>Explore Tech CTA: {hero?.exploreTechLabel}</p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Public Page Content</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          {pages.map((page) => (
+            <div key={page.page} className="border-b pb-2 last:border-b-0">
+              <p className="font-medium">{page.page}</p>
+              <p>Title: {page.title}</p>
+              <p>Subtitle: {page.subtitle}</p>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Navigation Items</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          {navItems.map((item) => (
+            <p key={item.id}>
+              [{item.position}] #{item.order} {item.label}
+              {" -> "}
+              {item.href} ({item.visible ? "visible" : "hidden"})
             </p>
-            <p className="text-sm mb-2">About Me: {settings.aboutMe}</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <p>No settings found.</p>
-      )}
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Social Links</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          {socialLinks.map((item) => (
+            <p key={item.id}>
+              [{item.position}] #{item.order} {item.label} ({item.platform})
+              {" -> "}
+              {item.url}
+            </p>
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Competencies</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          {competencies.map((item) => (
+            <p key={item.id}>
+              [{item.category}] #{item.order} {item.name} ({item.visible ? "visible" : "hidden"})
+            </p>
+          ))}
+        </CardContent>
+      </Card>
     </div>
   );
 }

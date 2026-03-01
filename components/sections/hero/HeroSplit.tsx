@@ -5,6 +5,7 @@ import { TechHero } from "./TechHero";
 import { Briefcase, Code, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Glassmorphism } from "@/components/ui/glassmorphism";
+import type { HeroContent, SiteConfig } from "@/lib/db-types";
 import {
   motion,
   AnimatePresence,
@@ -13,7 +14,13 @@ import {
   useMotionTemplate,
 } from "framer-motion";
 
-export default function HeroSplit() {
+export default function HeroSplit({
+  heroContent,
+  siteConfig,
+}: {
+  heroContent: HeroContent;
+  siteConfig: SiteConfig | null;
+}) {
   const [x, setX] = useState(0.5); // 0 = Tech fully shown, 1 = Professional fully shown
   const [skillsExitEarly, setSkillsExitEarly] = useState(false);
   const exitEarlyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -67,7 +74,7 @@ export default function HeroSplit() {
                 onClick={() => goTo(1)}
               >
                 <Briefcase size={16} className="text-primary" />
-                <span className="font-bold text-sm">Explore Professional</span>
+                <span className="font-bold text-sm">{heroContent.exploreProfessionalLabel}</span>
               </Button>
             )}
             {isProfessional && (
@@ -76,7 +83,7 @@ export default function HeroSplit() {
                 size="icon"
                 className="rounded-full bg-primary text-primary-foreground shadow-xl transition-all hover:scale-105 active:scale-95"
                 onClick={() => goTo(0.5)}
-                title="Reset View"
+                title={heroContent.resetViewLabel}
               >
                 <RotateCcw size={18} />
               </Button>
@@ -90,7 +97,7 @@ export default function HeroSplit() {
                 className="rounded-full gap-2 bg-background/60 backdrop-blur-xl border-primary/20 hover:border-primary shadow-xl transition-all hover:scale-105 active:scale-95 px-5"
                 onClick={() => goTo(0)}
               >
-                <span className="font-bold text-sm">Explore Tech Side</span>
+                <span className="font-bold text-sm">{heroContent.exploreTechLabel}</span>
                 <Code size={16} className="text-primary" />
               </Button>
             )}
@@ -100,7 +107,7 @@ export default function HeroSplit() {
                 size="icon"
                 className="rounded-full bg-primary text-primary-foreground shadow-xl transition-all hover:scale-105 active:scale-95"
                 onClick={() => goTo(0.5)}
-                title="Reset View"
+                title={heroContent.resetViewLabel}
               >
                 <RotateCcw size={18} />
               </Button>
@@ -120,7 +127,7 @@ export default function HeroSplit() {
             >
               <div className="bg-background/20 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg p-2">
                 <h1 className="text-xl md:text-3xl font-black text-foreground tracking-tight text-center uppercase whitespace-nowrap">
-                  Jotin Kumar Madugula
+                  {heroContent.displayName}
                 </h1>
                 <div className="h-1 w-10 bg-primary mx-auto mt-1 rounded-full" />
               </div>
@@ -144,6 +151,8 @@ export default function HeroSplit() {
             transition={{ duration: 0.35, ease: "easeOut" }}
           >
             <ProfessionalHero
+              heroContent={heroContent}
+              siteConfig={siteConfig}
               current={isProfessional}
               isInitial={isInitial}
               skillsExitEarly={skillsExitEarly}
@@ -159,6 +168,7 @@ export default function HeroSplit() {
             style={{ clipPath: techClipPath }}
           >
             <TechHero
+              heroContent={heroContent}
               current={isTech}
               isInitial={isInitial}
               skillsExitEarly={skillsExitEarly}

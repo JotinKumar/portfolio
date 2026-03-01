@@ -92,3 +92,98 @@ export interface Settings {
   profileImage: string;
   updatedAt: string;
 }
+
+export type NavPosition = "HEADER" | "FOOTER_QUICK" | "FOOTER_RESOURCE" | "FOOTER_LEGAL";
+export type SocialPosition = "FOOTER" | "CONTACT";
+export type PublicPage = "HOME" | "PROFILE" | "ARTICLES" | "PROJECTS" | "CONTACT";
+
+export interface SiteConfig {
+  id: string;
+  siteName: string;
+  siteTagline: string;
+  logoUrl: string;
+  logoAlt: string;
+  resumeUrl: string;
+  primaryEmail: string;
+  locationLabel: string;
+  defaultTitle: string;
+  defaultDescription: string;
+  updatedAt: string;
+}
+
+export interface NavigationItem {
+  id: string;
+  label: string;
+  href: string;
+  order: number;
+  position: NavPosition;
+  visible: boolean;
+  isExternal: boolean;
+  openInNewTab: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SocialLink {
+  id: string;
+  platform: string;
+  label: string;
+  url: string;
+  position: SocialPosition;
+  order: number;
+  visible: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HeroContent {
+  id: string;
+  displayName: string;
+  professionalTitle: string;
+  professionalSubtitle: string;
+  techTitle: string;
+  techSubtitle: string;
+  professionalSkills: string[];
+  professionalInitialSkills: string[];
+  techSkills: string[];
+  techInitialSkills: string[];
+  professionalImageUrl: string;
+  techImageUrl: string;
+  exploreProfessionalLabel: string;
+  exploreTechLabel: string;
+  resetViewLabel: string;
+  downloadResumeLabel: string;
+  getInTouchLabel: string;
+  viewProjectsLabel: string;
+  viewArticlesLabel: string;
+  homeWorkSectionTitle: string;
+  homeFeaturedArticlesTitle: string;
+  homeFeaturedProjectsTitle: string;
+  homeViewAllArticlesLabel: string;
+  homeViewAllProjectsLabel: string;
+  updatedAt: string;
+}
+
+export interface PageContent {
+  id: string;
+  page: PublicPage;
+  title: string;
+  subtitle: string;
+  emptyTitle: string | null;
+  emptyMessage: string | null;
+  primaryCta: string | null;
+  secondaryCta: string | null;
+  content: Record<string, unknown> | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Competency {
+  id: string;
+  name: string;
+  category: string;
+  order: number;
+  visible: boolean;
+  createdAt: string;
+  updatedAt: string;
+}

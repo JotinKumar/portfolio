@@ -18,7 +18,13 @@ interface Experience {
   skills: string[];
 }
 
-export function WorkTimeline({ experiences }: { experiences: Experience[] }) {
+export function WorkTimeline({
+  experiences,
+  title,
+}: {
+  experiences: Experience[];
+  title: string;
+}) {
   const parseSkills = (skills: Experience["skills"]): string[] => {
     if (Array.isArray(skills)) {
       return skills;
@@ -35,7 +41,7 @@ export function WorkTimeline({ experiences }: { experiences: Experience[] }) {
     <section className="py-10 md:py-12">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold tracking-tight mb-8">
-          Work Experience
+          {title}
         </h2>
 
         <div className="relative">
