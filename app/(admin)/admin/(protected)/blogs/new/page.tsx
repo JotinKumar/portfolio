@@ -50,7 +50,7 @@ async function createBlog(formData: FormData) {
   };
 
   const supabase = await createServerSupabaseClient();
-  const { error } = await supabase.from("Article").insert(payload);
+  const { error } = await supabase.from("Blog").insert(payload);
   if (error) {
     redirect("/admin/blogs/new?error=blog_create_failed");
   }

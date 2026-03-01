@@ -40,7 +40,7 @@ async function updateBlog(formData: FormData) {
   };
 
   const supabase = await createServerSupabaseClient();
-  const { error } = await supabase.from("Article").update(payload).eq("id", id);
+  const { error } = await supabase.from("Blog").update(payload).eq("id", id);
   if (error) {
     redirect(`/admin/blogs/${id}/edit?error=blog_update_failed`);
   }
@@ -59,7 +59,7 @@ interface EditBlogPageProps {
 export default async function EditBlogPage({ params }: EditBlogPageProps) {
   const { id } = await params;
   const supabase = await createServerSupabaseClient();
-  const { data, error } = await supabase.from("Article").select("*").eq("id", id).maybeSingle();
+  const { data, error } = await supabase.from("Blog").select("*").eq("id", id).maybeSingle();
 
   if (error || !data) {
     return (

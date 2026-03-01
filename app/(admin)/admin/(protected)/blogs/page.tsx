@@ -27,7 +27,7 @@ async function deleteBlog(formData: FormData) {
   }
 
   const supabase = await createServerSupabaseClient();
-  const { error } = await supabase.from("Article").delete().eq("id", id);
+  const { error } = await supabase.from("Blog").delete().eq("id", id);
 
   if (error) {
     redirect("/admin/blogs?error=blog_delete_failed");
@@ -45,7 +45,7 @@ export default async function BlogsAdmin() {
   try {
     const supabase = await createServerSupabaseClient();
     const { data, error } = await supabase
-      .from('Article')
+      .from('Blog')
       .select('*')
       .order('createdAt', { ascending: false });
     if (error) {

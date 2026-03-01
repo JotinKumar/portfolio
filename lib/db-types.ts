@@ -1,4 +1,4 @@
-export interface Article {
+export interface Blog {
   id: string;
   title: string;
   slug: string;
@@ -14,6 +14,9 @@ export interface Article {
   updatedAt: string;
   publishedAt: string | null;
 }
+
+// Backward-compatible alias while code is migrating from Article -> Blog naming.
+export type Article = Blog;
 
 export interface Project {
   id: string;

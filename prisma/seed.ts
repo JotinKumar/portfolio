@@ -356,7 +356,7 @@ The future of work is not about replacing humans - it is about augmenting human 
     publishedAt: new Date(),
   };
 
-  await prisma.article.upsert({
+  await prisma.blog.upsert({
     where: { slug: article1Data.slug },
     update: article1Data,
     create: article1Data,
@@ -402,7 +402,7 @@ One of the biggest challenges in remote work is maintaining work-life balance.`,
     publishedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
   };
 
-  await prisma.article.upsert({
+  await prisma.blog.upsert({
     where: { slug: article2Data.slug },
     update: article2Data,
     create: article2Data,

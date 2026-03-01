@@ -59,7 +59,7 @@ export type SiteShellData = {
 export const getFeaturedArticles = cache(async (limit = 3): Promise<ArticleCardData[]> => {
   const supabase = await createServerSupabaseClient();
   const { data, error } = await supabase
-    .from("Article")
+    .from("Blog")
     .select("id,title,slug,excerpt,coverImage,category,readTime,createdAt,publishedAt")
     .eq("featured", true)
     .eq("published", true)
@@ -217,7 +217,7 @@ export const getPublishedArticles = cache(
   async (category?: string, search?: string, tag?: string): Promise<ArticleCardData[]> => {
     const supabase = await createServerSupabaseClient();
     let query = supabase
-      .from("Article")
+      .from("Blog")
       .select("id,title,slug,excerpt,coverImage,category,readTime,createdAt,publishedAt")
       .eq("published", true)
       .order("publishedAt", { ascending: false, nullsFirst: false });
@@ -244,7 +244,7 @@ export const getPublishedArticles = cache(
 
 export const getPublishedArticleCategories = cache(async (): Promise<string[]> => {
   const supabase = await createServerSupabaseClient();
-  const { data, error } = await supabase.from("Article").select("category").eq("published", true);
+  const { data, error } = await supabase.from("Blog").select("category").eq("published", true);
   if (error) throw error;
   return Array.from(new Set((data ?? []).map((row) => row.category)));
 });
@@ -283,7 +283,7 @@ export const getProjectBySlug = cache(async (slug: string): Promise<Project | nu
 export const getPublishedArticleBySlug = cache(async (slug: string): Promise<Article | null> => {
   const supabase = await createServerSupabaseClient();
   const { data, error } = await supabase
-    .from("Article")
+    .from("Blog")
     .select("id,title,slug,excerpt,content,coverImage,tags,category,published,featured,readTime,createdAt,updatedAt,publishedAt")
     .eq("slug", slug)
     .eq("published", true)
@@ -296,8 +296,8 @@ export const getDashboardData = cache(async (): Promise<DashboardData> => {
   const supabase = await createServerSupabaseClient();
   const [articlesCountResult, publishedCountResult, projectsCountResult, messagesCountResult, experienceCountResult] =
     await Promise.all([
-      supabase.from("Article").select("id", { count: "exact", head: true }),
-      supabase.from("Article").select("id", { count: "exact", head: true }).eq("published", true),
+      supabase.from("Blog").select("id", { count: "exact", head: true }),
+      supabase.from("Blog").select("id", { count: "exact", head: true }).eq("published", true),
       supabase.from("Project").select("id", { count: "exact", head: true }),
       supabase.from("Contact").select("id", { count: "exact", head: true }),
       supabase.from("WorkExperienceCard").select("id", { count: "exact", head: true }),
@@ -315,7 +315,7 @@ export const getDashboardData = cache(async (): Promise<DashboardData> => {
   const [{ data: recentArticleRows, error: recentArticlesError }, { data: recentMessageRows, error: recentMessagesError }] =
     await Promise.all([
       supabase
-        .from("Article")
+        .from("Blog")
         .select("id,title,published,createdAt,category")
         .order("createdAt", { ascending: false })
         .limit(5),
@@ -341,3 +341,4 @@ export const getDashboardData = cache(async (): Promise<DashboardData> => {
     recentMessages: (recentMessageRows ?? []) as DashboardData["recentMessages"],
   };
 });
+

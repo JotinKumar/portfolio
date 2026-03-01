@@ -2,36 +2,36 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-function makeArticleContent(index: number): string {
-  return `# Dummy Article ${index}
+function makeBlogContent(index: number): string {
+  return `# Dummy Blog ${index}
 
-This is demo content for article ${index}. It is intended for testing cards, detail pages, and admin workflows.
+This is demo content for blog ${index}. It is intended for testing cards, detail pages, and admin workflows.
 
 ## Section 1
 
-Sample paragraph text to simulate a real article body with enough content for layout testing.
+Sample paragraph text to simulate a real blog body with enough content for layout testing.
 
 ## Section 2
 
-- Point one for article ${index}
-- Point two for article ${index}
-- Point three for article ${index}
+- Point one for blog ${index}
+- Point two for blog ${index}
+- Point three for blog ${index}
 `;
 }
 
-async function seedDummyArticles() {
+async function seedDummyBlogs() {
   for (let i = 1; i <= 10; i++) {
-    const slug = `dummy-article-${String(i).padStart(2, "0")}`;
+    const slug = `dummy-blog-${String(i).padStart(2, "0")}`;
     const published = i % 2 === 0;
 
-    await prisma.article.upsert({
+    await prisma.blog.upsert({
       where: { slug },
       update: {
-        title: `Dummy Article ${i}`,
-        excerpt: `This is dummy article ${i} used for testing the portfolio content flow.`,
-        content: makeArticleContent(i),
-        coverImage: `https://picsum.photos/seed/article-${i}/1200/630`,
-        tags: `Dummy,Testing,Sample,Article-${i}`,
+        title: `Dummy Blog ${i}`,
+        excerpt: `This is dummy blog ${i} used for testing the portfolio content flow.`,
+        content: makeBlogContent(i),
+        coverImage: `https://picsum.photos/seed/blog-${i}/1200/630`,
+        tags: `Dummy,Testing,Sample,Blog-${i}`,
         category: i % 3 === 0 ? "Technology" : i % 3 === 1 ? "Leadership" : "Business",
         featured: i <= 3,
         published,
@@ -39,12 +39,12 @@ async function seedDummyArticles() {
         publishedAt: published ? new Date(Date.now() - i * 86_400_000) : null,
       },
       create: {
-        title: `Dummy Article ${i}`,
+        title: `Dummy Blog ${i}`,
         slug,
-        excerpt: `This is dummy article ${i} used for testing the portfolio content flow.`,
-        content: makeArticleContent(i),
-        coverImage: `https://picsum.photos/seed/article-${i}/1200/630`,
-        tags: `Dummy,Testing,Sample,Article-${i}`,
+        excerpt: `This is dummy blog ${i} used for testing the portfolio content flow.`,
+        content: makeBlogContent(i),
+        coverImage: `https://picsum.photos/seed/blog-${i}/1200/630`,
+        tags: `Dummy,Testing,Sample,Blog-${i}`,
         category: i % 3 === 0 ? "Technology" : i % 3 === 1 ? "Leadership" : "Business",
         featured: i <= 3,
         published,
@@ -105,18 +105,18 @@ async function seedDummyProjects() {
 }
 
 async function reportCounts() {
-  const [articleCount, projectCount] = await Promise.all([
-    prisma.article.count({ where: { slug: { startsWith: "dummy-article-" } } }),
+  const [blogCount, projectCount] = await Promise.all([
+    prisma.blog.count({ where: { slug: { startsWith: "dummy-blog-" } } }),
     prisma.project.count({ where: { slug: { startsWith: "dummy-project-" } } }),
   ]);
 
-  console.log(`Dummy articles in DB: ${articleCount}`);
+  console.log(`Dummy blogs in DB: ${blogCount}`);
   console.log(`Dummy projects in DB: ${projectCount}`);
 }
 
 async function main() {
-  console.log("Seeding 10 dummy articles and 10 dummy projects...");
-  await seedDummyArticles();
+  console.log("Seeding 10 dummy blogs and 10 dummy projects...");
+  await seedDummyBlogs();
   await seedDummyProjects();
   await reportCounts();
   console.log("Dummy content seeding complete.");

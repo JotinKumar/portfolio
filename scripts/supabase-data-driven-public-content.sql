@@ -118,12 +118,12 @@ ON CONFLICT ("id") DO UPDATE SET
 INSERT INTO "NavigationItem" ("id","label","href","order","position","visible","isExternal","openInNewTab","updatedAt") VALUES
 ('HEADER-1','Home','/',1,'HEADER',true,false,false,NOW()),
 ('HEADER-2','Profile','/profile',2,'HEADER',true,false,false,NOW()),
-('HEADER-3','Articles','/articles',3,'HEADER',true,false,false,NOW()),
+('HEADER-3','Blogs','/blogs',3,'HEADER',true,false,false,NOW()),
 ('HEADER-4','Projects','/projects',4,'HEADER',true,false,false,NOW()),
 ('HEADER-5','Contact','/contact',5,'HEADER',true,false,false,NOW()),
 ('FOOTER_QUICK-1','Home','/',1,'FOOTER_QUICK',true,false,false,NOW()),
 ('FOOTER_QUICK-2','Profile','/profile',2,'FOOTER_QUICK',true,false,false,NOW()),
-('FOOTER_QUICK-3','Articles','/articles',3,'FOOTER_QUICK',true,false,false,NOW()),
+('FOOTER_QUICK-3','Blogs','/blogs',3,'FOOTER_QUICK',true,false,false,NOW()),
 ('FOOTER_QUICK-4','Projects','/projects',4,'FOOTER_QUICK',true,false,false,NOW()),
 ('FOOTER_RESOURCE-1','Resume','/jotin-madugula-resume.pdf',1,'FOOTER_RESOURCE',true,false,false,NOW()),
 ('FOOTER_RESOURCE-2','Contact','/contact',2,'FOOTER_RESOURCE',true,false,false,NOW()),
@@ -151,7 +151,7 @@ ARRAY['Pricing & RFX','Ops Leadership','Cost Modeling','Process Re-engineering',
 ARRAY['Pricing & RFX','Ops Leadership','Financial Analysis','US Healthcare'],
 ARRAY['Python','Node.js','React','Next.js','TypeScript','AI & ML','Excel & VBA','RPA & Automation','Full Stack','UI Design'],
 ARRAY['AI & ML','Next.js','Python','Full Stack'],
-'/images/professional-portrait.jpg','/images/tech-portrait.jpg','Explore Professional','Explore Tech Side','Reset View','Download Resume','Get in Touch','View Projects','View Articles','Work Experience','Featured Articles','Featured Projects','View All Articles','View All Projects',NOW()
+'/images/professional-portrait.jpg','/images/tech-portrait.jpg','Explore Professional','Explore Tech Side','Reset View','Download Resume','Get in Touch','View Projects','View Blogs','Work Experience','Featured Blogs','Featured Projects','View All Blogs','View All Projects',NOW()
 )
 ON CONFLICT ("id") DO UPDATE SET
 "displayName"=EXCLUDED."displayName","professionalTitle"=EXCLUDED."professionalTitle","professionalSubtitle"=EXCLUDED."professionalSubtitle","techTitle"=EXCLUDED."techTitle","techSubtitle"=EXCLUDED."techSubtitle","professionalSkills"=EXCLUDED."professionalSkills","professionalInitialSkills"=EXCLUDED."professionalInitialSkills","techSkills"=EXCLUDED."techSkills","techInitialSkills"=EXCLUDED."techInitialSkills","professionalImageUrl"=EXCLUDED."professionalImageUrl","techImageUrl"=EXCLUDED."techImageUrl","exploreProfessionalLabel"=EXCLUDED."exploreProfessionalLabel","exploreTechLabel"=EXCLUDED."exploreTechLabel","resetViewLabel"=EXCLUDED."resetViewLabel","downloadResumeLabel"=EXCLUDED."downloadResumeLabel","getInTouchLabel"=EXCLUDED."getInTouchLabel","viewProjectsLabel"=EXCLUDED."viewProjectsLabel","viewArticlesLabel"=EXCLUDED."viewArticlesLabel","homeWorkSectionTitle"=EXCLUDED."homeWorkSectionTitle","homeFeaturedArticlesTitle"=EXCLUDED."homeFeaturedArticlesTitle","homeFeaturedProjectsTitle"=EXCLUDED."homeFeaturedProjectsTitle","homeViewAllArticlesLabel"=EXCLUDED."homeViewAllArticlesLabel","homeViewAllProjectsLabel"=EXCLUDED."homeViewAllProjectsLabel","updatedAt"=NOW();
@@ -160,7 +160,7 @@ INSERT INTO "PageContent" ("id","page","title","subtitle","emptyTitle","emptyMes
 ('page-home','HOME','Home','Business and technology perspectives, projects, and career highlights.',NULL,NULL,NULL,NULL,NULL,NOW()),
 ('page-profile','PROFILE','Jotin Kumar Madugula','Pricing and Solutions Director',NULL,NULL,'Download Resume','Contact Me',
  '{"summary":"A seasoned professional with 21+ years of experience in the BPO/ITES industry, including 13 years in US Healthcare Operations and 8+ years in Pricing and Financial Strategy.","profileIntroBadge":"Hybrid Resume Profile","professionalSummaryTitle":"Professional Summary","professionalSummarySubtitle":"Executive overview tailored for pricing, operations, and transformation leadership.","timelineTitle":"Experience Timeline","timelineSubtitle":"Role progression with delivery impact, capabilities, and measurable contributions.","quickFactsTitle":"Quick Facts","quickFactLocationLabel":"Location","quickFactExperienceLabel":"Experience","quickFactFocusLabel":"Current Focus","achievementsTitle":"Key Achievements","skillsTitle":"Skills","commercialDeliveryTitle":"Commercial & Delivery","operationsTechnologyTitle":"Operations & Technology","contactLinksTitle":"Contact & Links","contactLinksSubtitle":"Available for consulting, leadership opportunities, and strategic partnerships."}'::jsonb,NOW()),
-('page-articles','ARTICLES','Articles','Thoughts on business processes, technology, and the future of work.','No articles found','Try adjusting your filters to see more articles.','All','Clear','{"tagLabel":"Tag:","defaultEmptyMessage":"Articles will appear here once they are published."}'::jsonb,NOW()),
+('page-articles','ARTICLES','Blogs','Thoughts on business processes, technology, and the future of work.','No blogs found','Try adjusting your filters to see more blogs.','All','Clear','{"tagLabel":"Tag:","defaultEmptyMessage":"Blogs will appear here once they are published."}'::jsonb,NOW()),
 ('page-projects','PROJECTS','Projects','A showcase of my latest work in web development, automation, and digital transformation.','No projects yet','Projects will appear here once they are added.','All',NULL,NULL,NOW()),
 ('page-contact','CONTACT','Get in Touch','Have a project in mind or just want to chat? I\'d love to hear from you.',NULL,NULL,'Send Message','Sending...',
  '{"formTitle":"Send a Message","formSubtitle":"Fill out the form below and I\'ll get back to you within 24 hours.","nameLabel":"Name","emailLabel":"Email","messageLabel":"Message","namePlaceholder":"Your full name","emailPlaceholder":"your.email@example.com","messagePlaceholder":"Tell me about your project or just say hello!","infoTitle":"Contact Information","infoSubtitle":"Prefer a different way to reach out? Here are some alternatives.","infoEmailLabel":"Email","infoLocationLabel":"Location","infoLocationValue":"Remote � Available Globally","infoResponseTimeLabel":"Response Time","infoResponseTimeValue":"Within 24 hours","socialTitle":"Let\'s Connect","socialSubtitle":"Follow me on social media for updates and insights.","successMessage":"Message sent successfully! I\'ll get back to you soon.","errorMessage":"Failed to send message","unexpectedErrorMessage":"An error occurred while sending your message"}'::jsonb,NOW())
@@ -180,3 +180,4 @@ INSERT INTO "Competency" ("id","name","category","order","visible","updatedAt") 
 ('OPERATIONS_TECH-5','Global Stakeholder Governance','OPERATIONS_TECH',5,true,NOW())
 ON CONFLICT ("id") DO UPDATE SET
 "name"=EXCLUDED."name","category"=EXCLUDED."category","order"=EXCLUDED."order","visible"=EXCLUDED."visible","updatedAt"=NOW();
+
