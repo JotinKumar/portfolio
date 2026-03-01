@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { AdminPageHeader } from "@/components/admin/page-header";
 import { createServerSupabaseClient, getUser } from "@/lib/supabase-server";
 import { isAdminEmail } from "@/lib/admin-auth";
 import type { Project } from "@/lib/db-types";
@@ -64,7 +66,7 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
   if (error || !data) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold">Edit Project</h1>
+        <AdminPageHeader title="Edit Project" />
         <Card>
           <CardContent className="p-6 space-y-3">
             <p className="text-muted-foreground">Project not found.</p>
@@ -81,12 +83,15 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Edit Project</h1>
-        <Button variant="outline" asChild>
-          <Link href="/admin/projects">Back to Projects</Link>
-        </Button>
-      </div>
+      <AdminPageHeader
+        title="Edit Project"
+        description="Update project details, links, and display metadata."
+        action={
+          <Button variant="outline" asChild>
+            <Link href="/admin/projects">Back to Projects</Link>
+          </Button>
+        }
+      />
 
       <Card>
         <CardHeader>
@@ -98,10 +103,10 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
             <Input name="title" defaultValue={project.title} required />
             <Input name="slug" defaultValue={project.slug} required />
             <Input name="shortDesc" defaultValue={project.shortDesc} required />
-            <textarea
+            <Textarea
               aria-label="project description"
               name="description"
-              className="min-h-[160px] w-full rounded-md border bg-background px-3 py-2 text-sm"
+              className="min-h-[160px]"
               defaultValue={project.description}
               required
             />

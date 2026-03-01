@@ -1,9 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Clock3, FileImage, Layers3, Tag } from "lucide-react";
+import { PageContent } from "@/components/layout/page-primitives";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PAGE_SECTION_Y_CLASS } from "@/lib/layout";
 import { getProjectBySlug } from "@/lib/server/queries";
 import type { Project } from "@/lib/db-types";
 
@@ -43,20 +45,22 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
 
   if (!project) {
     return (
-      <section className="py-12">
-        <Card className="max-w-2xl mx-auto">
-          <CardHeader>
-            <CardTitle>Project not found</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-muted-foreground">
-              This project does not exist or is not available.
-            </p>
-            <Link href="/projects" className="text-primary hover:underline">
-              Back to all projects
-            </Link>
-          </CardContent>
-        </Card>
+      <section className={PAGE_SECTION_Y_CLASS}>
+        <PageContent>
+          <Card className="max-w-2xl mx-auto">
+            <CardHeader>
+              <CardTitle>Project not found</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground">
+                This project does not exist or is not available.
+              </p>
+              <Link href="/projects" className="text-primary hover:underline">
+                Back to all projects
+              </Link>
+            </CardContent>
+          </Card>
+        </PageContent>
       </section>
     );
   }
@@ -66,8 +70,8 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   const concepts = parseList(project.tags);
 
   return (
-    <article className="py-12 md:py-16">
-      <div className="mx-auto w-full max-w-5xl space-y-8">
+    <article className={PAGE_SECTION_Y_CLASS}>
+      <PageContent className="space-y-8">
         <div className="flex items-center justify-between gap-3">
           <Button variant="outline" size="sm" asChild>
             <Link href="/projects">
@@ -199,7 +203,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
             </Button>
           ) : null}
         </section>
-      </div>
+      </PageContent>
     </article>
   );
 }

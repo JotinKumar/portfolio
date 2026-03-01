@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { AdminPageHeader } from "@/components/admin/page-header";
 import { createServerSupabaseClient, getUser } from "@/lib/supabase-server";
 import { isAdminEmail } from "@/lib/admin-auth";
 
@@ -65,12 +67,15 @@ async function createProject(formData: FormData) {
 export default function NewProjectPage() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">New Project</h1>
-        <Button variant="outline" asChild>
-          <Link href="/admin/projects">Back to Projects</Link>
-        </Button>
-      </div>
+      <AdminPageHeader
+        title="New Project"
+        description="Create a new project entry for the portfolio."
+        action={
+          <Button variant="outline" asChild>
+            <Link href="/admin/projects">Back to Projects</Link>
+          </Button>
+        }
+      />
 
       <Card>
         <CardHeader>
@@ -81,10 +86,10 @@ export default function NewProjectPage() {
             <Input name="title" placeholder="Title" required />
             <Input name="slug" placeholder="Slug (optional, auto-generated)" />
             <Input name="shortDesc" placeholder="Short description" required />
-            <textarea
+            <Textarea
               aria-label="project description"
               name="description"
-              className="min-h-[160px] w-full rounded-md border bg-background px-3 py-2 text-sm"
+              className="min-h-[160px]"
               placeholder="Full description"
               required
             />

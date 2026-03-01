@@ -1,7 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { PageContent } from "@/components/layout/page-primitives";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { PAGE_SECTION_Y_CLASS } from "@/lib/layout";
 import type { Settings, WorkExperienceCard } from "@/lib/db-types";
 import { getCompetencies, getPageContent, getProfileData, getSiteShellData } from "@/lib/server/queries";
 import { Calendar, Download, Github, Linkedin, Mail, MapPin } from "lucide-react";
@@ -102,8 +104,8 @@ export default async function ProfilePage() {
   const operationsCompetencies = competencies.filter((item) => item.category === "OPERATIONS_TECH").map((item) => item.name);
 
   return (
-    <section className="py-12 md:py-16">
-      <div className="w-full max-w-6xl mx-auto space-y-10">
+    <section className={PAGE_SECTION_Y_CLASS}>
+      <PageContent className="space-y-10">
         <div className="relative overflow-hidden rounded-3xl border bg-card/70 p-6 shadow-sm animate-in fade-in duration-500 md:p-10">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,color-mix(in_srgb,var(--color-primary),transparent_78%)_0%,transparent_48%)]" />
           <div className="relative grid gap-6 md:grid-cols-[1.4fr_1fr] md:gap-10">
@@ -317,7 +319,7 @@ export default async function ProfilePage() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </PageContent>
     </section>
   );
 }

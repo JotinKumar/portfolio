@@ -154,7 +154,7 @@ export const FloatingBlobsBar: React.FC<FloatingBlobsBarProps> = ({
     if (isAnimatingRef.current) return;
     isAnimatingRef.current = true;
     animationIdRef.current = requestAnimationFrame(animate);
-  }, [animate]);
+  }, [animate, draw, height]);
 
   const stopAnimation = useCallback(() => {
     if (!isAnimatingRef.current) return;

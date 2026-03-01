@@ -1,9 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Clock, FileText, Tag } from "lucide-react";
+import { PageContent } from "@/components/layout/page-primitives";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PAGE_SECTION_Y_CLASS } from "@/lib/layout";
 import { getPublishedArticleBySlug } from "@/lib/server/queries";
 import type { Article } from "@/lib/db-types";
 
@@ -43,20 +45,22 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
 
   if (!article) {
     return (
-      <section className="py-12">
-        <Card className="max-w-2xl mx-auto">
-          <CardHeader>
-            <CardTitle>Article not found</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-muted-foreground">
-              This article does not exist or is not published yet.
-            </p>
-            <Link href="/articles" className="text-primary hover:underline">
-              Back to all articles
-            </Link>
-          </CardContent>
-        </Card>
+      <section className={PAGE_SECTION_Y_CLASS}>
+        <PageContent>
+          <Card className="max-w-2xl mx-auto">
+            <CardHeader>
+              <CardTitle>Article not found</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground">
+                This article does not exist or is not published yet.
+              </p>
+              <Link href="/articles" className="text-primary hover:underline">
+                Back to all articles
+              </Link>
+            </CardContent>
+          </Card>
+        </PageContent>
       </section>
     );
   }
@@ -65,8 +69,8 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
   const tags = parseTags(article.tags);
 
   return (
-    <article className="py-12 md:py-16">
-      <div className="mx-auto w-full max-w-4xl space-y-8">
+    <article className={PAGE_SECTION_Y_CLASS}>
+      <PageContent className="max-w-4xl space-y-8">
         <div className="flex items-center justify-between gap-3">
           <Button variant="outline" size="sm" asChild>
             <Link href="/articles">
@@ -139,7 +143,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
             </div>
           </section>
         ) : null}
-      </div>
+      </PageContent>
     </article>
   );
 }

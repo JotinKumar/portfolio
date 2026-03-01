@@ -47,7 +47,7 @@ async function main() {
     defaultDescription: 'Business Process Expert & Full Stack Developer',
   };
 
-  await (prisma as any).siteConfig.upsert({
+  await prisma.siteConfig.upsert({
     where: { id: 'default' },
     update: siteConfigData,
     create: siteConfigData,
@@ -70,7 +70,7 @@ async function main() {
   ] as const;
 
   for (const item of navigationItems) {
-    await (prisma as any).navigationItem.upsert({
+    await prisma.navigationItem.upsert({
       where: { id: `${item.position}-${item.order}` },
       update: { ...item },
       create: { id: `${item.position}-${item.order}`, ...item },
@@ -88,7 +88,7 @@ async function main() {
   ] as const;
 
   for (const item of socialLinks) {
-    await (prisma as any).socialLink.upsert({
+    await prisma.socialLink.upsert({
       where: { id: item.id },
       update: { ...item },
       create: { ...item },
@@ -135,7 +135,7 @@ async function main() {
     homeViewAllProjectsLabel: 'View All Projects',
   };
 
-  await (prisma as any).heroContent.upsert({
+  await prisma.heroContent.upsert({
     where: { id: 'default' },
     update: heroContent,
     create: heroContent,
@@ -237,7 +237,7 @@ async function main() {
   ] as const;
 
   for (const row of pageContentRows) {
-    await (prisma as any).pageContent.upsert({
+    await prisma.pageContent.upsert({
       where: { page: row.page },
       update: row,
       create: row,
@@ -258,7 +258,7 @@ async function main() {
   ] as const;
 
   for (const item of competencies) {
-    await (prisma as any).competency.upsert({
+    await prisma.competency.upsert({
       where: { id: `${item.category}-${item.order}` },
       update: item,
       create: { id: `${item.category}-${item.order}`, ...item },

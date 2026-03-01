@@ -1,5 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { AdminPageHeader } from '@/components/admin/page-header';
 import { getDashboardData } from '@/lib/server/queries';
 import type { Article, Contact } from '@/lib/db-types';
 import { FileText, FolderOpen, Mail, User } from 'lucide-react';
@@ -61,12 +62,10 @@ export default async function AdminDashboard() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Welcome back! Here&apos;s what&apos;s happening with your portfolio.
-        </p>
-      </div>
+      <AdminPageHeader
+        title="Dashboard"
+        description="Welcome back. Here is what is happening with your portfolio."
+      />
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

@@ -5,6 +5,7 @@ import { createServerSupabaseClient, getUser } from "@/lib/supabase-server";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { AdminPageHeader } from "@/components/admin/page-header";
 import type { Project } from "@/lib/db-types";
 import { Edit, Plus, Trash } from "lucide-react";
 import { isAdminEmail } from "@/lib/admin-auth";
@@ -53,15 +54,18 @@ export default async function ProjectsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold mb-4">Projects</h1>
-        <Button asChild>
-          <Link href="/admin/projects/new">
-            <Plus className="w-4 h-4 mr-2" />
-            New Project
-          </Link>
-        </Button>
-      </div>
+      <AdminPageHeader
+        title="Projects"
+        description="Manage project cards, details, and featured status."
+        action={
+          <Button asChild>
+            <Link href="/admin/projects/new">
+              <Plus className="w-4 h-4 mr-2" />
+              New Project
+            </Link>
+          </Button>
+        }
+      />
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {projects.map((project) => (
           <Card key={project.id}>

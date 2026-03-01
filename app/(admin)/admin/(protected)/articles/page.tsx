@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { AdminPageHeader } from '@/components/admin/page-header';
 import { createServerSupabaseClient, getUser } from '@/lib/supabase-server';
 import type { Article } from '@/lib/db-types';
 import { Plus, Edit, Trash, Eye } from 'lucide-react';
@@ -57,20 +58,18 @@ export default async function ArticlesAdmin() {
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Articles</h1>
-          <p className="text-muted-foreground">
-            Manage your blog posts and articles.
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/admin/articles/new">
-            <Plus className="w-4 h-4 mr-2" />
-            New Article
-          </Link>
-        </Button>
-      </div>
+      <AdminPageHeader
+        title="Articles"
+        description="Manage your blog posts and drafts."
+        action={
+          <Button asChild>
+            <Link href="/admin/articles/new">
+              <Plus className="w-4 h-4 mr-2" />
+              New Article
+            </Link>
+          </Button>
+        }
+      />
 
       <div className="grid gap-4">
         {articles.length > 0 ? (

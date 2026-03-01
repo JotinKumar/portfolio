@@ -6,6 +6,7 @@ import { isAdminEmail } from "@/lib/admin-auth";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { AdminPageHeader } from "@/components/admin/page-header";
 import type { Competency, HeroContent, NavigationItem, PageContent, SiteConfig, SocialLink } from "@/lib/db-types";
 
 export const dynamic = "force-dynamic";
@@ -417,7 +418,10 @@ export default async function SettingsPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold">Settings</h1>
+      <AdminPageHeader
+        title="Settings"
+        description="Manage global site content, navigation, social links, and competencies."
+      />
 
       <Card>
         <CardHeader>

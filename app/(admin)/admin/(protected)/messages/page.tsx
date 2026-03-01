@@ -1,5 +1,6 @@
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { AdminPageHeader } from "@/components/admin/page-header";
 import type { Contact } from "@/lib/db-types";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +21,10 @@ export default async function MessagesPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold mb-4">Messages</h1>
+      <AdminPageHeader
+        title="Messages"
+        description="Recent contact form submissions."
+      />
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {messages.map((msg) => (
           <Card key={msg.id}>

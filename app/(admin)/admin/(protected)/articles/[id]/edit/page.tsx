@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { AdminPageHeader } from "@/components/admin/page-header";
 import { createServerSupabaseClient, getUser } from "@/lib/supabase-server";
 import { isAdminEmail } from "@/lib/admin-auth";
 import type { Article } from "@/lib/db-types";
@@ -62,7 +64,7 @@ export default async function EditArticlePage({ params }: EditArticlePageProps) 
   if (error || !data) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold">Edit Article</h1>
+        <AdminPageHeader title="Edit Article" />
         <Card>
           <CardContent className="p-6 space-y-3">
             <p className="text-muted-foreground">Article not found.</p>
@@ -79,12 +81,15 @@ export default async function EditArticlePage({ params }: EditArticlePageProps) 
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Edit Article</h1>
-        <Button variant="outline" asChild>
-          <Link href="/admin/articles">Back to Articles</Link>
-        </Button>
-      </div>
+      <AdminPageHeader
+        title="Edit Article"
+        description="Update article content, metadata, and publish state."
+        action={
+          <Button variant="outline" asChild>
+            <Link href="/admin/articles">Back to Articles</Link>
+          </Button>
+        }
+      />
 
       <Card>
         <CardHeader>
@@ -100,10 +105,10 @@ export default async function EditArticlePage({ params }: EditArticlePageProps) 
             <Input name="readTime" type="number" min={1} defaultValue={article.readTime} required />
             <Input name="coverImage" defaultValue={article.coverImage ?? ""} placeholder="Cover image URL (optional)" />
             <Input name="excerpt" defaultValue={article.excerpt} required />
-            <textarea
+            <Textarea
               aria-label="article content"
               name="content"
-              className="min-h-[280px] w-full rounded-md border bg-background px-3 py-2 text-sm"
+              className="min-h-[280px]"
               defaultValue={article.content}
               required
             />

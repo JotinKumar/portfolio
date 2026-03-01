@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
@@ -148,10 +149,10 @@ export function TechHero({
             </motion.div>
             <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 ${isInitial ? "scale-90 origin-right" : ""}`}>
               <Button variant="outline" asChild className="rounded-full px-8 py-5 text-base font-bold border-2 hover:bg-primary/5 transition-all active:scale-95">
-                <a href="/projects">{heroContent.viewProjectsLabel}</a>
+                <Link href="/projects">{heroContent.viewProjectsLabel}</Link>
               </Button>
               <Button asChild className="rounded-full px-8 py-5 text-base font-bold shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
-                <a href="/articles">{heroContent.viewArticlesLabel}</a>
+                <Link href="/articles">{heroContent.viewArticlesLabel}</Link>
               </Button>
             </div>
           </div>

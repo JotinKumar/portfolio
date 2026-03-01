@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
+import { PageContent, PageHeader } from "@/components/layout/page-primitives";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ContactFormCard } from "@/components/sections/contact-form-card";
+import { PAGE_SECTION_Y_CLASS } from "@/lib/layout";
 import { getPageContent, getSiteShellData, getSocialLinksByPosition } from "@/lib/server/queries";
 import { Mail, MapPin, Clock } from "lucide-react";
 
@@ -32,12 +34,9 @@ export default async function ContactPage() {
   const content = pageContent?.content as Record<string, unknown> | null;
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center space-y-4 mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold">{pageContent?.title ?? "Contact"}</h1>
-          <p className="text-xl text-muted-foreground">{pageContent?.subtitle ?? ""}</p>
-        </div>
+    <section className={PAGE_SECTION_Y_CLASS}>
+      <PageContent className="space-y-10">
+        <PageHeader title={pageContent?.title ?? "Contact"} subtitle={pageContent?.subtitle ?? ""} />
 
         <div className="grid md:grid-cols-2 gap-8">
           <ContactFormCard
@@ -106,7 +105,7 @@ export default async function ContactPage() {
             </Card>
           </div>
         </div>
-      </div>
-    </div>
+      </PageContent>
+    </section>
   );
 }

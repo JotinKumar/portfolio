@@ -1,4 +1,8 @@
 import { ArticleCard } from '@/components/sections/article-card';
+import Link from "next/link";
+import { PageContent, PageHeader } from "@/components/layout/page-primitives";
+import { FilterTabs } from "@/components/ui/filter-tabs";
+import { PAGE_SECTION_Y_CLASS } from "@/lib/layout";
 import { getPageContent, getPublishedArticleCategories, getPublishedArticles } from '@/lib/server/queries';
 import type { Article } from '@/lib/db-types';
 
@@ -29,56 +33,37 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
   const tagLabel = typeof content?.tagLabel === "string" ? content.tagLabel : "Tag:";
 
   return (
-    <section className="py-12">
-      <div className="space-y-8">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold">{pageContent?.title ?? "Articles"}</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            {pageContent?.subtitle ?? ""}
-          </p>
-        </div>
+    <section className={PAGE_SECTION_Y_CLASS}>
+      <PageContent className="space-y-8">
+        <PageHeader
+          title={pageContent?.title ?? "Articles"}
+          subtitle={pageContent?.subtitle ?? ""}
+        />
 
         {/* Filter Section */}
         {uniqueCategories.length > 0 && (
-          <div className="flex flex-wrap gap-2 justify-center">
-            <a 
-              href="/articles"
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                !params.category && !params.tag
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-muted hover:bg-muted/80'
-              }`}
-            >
-              {pageContent?.primaryCta ?? "All"}
-            </a>
-            {uniqueCategories.map((category) => (
-              <a 
-                key={category}
-                href={`/articles?category=${encodeURIComponent(category)}`}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  params.category === category
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-muted hover:bg-muted/80'
-                }`}
-              >
-                {category}
-              </a>
-            ))}
-          </div>
+          <FilterTabs
+            basePath="/articles"
+            allLabel={pageContent?.primaryCta ?? "All"}
+            options={uniqueCategories.map((category) => ({ label: category, value: category }))}
+            queryKey="category"
+            activeValue={params.category}
+            preservedQuery={{ search: params.search, tag: params.tag }}
+          />
         )}
 
         {params.tag ? (
           <div className="flex items-center justify-center gap-2 text-sm">
             <span className="text-muted-foreground">{tagLabel}</span>
-            <a
+            <Link
               href={`/articles?tag=${encodeURIComponent(params.tag)}`}
               className="rounded-full bg-primary px-3 py-1 text-primary-foreground"
             >
               #{params.tag}
-            </a>
-            <a href="/articles" className="text-muted-foreground underline hover:text-foreground">
+            </Link>
+            <Link href="/articles" className="text-muted-foreground underline hover:text-foreground">
               {pageContent?.secondaryCta ?? "Clear"}
-            </a>
+            </Link>
           </div>
         ) : null}
 
@@ -99,7 +84,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
             </p>
           </div>
         )}
-      </div>
+      </PageContent>
     </section>
   );
 }

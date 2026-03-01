@@ -39,8 +39,8 @@ export function WorkTimeline({
 
   return (
     <section className="py-10 md:py-12">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold tracking-tight mb-8">
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight mb-8 md:text-3xl">
           {title}
         </h2>
 

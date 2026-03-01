@@ -12,9 +12,9 @@ interface FeaturedArticlesProps {
 export function FeaturedArticles({ articles, title, viewAllLabel }: FeaturedArticlesProps) {
   return (
     <section className="py-10 md:py-12">
-      <div className="container mx-auto px-4">
+      <div className="space-y-8">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold tracking-tight">
+          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
             {title}
           </h2>
           <Link href="/articles" passHref>

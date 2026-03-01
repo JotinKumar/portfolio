@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { AdminPageHeader } from "@/components/admin/page-header";
 import { createServerSupabaseClient, getUser } from "@/lib/supabase-server";
 import { isAdminEmail } from "@/lib/admin-auth";
 
@@ -62,12 +64,15 @@ async function createArticle(formData: FormData) {
 export default function NewArticlePage() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">New Article</h1>
-        <Button variant="outline" asChild>
-          <Link href="/admin/articles">Back to Articles</Link>
-        </Button>
-      </div>
+      <AdminPageHeader
+        title="New Article"
+        description="Create a new article draft or publish it immediately."
+        action={
+          <Button variant="outline" asChild>
+            <Link href="/admin/articles">Back to Articles</Link>
+          </Button>
+        }
+      />
 
       <Card>
         <CardHeader>
@@ -82,10 +87,10 @@ export default function NewArticlePage() {
             <Input name="readTime" type="number" min={1} defaultValue={5} required />
             <Input name="coverImage" placeholder="Cover image URL (optional)" />
             <Input name="excerpt" placeholder="Short excerpt" required />
-            <textarea
+            <Textarea
               aria-label="article content"
               name="content"
-              className="min-h-[280px] w-full rounded-md border bg-background px-3 py-2 text-sm"
+              className="min-h-[280px]"
               placeholder="Article content"
               required
             />
