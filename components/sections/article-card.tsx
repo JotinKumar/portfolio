@@ -40,7 +40,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
           </Badge>
           <h3 className="font-semibold text-lg line-clamp-2">
             <Link 
-              href={`/articles/${article.slug}`}
+              href={`/blogs/${article.slug}`}
               className="hover:underline"
             >
               {article.title}

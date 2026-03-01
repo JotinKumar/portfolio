@@ -6,5 +6,5 @@ interface AdminArticleRedirectPageProps {
 
 export default async function AdminArticleRedirectPage({ params }: AdminArticleRedirectPageProps) {
   const { id } = await params;
-  redirect(`/admin/articles/${id}/edit`);
+  redirect(`/admin/blogs/${id}/edit`);
 }

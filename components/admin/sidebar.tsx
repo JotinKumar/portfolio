@@ -22,8 +22,8 @@ const sidebarItems = [
     icon: LayoutDashboard,
   },
   {
-    title: 'Articles',
-    href: '/admin/articles',
+    title: 'Blogs',
+    href: '/admin/blogs',
     icon: FileText,
   },
   {

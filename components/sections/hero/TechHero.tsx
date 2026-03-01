@@ -152,7 +152,7 @@ export function TechHero({
                 <Link href="/projects">{heroContent.viewProjectsLabel}</Link>
               </Button>
               <Button asChild className="rounded-full px-8 py-5 text-base font-bold shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
-                <Link href="/articles">{heroContent.viewArticlesLabel}</Link>
+                <Link href="/blogs">{heroContent.viewArticlesLabel}</Link>
               </Button>
             </div>
           </div>

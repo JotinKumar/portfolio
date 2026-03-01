@@ -22,7 +22,7 @@ function revalidateAllPublic() {
   revalidatePath("/admin/settings");
   revalidatePath("/");
   revalidatePath("/profile");
-  revalidatePath("/articles");
+  revalidatePath("/blogs");
   revalidatePath("/projects");
   revalidatePath("/contact");
 }
@@ -530,7 +530,7 @@ export default async function SettingsPage() {
             />
             <Input
               name="viewArticlesLabel"
-              placeholder="View articles label"
+              placeholder="View blogs label"
               defaultValue={hero?.viewArticlesLabel ?? ""}
               required
             />
@@ -542,7 +542,7 @@ export default async function SettingsPage() {
             />
             <Input
               name="homeFeaturedArticlesTitle"
-              placeholder="Home featured articles title"
+              placeholder="Home featured blogs title"
               defaultValue={hero?.homeFeaturedArticlesTitle ?? ""}
               required
             />
@@ -554,7 +554,7 @@ export default async function SettingsPage() {
             />
             <Input
               name="homeViewAllArticlesLabel"
-              placeholder="Home view all articles label"
+              placeholder="Home view all blogs label"
               defaultValue={hero?.homeViewAllArticlesLabel ?? ""}
               required
             />

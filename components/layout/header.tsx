@@ -29,7 +29,7 @@ const iconForLabel = (label: string) => {
   const normalized = label.toLowerCase();
   if (normalized.includes("home")) return Home;
   if (normalized.includes("profile")) return User;
-  if (normalized.includes("article")) return FileText;
+  if (normalized.includes("article") || normalized.includes("blog")) return FileText;
   if (normalized.includes("project")) return Briefcase;
   if (normalized.includes("contact")) return Mail;
   return FileText;

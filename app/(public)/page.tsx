@@ -41,7 +41,7 @@ export default async function Home() {
     return (
       <div>
         <WorkTimeline experiences={[]} title="Work Experience" />
-        <FeaturedArticles articles={featuredArticles} title="Featured Articles" viewAllLabel="View All Articles" />
+        <FeaturedArticles articles={featuredArticles} title="Featured Blogs" viewAllLabel="View All Blogs" />
         <FeaturedProjects projects={featuredProjects} title="Featured Projects" viewAllLabel="View All Projects" />
       </div>
     );

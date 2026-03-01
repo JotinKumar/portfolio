@@ -17,7 +17,7 @@ export function FeaturedArticles({ articles, title, viewAllLabel }: FeaturedArti
           <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
             {title}
           </h2>
-          <Link href="/articles" passHref>
+          <Link href="/blogs" passHref>
             <Button variant="outline">{viewAllLabel}</Button>
           </Link>
         </div>

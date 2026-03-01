@@ -35,7 +35,7 @@ export default async function AdminDashboard() {
 
   const stats = [
     {
-      title: 'Total Articles',
+      title: 'Total Blogs',
       value: articlesCount,
       description: `${publishedArticlesCount} published`,
       icon: FileText,
@@ -88,10 +88,10 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        {/* Recent Articles */}
+        {/* Recent Blogs */}
         <Card>
           <CardHeader>
-            <CardTitle>Recent Articles</CardTitle>
+            <CardTitle>Recent Blogs</CardTitle>
             <CardDescription>Your latest blog posts</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -112,7 +112,7 @@ export default async function AdminDashboard() {
                 </div>
               ))
             ) : (
-              <p className="text-sm text-muted-foreground">No articles yet.</p>
+              <p className="text-sm text-muted-foreground">No blogs yet.</p>
             )}
           </CardContent>
         </Card>

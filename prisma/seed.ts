@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 const connectionString = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
@@ -56,12 +56,12 @@ async function main() {
   const navigationItems = [
     { label: 'Home', href: '/', position: 'HEADER', order: 1 },
     { label: 'Profile', href: '/profile', position: 'HEADER', order: 2 },
-    { label: 'Articles', href: '/articles', position: 'HEADER', order: 3 },
+    { label: 'Blogs', href: '/blogs', position: 'HEADER', order: 3 },
     { label: 'Projects', href: '/projects', position: 'HEADER', order: 4 },
     { label: 'Contact', href: '/contact', position: 'HEADER', order: 5 },
     { label: 'Home', href: '/', position: 'FOOTER_QUICK', order: 1 },
     { label: 'Profile', href: '/profile', position: 'FOOTER_QUICK', order: 2 },
-    { label: 'Articles', href: '/articles', position: 'FOOTER_QUICK', order: 3 },
+    { label: 'Blogs', href: '/blogs', position: 'FOOTER_QUICK', order: 3 },
     { label: 'Projects', href: '/projects', position: 'FOOTER_QUICK', order: 4 },
     { label: 'Resume', href: '/jotin-madugula-resume.pdf', position: 'FOOTER_RESOURCE', order: 1 },
     { label: 'Contact', href: '/contact', position: 'FOOTER_RESOURCE', order: 2 },
@@ -127,11 +127,11 @@ async function main() {
     downloadResumeLabel: 'Download Resume',
     getInTouchLabel: 'Get in Touch',
     viewProjectsLabel: 'View Projects',
-    viewArticlesLabel: 'View Articles',
+    viewArticlesLabel: 'View Blogs',
     homeWorkSectionTitle: 'Work Experience',
-    homeFeaturedArticlesTitle: 'Featured Articles',
+    homeFeaturedArticlesTitle: 'Featured Blogs',
     homeFeaturedProjectsTitle: 'Featured Projects',
-    homeViewAllArticlesLabel: 'View All Articles',
+    homeViewAllArticlesLabel: 'View All Blogs',
     homeViewAllProjectsLabel: 'View All Projects',
   };
 
@@ -182,15 +182,15 @@ async function main() {
     },
     {
       page: 'ARTICLES',
-      title: 'Articles',
+      title: 'Blogs',
       subtitle: 'Thoughts on business processes, technology, and the future of work.',
-      emptyTitle: 'No articles found',
-      emptyMessage: 'Try adjusting your filters to see more articles.',
+      emptyTitle: 'No blogs found',
+      emptyMessage: 'Try adjusting your filters to see more blogs.',
       primaryCta: 'All',
       secondaryCta: 'Clear',
       content: {
         tagLabel: 'Tag:',
-        defaultEmptyMessage: 'Articles will appear here once they are published.',
+        defaultEmptyMessage: 'Blogs will appear here once they are published.',
       },
     },
     {
@@ -237,10 +237,11 @@ async function main() {
   ] as const;
 
   for (const row of pageContentRows) {
+    const contentValue = row.content === null ? Prisma.JsonNull : row.content;
     await prisma.pageContent.upsert({
       where: { page: row.page },
-      update: row,
-      create: row,
+      update: { ...row, content: contentValue },
+      create: { ...row, content: contentValue },
     });
   }
 
