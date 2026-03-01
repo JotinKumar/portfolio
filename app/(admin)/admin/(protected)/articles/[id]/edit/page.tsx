@@ -46,6 +46,7 @@ async function updateArticle(formData: FormData) {
   revalidatePath("/admin/articles");
   revalidatePath("/articles");
   revalidatePath(`/articles/${payload.slug}`);
+  revalidatePath("/");
   redirect("/admin/articles?success=article_updated");
 }
 

@@ -34,6 +34,7 @@ async function deleteArticle(formData: FormData) {
 
   revalidatePath("/admin/articles");
   revalidatePath("/articles");
+  revalidatePath("/");
   redirect("/admin/articles?success=article_deleted");
 }
 

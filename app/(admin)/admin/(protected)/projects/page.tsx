@@ -33,6 +33,7 @@ async function deleteProject(formData: FormData) {
 
   revalidatePath("/admin/projects");
   revalidatePath("/projects");
+  revalidatePath("/");
   redirect("/admin/projects?success=project_deleted");
 }
 

@@ -58,6 +58,7 @@ async function createProject(formData: FormData) {
 
   revalidatePath("/admin/projects");
   revalidatePath("/projects");
+  revalidatePath("/");
   redirect("/admin/projects?success=project_created");
 }
 
