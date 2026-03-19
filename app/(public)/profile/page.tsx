@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PageContent } from "@/components/layout/page-primitives";
@@ -7,6 +8,7 @@ import { PAGE_SECTION_Y_CLASS } from "@/lib/layout";
 import type { Settings, WorkExperienceCard } from "@/lib/db-types";
 import { getCompetencies, getPageContent, getProfileData, getSiteShellData } from "@/lib/server/queries";
 import { Calendar, Download, Github, Linkedin, Mail, MapPin } from "lucide-react";
+import { isManagedPublicPageEnabled } from "@/lib/public-page-visibility";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +76,10 @@ export default async function ProfilePage() {
     siteConfig = shellData.siteConfig;
   } catch {
     // Render empty state when database is unavailable.
+  }
+
+  if (!isManagedPublicPageEnabled(profilePageContent)) {
+    notFound();
   }
 
   const experiences: NormalizedExperience[] = experienceCards.map((exp) => ({
@@ -175,7 +181,7 @@ export default async function ProfilePage() {
           </CardContent>
         </Card>
 
-        <div className="space-y-5">
+        <div id="experience-timeline" className="space-y-5">
           <div className="space-y-1">
             <h2 className="text-2xl font-bold tracking-tight md:text-3xl">{asText(pageContent, "timelineTitle", "Experience Timeline")}</h2>
             <p className="text-sm text-muted-foreground md:text-base">{asText(pageContent, "timelineSubtitle", "")}</p>
@@ -185,6 +191,7 @@ export default async function ProfilePage() {
             {experiences.map((exp) => (
               <Card
                 key={exp.id}
+                id={`experience-${exp.id}`}
                 className={`animate-in fade-in slide-in-from-bottom-2 duration-500 ${exp.current ? "border-primary/40 shadow-md" : ""}`}
               >
                 <CardHeader className="space-y-3">

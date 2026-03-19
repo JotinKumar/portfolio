@@ -6,7 +6,8 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Glassmorphism } from "@/components/ui/glassmorphism";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import type { NavigationItem, SiteConfig } from "@/lib/db-types";
+import type { SiteConfig } from "@/lib/db-types";
+import type { SiteNavLink } from "@/lib/public-page-visibility";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -17,7 +18,6 @@ import {
   Moon,
   Sun,
   Menu,
-  Download,
   Mail,
   User,
   FileText,
@@ -35,15 +35,22 @@ const iconForLabel = (label: string) => {
   return FileText;
 };
 
+const normalizeNavLabel = (label: string) => {
+  const normalized = label.toLowerCase();
+  if (normalized.includes("article") || normalized.includes("articel") || normalized.includes("articels")) {
+    return "Blogs";
+  }
+  return label;
+};
+
 export function Header({
   siteConfig,
   navigationItems,
 }: {
   siteConfig: SiteConfig | null;
-  navigationItems: NavigationItem[];
+  navigationItems: SiteNavLink[];
 }) {
   const { resolvedTheme, setTheme } = useTheme();
-  const resumeUrl = siteConfig?.resumeUrl;
   const logoUrl = siteConfig?.logoUrl ?? "/images/logo.png";
   const logoAlt = siteConfig?.logoAlt ?? "Portfolio Logo";
   const items = navigationItems;
@@ -69,7 +76,8 @@ export function Header({
               <NavigationMenu>
               <NavigationMenuList>
                 {items.map((item) => {
-                  const Icon = iconForLabel(item.label);
+                  const label = normalizeNavLabel(item.label);
+                  const Icon = iconForLabel(label);
                   return (
                   <NavigationMenuItem key={item.id}>
                     <NavigationMenuLink asChild>
@@ -77,10 +85,10 @@ export function Header({
                         href={item.href}
                         target={item.openInNewTab ? "_blank" : undefined}
                         rel={item.openInNewTab ? "noopener noreferrer" : undefined}
-                        className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50"
+                        className="type-nav group inline-flex h-10 w-max items-center justify-center rounded-none bg-transparent px-4 py-2 transition-colors hover:bg-accent/80 hover:text-accent-foreground focus:bg-accent/80 focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50"
                       >
                         <Icon className="w-4 h-4 mr-2" />
-                        {item.label}
+                        {label}
                       </Link>
                     </NavigationMenuLink>
                   </NavigationMenuItem>
@@ -101,20 +109,6 @@ export function Header({
               <span className="sr-only">Toggle theme</span>
             </Button>
 
-            {resumeUrl ? (
-              <Button
-                variant="outline"
-                size="sm"
-                className="hidden md:flex"
-                asChild
-              >
-                <Link href={resumeUrl} target="_blank">
-                  <Download className="w-4 h-4 mr-2" />
-                  Resume
-                </Link>
-              </Button>
-            ) : null}
-
             {/* Mobile Navigation */}
             <Sheet>
               <SheetTrigger asChild>
@@ -126,27 +120,20 @@ export function Header({
               <SheetContent side="right">
                 <div className="flex flex-col space-y-4 mt-8">
                   {items.map((item) => {
-                    const Icon = iconForLabel(item.label);
+                    const label = normalizeNavLabel(item.label);
+                    const Icon = iconForLabel(label);
                     return (
                     <Link
                       key={`mobile-${item.id}`}
                       href={item.href}
                       target={item.openInNewTab ? "_blank" : undefined}
                       rel={item.openInNewTab ? "noopener noreferrer" : undefined}
-                      className="flex items-center space-x-2 text-lg font-medium"
+                      className="type-nav flex items-center space-x-2 text-foreground"
                     >
                       <Icon className="w-5 h-5" />
-                      <span>{item.label}</span>
+                      <span>{label}</span>
                     </Link>
                   )})}
-                  {resumeUrl ? (
-                    <Button variant="outline" className="justify-start" asChild>
-                      <Link href={resumeUrl} target="_blank">
-                        <Download className="w-4 h-4 mr-2" />
-                        Download Resume
-                      </Link>
-                    </Button>
-                  ) : null}
                 </div>
               </SheetContent>
             </Sheet>
