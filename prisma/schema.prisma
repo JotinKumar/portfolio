@@ -70,26 +70,6 @@ model Project {
   @@index([order])
 }
 
-model WorkExperience {
-  id           String    @id @default(cuid())
-  company      String
-  companyLogo  String?
-  role         String
-  location     String
-  type         String
-  description  String
-  achievements String
-  skills       String
-  startDate    DateTime
-  endDate      DateTime?
-  current      Boolean   @default(false)
-  order        Int       @default(0)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  @@index([current, order])
-}
-
 model WorkExperienceCard {
   id           String   @id @default(cuid())
   company      String

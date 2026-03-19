@@ -38,24 +38,6 @@ export interface Project {
   updatedAt: string;
 }
 
-export interface WorkExperience {
-  id: string;
-  company: string;
-  companyLogo: string | null;
-  role: string;
-  location: string;
-  type: string;
-  description: string;
-  achievements: string;
-  skills: string;
-  startDate: string;
-  endDate: string | null;
-  current: boolean;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface WorkExperienceCard {
   id: string;
   company: string;
