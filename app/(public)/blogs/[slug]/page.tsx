@@ -70,7 +70,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 
   return (
     <article className={PAGE_SECTION_Y_CLASS}>
-      <PageContent className="max-w-4xl space-y-8">
+      <PageContent className="space-y-8">
         <div className="flex items-center justify-between gap-3">
           <Button variant="outline" size="sm" asChild>
             <Link href="/blogs">

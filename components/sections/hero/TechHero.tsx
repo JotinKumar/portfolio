@@ -16,17 +16,6 @@ export function TechHero({
   isInitial?: boolean;
   skillsExitEarly?: boolean;
 }) {
-  const techColors = [
-    "bg-rose-500 hover:bg-rose-600",
-    "bg-amber-500 hover:bg-amber-600",
-    "bg-emerald-500 hover:bg-emerald-600",
-    "bg-sky-500 hover:bg-sky-600",
-    "bg-indigo-500 hover:bg-indigo-600",
-    "bg-violet-500 hover:bg-violet-600",
-    "bg-fuchsia-500 hover:bg-fuchsia-600",
-    "bg-orange-500 hover:bg-orange-600",
-  ];
-
   const allSkills = heroContent.techSkills;
   const initialSkills = heroContent.techInitialSkills;
   const displaySkills = isInitial ? initialSkills : allSkills;
@@ -83,22 +72,22 @@ export function TechHero({
                   transition={{ duration: 0.4, ease: "easeInOut" }}
                   className="overflow-hidden flex flex-col items-start"
                 >
-                  <h1 className="text-2xl md:text-4xl font-black mb-1 text-foreground tracking-tighter uppercase whitespace-nowrap">
+                  <h1 className="type-section-title mb-1 text-[clamp(2rem,2vw+1rem,3rem)] whitespace-nowrap">
                     {heroContent.displayName}
                   </h1>
                   <motion.div 
                     layoutId="tech-underline"
-                    className="h-1.5 w-20 bg-primary rounded-full" 
+                    className="h-px w-20 bg-primary" 
                   />
                 </motion.div>
               )}
             </AnimatePresence>
             
             <div className={`space-y-3 flex flex-col ${current ? "items-start" : "items-end"}`}>
-              <h2 className={`${isInitial ? "text-lg" : "text-xl md:text-2xl"} text-primary font-bold uppercase tracking-wide whitespace-nowrap`}>
+              <h2 className={`${isInitial ? "type-nav text-[0.95rem]" : "type-card-title text-[1.35rem] md:text-[1.7rem]"} whitespace-nowrap`}>
                 {heroContent.techTitle}
               </h2>
-              <p className={`${isInitial ? "text-base max-w-md" : "text-lg md:text-xl max-w-2xl"} text-muted-foreground leading-relaxed`}>
+              <p className={`${isInitial ? "type-body max-w-md" : "type-body-lg max-w-2xl"} text-muted-foreground`}>
                 {heroContent.techSubtitle}
               </p>
             </div>
@@ -136,10 +125,8 @@ export function TechHero({
                     }}
                   >
                     <Badge
-                      variant="default"
-                      className={`rounded-full px-3 py-1 text-[8px] md:text-[9px] uppercase tracking-widest font-black text-white border-none shadow-md whitespace-nowrap ${
-                        techColors[index % techColors.length]
-                      }`}
+                      variant="outline"
+                      className="border-foreground/18 bg-transparent px-3 py-1 text-[8px] md:text-[9px] text-foreground shadow-none whitespace-nowrap"
                     >
                       {skill}
                     </Badge>
@@ -148,10 +135,10 @@ export function TechHero({
               </AnimatePresence>
             </motion.div>
             <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 ${isInitial ? "scale-90 origin-right" : ""}`}>
-              <Button variant="outline" asChild className="rounded-full px-8 py-5 text-base font-bold border-2 hover:bg-primary/5 transition-all active:scale-95">
+              <Button variant="outline" asChild className="px-8 py-5 text-base border-2 hover:bg-primary/5">
                 <Link href="/projects">{heroContent.viewProjectsLabel}</Link>
               </Button>
-              <Button asChild className="rounded-full px-8 py-5 text-base font-bold shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
+              <Button asChild className="px-8 py-5 text-base shadow-lg hover:shadow-primary/20">
                 <Link href="/blogs">{heroContent.viewArticlesLabel}</Link>
               </Button>
             </div>

@@ -6,6 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "test": "node -r ts-node/register scripts/security-selftest.cjs",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
     "postinstall": "prisma generate",
     "db:seed": "node -r ts-node/register prisma/seed.ts",
     "start": "next start",

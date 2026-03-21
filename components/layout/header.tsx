@@ -24,6 +24,7 @@ import {
   Briefcase,
   Home,
 } from "lucide-react";
+import { APP_SHELL_CLASS } from "@/lib/layout";
 
 const iconForLabel = (label: string) => {
   const normalized = label.toLowerCase();
@@ -57,8 +58,9 @@ export function Header({
 
   return (
     <header className="fixed top-4 left-4 right-4 z-[100]">
-      <Glassmorphism className="max-w-[1280px] mx-auto">
-        <div className="flex h-14 items-center px-4">
+      <div className={APP_SHELL_CLASS}>
+      <Glassmorphism className="mx-auto">
+        <div className="flex h-14 items-center px-3 md:px-4">
           <div className="mr-4 flex">
             <Link href="/" className="mr-6 flex items-center space-x-2">
               <Image
@@ -85,7 +87,7 @@ export function Header({
                         href={item.href}
                         target={item.openInNewTab ? "_blank" : undefined}
                         rel={item.openInNewTab ? "noopener noreferrer" : undefined}
-                        className="type-nav group inline-flex h-10 w-max items-center justify-center rounded-none bg-transparent px-4 py-2 transition-colors hover:bg-accent/80 hover:text-accent-foreground focus:bg-accent/80 focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50"
+                        className="type-nav group inline-flex h-10 w-max items-center justify-center rounded-none border border-transparent bg-transparent px-4 py-2 tracking-[0.03em] transition-[transform,color,background-color,border-color] duration-[var(--duration-quick)] ease-[var(--ease-out-quart)] hover:-translate-y-px hover:border-primary/20 hover:bg-accent/75 hover:text-accent-foreground focus:border-primary/20 focus:bg-accent/75 focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50"
                       >
                         <Icon className="w-4 h-4 mr-2" />
                         {label}
@@ -128,7 +130,7 @@ export function Header({
                       href={item.href}
                       target={item.openInNewTab ? "_blank" : undefined}
                       rel={item.openInNewTab ? "noopener noreferrer" : undefined}
-                      className="type-nav flex items-center space-x-2 text-foreground"
+                      className="type-nav flex items-center space-x-2 border-b border-border/60 pb-3 text-foreground transition-colors duration-[var(--duration-quick)] ease-[var(--ease-out-quart)] hover:text-primary"
                     >
                       <Icon className="w-5 h-5" />
                       <span>{label}</span>
@@ -140,6 +142,7 @@ export function Header({
           </div>
         </div>
       </Glassmorphism>
+      </div>
     </header>
   );
 }

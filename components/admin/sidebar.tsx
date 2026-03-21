@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { 
   LayoutDashboard, 
   FileText, 
@@ -70,22 +69,36 @@ export function AdminSidebar() {
   }
 
   return (
-    <div className="flex h-full w-64 shrink-0 flex-col border-r bg-muted/20">
-      <div className="flex h-14 items-center border-b px-4">
-        <Link href="/admin/dashboard" className="flex items-center space-x-2">
-          <span className="text-lg font-bold">Admin Panel</span>
-        </Link>
-      </div>
-      
-      <div className="flex-1 overflow-auto p-4">
-        <nav className="space-y-2">
+    <div className="animate-in fade-in slide-in-from-top-2 duration-500 border-b border-border/70 bg-card/80 backdrop-blur-sm">
+      <div className="flex flex-col gap-4 px-5 py-4 md:px-8">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-1">
+            <Link href="/admin/dashboard" className="inline-flex items-center">
+              <span className="type-section-title text-[1.5rem] md:text-[1.85rem]">Admin</span>
+            </Link>
+            <p className="type-body text-muted-foreground">
+              Manage content, site settings, and incoming conversations from the same editorial system as the public site.
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            className="w-full justify-center md:w-auto"
+            onClick={handleLogout}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
+        </div>
+
+        <nav className="flex flex-wrap gap-2">
           {sidebarItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
             return (
               <Button
                 key={item.href}
-                variant={isActive ? 'default' : 'ghost'}
-                className="w-full justify-start"
+                variant={isActive ? 'default' : 'outline'}
+                size="sm"
+                className="justify-start"
                 asChild
               >
                 <Link href={item.href}>
@@ -96,19 +109,6 @@ export function AdminSidebar() {
             );
           })}
         </nav>
-      </div>
-
-      <Separator />
-      
-      <div className="p-4">
-        <Button
-          variant="outline"
-          className="w-full justify-start"
-          onClick={handleLogout}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Logout
-        </Button>
       </div>
     </div>
   );

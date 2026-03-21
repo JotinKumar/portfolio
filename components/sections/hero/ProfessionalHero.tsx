@@ -17,17 +17,6 @@ export function ProfessionalHero({
   isInitial?: boolean;
   skillsExitEarly?: boolean;
 }) {
-  const professionalColors = [
-    "bg-slate-600",
-    "bg-blue-700",
-    "bg-indigo-800",
-    "bg-cyan-700",
-    "bg-teal-700",
-    "bg-sky-700",
-    "bg-zinc-700",
-    "bg-blue-900",
-  ];
-
   const allSkills = heroContent.professionalSkills;
   const initialSkills = heroContent.professionalInitialSkills;
   const displaySkills = isInitial ? initialSkills : allSkills;
@@ -63,22 +52,22 @@ export function ProfessionalHero({
                   transition={{ duration: 0.4, ease: "easeInOut" }}
                   className="overflow-hidden"
                 >
-                  <h1 className="text-2xl md:text-4xl font-black mb-1 text-foreground tracking-tighter uppercase whitespace-nowrap">
+                  <h1 className="type-section-title mb-1 text-[clamp(2rem,2vw+1rem,3rem)] whitespace-nowrap">
                     {heroContent.displayName}
                   </h1>
                   <motion.div 
                     layoutId="prof-underline"
-                    className="h-1.5 w-20 bg-primary rounded-full" 
+                    className="h-px w-20 bg-primary" 
                   />
                 </motion.div>
               )}
             </AnimatePresence>
             
             <div className="space-y-3">
-              <h2 className={`${isInitial ? "text-lg" : "text-xl md:text-2xl"} text-primary font-bold uppercase tracking-wide whitespace-nowrap`}>
+              <h2 className={`${isInitial ? "type-nav text-[0.95rem]" : "type-card-title text-[1.35rem] md:text-[1.7rem]"} whitespace-nowrap`}>
                 {heroContent.professionalTitle}
               </h2>
-              <p className={`${isInitial ? "text-base max-w-md" : "text-base md:text-lg max-w-2xl"} text-muted-foreground leading-relaxed`}>
+              <p className={`${isInitial ? "type-body max-w-md" : "type-body-lg max-w-2xl"} text-muted-foreground`}>
                 {heroContent.professionalSubtitle}
               </p>
             </div>
@@ -116,10 +105,8 @@ export function ProfessionalHero({
                     }}
                   >
                     <Badge
-                      variant="default"
-                      className={`rounded-full px-3 py-1 text-[8px] md:text-[9px] uppercase tracking-widest font-black text-white border-none shadow-md whitespace-nowrap ${
-                        professionalColors[index % professionalColors.length]
-                      }`}
+                      variant="outline"
+                      className="border-foreground/18 bg-transparent px-3 py-1 text-[8px] md:text-[9px] text-foreground shadow-none whitespace-nowrap"
                     >
                       {skill}
                     </Badge>
@@ -128,10 +115,10 @@ export function ProfessionalHero({
               </AnimatePresence>
             </motion.div>
             <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 ${isInitial ? "scale-90 origin-left" : ""}`}>
-              <Button asChild className="rounded-full px-8 py-5 text-base font-bold shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
+              <Button asChild className="px-8 py-5 text-base shadow-lg hover:shadow-primary/20">
                 <a href={resumeUrl}>{heroContent.downloadResumeLabel}</a>
               </Button>
-              <Button variant="outline" asChild className="rounded-full px-8 py-5 text-base font-bold border-2 hover:bg-primary/5 transition-all active:scale-95">
+              <Button variant="outline" asChild className="px-8 py-5 text-base border-2 hover:bg-primary/5">
                 <a href="/contact">{heroContent.getInTouchLabel}</a>
               </Button>
             </div>

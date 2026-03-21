@@ -12,25 +12,25 @@ interface FeaturedArticlesProps {
 const ARTICLE_PLACEHOLDERS = [
   {
     eyebrow: "Archive Preview",
-    title: "More writing is on the way",
+    title: "Systems, process, and technical writing",
     description:
-      "Fresh notes on systems, automation, and operating design will appear here as new essays are published.",
+      "The writing archive captures operating design, AI experimentation, and practical lessons from delivery work.",
     href: "/blogs",
     ctaLabel: "Browse Archive",
   },
   {
     eyebrow: "Field Notes",
-    title: "Working drafts and sharper takes",
+    title: "Ideas behind the work",
     description:
-      "Until the next featured post lands, the full blog archive is the best place to explore the thinking behind the work.",
+      "Short notes and longer essays explain the thinking behind systems, products, and implementation choices.",
     href: "/blogs",
     ctaLabel: "Read All Blogs",
   },
   {
-    eyebrow: "Editorial Queue",
-    title: "Strategy, AI, and process essays",
+    eyebrow: "Recent Topics",
+    title: "Strategy, AI, and process",
     description:
-      "This column is reserved for deeper perspectives on operations, product thinking, and modern technical execution.",
+      "Expect writing shaped by delivery practice rather than filler content or trend summaries.",
     href: "/blogs",
     ctaLabel: "See What Is Live",
   },
@@ -55,8 +55,7 @@ export function FeaturedArticles({ articles, title, viewAllLabel }: FeaturedArti
             <p className="kicker text-muted-foreground">Writing</p>
             <h2 className="type-section-title">{title}</h2>
             <p className="type-body-lg text-muted-foreground">
-              Notes on systems, AI, operating design, and the thinking behind the work. This section should read like
-              perspective, not a blog grid.
+              Essays on systems, AI, operating design, and the ideas shaping the work behind the portfolio.
             </p>
           </div>
           <Link

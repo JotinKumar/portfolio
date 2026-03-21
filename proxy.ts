@@ -4,7 +4,9 @@ import type { NextRequest } from "next/server";
 import { isAdminEmail } from "@/lib/admin-auth";
 
 export async function proxy(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith("/admin")) {
+  const { pathname } = request.nextUrl;
+
+  if (pathname.startsWith("/admin") && pathname !== "/admin") {
     let supabaseResponse = NextResponse.next({
       request,
     });
@@ -35,7 +37,7 @@ export async function proxy(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (!user || !isAdminEmail(user.email)) {
-      return NextResponse.redirect(new URL("/login", request.url));
+      return NextResponse.redirect(new URL("/admin", request.url));
     }
 
     return supabaseResponse;
