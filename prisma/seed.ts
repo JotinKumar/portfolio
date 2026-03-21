@@ -266,59 +266,55 @@ async function main() {
     });
   }
 
-  const work1Data = {
-    id: 'work1',
-    company: 'Tech Solutions Inc.',
-    role: 'Senior Business Process Analyst',
-    location: 'Remote',
-    type: 'full-time',
-    description: 'Led digital transformation initiatives for major clients.',
-    achievements: JSON.stringify([
-      'Reduced processing time by 40%',
-      'Implemented AI-driven automation solutions',
-      'Managed team of 8+ analysts',
-    ]),
-    skills: JSON.stringify([
-      'Process Optimization',
-      'AI Integration',
-      'Team Leadership',
-      'Strategic Planning',
-    ]),
-    startDate: new Date('2022-01-01'),
-    current: true,
-    order: 1,
-  };
+  const workExperienceCards = [
+    {
+      id: 'work-card-1',
+      company: 'Tech Solutions Inc.',
+      role: 'Senior Business Process Analyst',
+      location: 'Remote',
+      description: 'Led digital transformation initiatives for major clients across operations, reporting, and workflow automation.',
+      achievements: JSON.stringify([
+        'Reduced processing time by 40%',
+        'Implemented AI-driven automation solutions',
+        'Managed a team of 8+ analysts',
+      ]),
+      skills: JSON.stringify([
+        'Process Optimization',
+        'AI Integration',
+        'Team Leadership',
+        'Strategic Planning',
+      ]),
+      startDate: 'Jan 2022',
+      endDate: null,
+      current: true,
+      order: 1,
+    },
+    {
+      id: 'work-card-2',
+      company: 'Innovation Corp',
+      role: 'Process Improvement Manager',
+      location: 'New York, NY',
+      description: 'Streamlined operations and introduced automation programs for distributed service teams.',
+      achievements: JSON.stringify([
+        'Increased efficiency by 35%',
+        'Led cross-functional delivery teams',
+        'Deployed RPA solutions across core workflows',
+      ]),
+      skills: JSON.stringify(['Business Analysis', 'Project Management', 'RPA', 'Six Sigma']),
+      startDate: 'Mar 2020',
+      endDate: 'Dec 2021',
+      current: false,
+      order: 2,
+    },
+  ] as const;
 
-  await prisma.workExperience.upsert({
-    where: { id: 'work1' },
-    update: work1Data,
-    create: work1Data,
-  });
-
-  const work2Data = {
-    id: 'work2',
-    company: 'Innovation Corp',
-    role: 'Process Improvement Manager',
-    location: 'New York, NY',
-    type: 'full-time',
-    description: 'Streamlined operations and implemented automation solutions.',
-    achievements: JSON.stringify([
-      'Increased efficiency by 35%',
-      'Led cross-functional teams',
-      'Deployed RPA solutions',
-    ]),
-    skills: JSON.stringify(['Business Analysis', 'Project Management', 'RPA', 'Six Sigma']),
-    startDate: new Date('2020-03-01'),
-    endDate: new Date('2021-12-31'),
-    current: false,
-    order: 2,
-  };
-
-  await prisma.workExperience.upsert({
-    where: { id: 'work2' },
-    update: work2Data,
-    create: work2Data,
-  });
+  for (const card of workExperienceCards) {
+    await prisma.workExperienceCard.upsert({
+      where: { id: card.id },
+      update: card,
+      create: card,
+    });
+  }
 
   const article1Data = {
     title: 'AI Transformation in Business Processes',
