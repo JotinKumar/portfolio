@@ -70,7 +70,7 @@ export default function HeroSplit({
             {(isInitial || isTech) && (
               <Button
                 variant="outline"
-                className="gap-2 bg-background/60 backdrop-blur-xl border-primary/20 hover:border-primary shadow-xl px-5"
+                className="rounded-full gap-2 bg-background/60 px-5 backdrop-blur-xl border-primary/20 shadow-xl transition-all hover:scale-105 hover:border-primary active:scale-95"
                 onClick={() => goTo(1)}
               >
                 <Briefcase size={16} className="text-primary" />
@@ -94,7 +94,7 @@ export default function HeroSplit({
             {(isInitial || isProfessional) && (
               <Button
                 variant="outline"
-                className="gap-2 bg-background/60 backdrop-blur-xl border-primary/20 hover:border-primary shadow-xl px-5"
+                className="rounded-full gap-2 bg-background/60 px-5 backdrop-blur-xl border-primary/20 shadow-xl transition-all hover:scale-105 hover:border-primary active:scale-95"
                 onClick={() => goTo(0)}
               >
                 <span>{heroContent.exploreTechLabel}</span>
@@ -125,7 +125,7 @@ export default function HeroSplit({
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="absolute left-0 right-0 z-40 flex flex-col items-center pointer-events-none"
             >
-              <div className="bg-background/20 backdrop-blur-md border border-white/10 shadow-lg p-2">
+              <div className="rounded-2xl border border-white/10 bg-background/20 p-2 shadow-lg backdrop-blur-md">
                 <h1 className="type-card-title text-center text-[1.15rem] md:text-[1.75rem] whitespace-nowrap">
                   {heroContent.displayName}
                 </h1>

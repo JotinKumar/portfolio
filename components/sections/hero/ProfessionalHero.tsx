@@ -115,10 +115,10 @@ export function ProfessionalHero({
               </AnimatePresence>
             </motion.div>
             <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 ${isInitial ? "scale-90 origin-left" : ""}`}>
-              <Button asChild className="px-8 py-5 text-base shadow-lg hover:shadow-primary/20">
+              <Button asChild className="rounded-full px-8 py-5 text-base shadow-lg transition-all hover:shadow-primary/20 active:scale-95">
                 <a href={resumeUrl}>{heroContent.downloadResumeLabel}</a>
               </Button>
-              <Button variant="outline" asChild className="px-8 py-5 text-base border-2 hover:bg-primary/5">
+              <Button variant="outline" asChild className="rounded-full border-2 px-8 py-5 text-base transition-all hover:bg-primary/5 active:scale-95">
                 <a href="/contact">{heroContent.getInTouchLabel}</a>
               </Button>
             </div>

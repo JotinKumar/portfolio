@@ -104,7 +104,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
               {article.readTime} min read
             </span>
           </div>
-          <h3 className="type-card-title line-clamp-2 text-[1.45rem] transition-colors group-hover:text-primary">
+          <h3 className="type-card-title transition-colors group-hover:text-primary">
             {article.title}
           </h3>
           <div className="flex items-start justify-between gap-4">

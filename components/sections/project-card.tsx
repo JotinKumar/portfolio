@@ -108,7 +108,7 @@ export function ProjectCard({ project, featured = false }: ProjectCardProps) {
             <Badge variant="outline" className="type-meta tracking-[0.08em] text-muted-foreground">{project.category}</Badge>
             <span className="type-meta text-muted-foreground/80">{project.status}</span>
           </div>
-          <h3 className="type-card-title text-[1.6rem]">
+          <h3 className="type-card-title">
             <Link href={`/projects/${project.slug}`} className="transition-colors hover:text-primary">
               {project.title}
             </Link>
