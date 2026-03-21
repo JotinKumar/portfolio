@@ -148,7 +148,7 @@ export function WorkTimeline({
                 return (
                   <span
                     key={year}
-                    className={`inline-flex items-center rounded-none border px-2.5 py-1 font-mono text-[0.76rem] font-medium tracking-[0.08em] md:text-[0.9rem] ${
+                    className={`inline-flex items-center rounded-full border px-2.5 py-1 font-mono text-[0.76rem] font-medium tracking-[0.08em] md:text-[0.9rem] ${
                       isMilestone
                         ? "border-primary/30 bg-primary/10 text-foreground shadow-sm"
                         : "border-border/70 bg-background/80 text-muted-foreground"

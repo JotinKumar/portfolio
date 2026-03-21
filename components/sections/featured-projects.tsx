@@ -16,26 +16,26 @@ interface FeaturedProjectsProps {
 
 const PROJECT_PLACEHOLDERS = [
   {
-    eyebrow: "Selected Work",
-    title: "Systems, launches, and internal tools",
+    eyebrow: "Workbench",
+    title: "More selected work is on the way",
     description:
-      "The project archive collects shipped work across operations, product, and technical execution.",
+      "Featured launches, internal systems, and product experiments will rotate in here as the portfolio grows.",
     href: "/projects",
     ctaLabel: "Browse Projects",
   },
   {
     eyebrow: "Case Study",
-    title: "Implementation detail lives in the archive",
+    title: "Deeper builds live in the archive",
     description:
-      "Each project entry expands on the build logic, stack choices, and the tradeoffs behind the work.",
+      "The complete project index already holds more context, including implementation details, stack choices, and live links.",
     href: "/projects",
     ctaLabel: "View Archive",
   },
   {
-    eyebrow: "On Deck",
-    title: "Dashboards, automation, and product work",
+    eyebrow: "In Progress",
+    title: "Systems, tooling, and product studies",
     description:
-      "The next wave of work focuses on practical systems, workflow automation, and full-stack product studies.",
+      "This slot is reserved for upcoming work spanning dashboards, automation, and pragmatic full-stack builds.",
     href: "/projects",
     ctaLabel: "Explore What Is Live",
   },
@@ -88,7 +88,8 @@ export function FeaturedProjects({ projects, title, viewAllLabel }: FeaturedProj
             <p className="kicker text-muted-foreground">Projects</p>
             <h2 className="type-section-title">{title}</h2>
             <p className="type-body-lg text-muted-foreground">
-              Selected work sits up front, with active builds and future directions kept visible below for context.
+              Completed work gets the full-width spotlight. In-progress and other categories stay visible below as a
+              lighter reading list.
             </p>
           </div>
           <Link
@@ -184,7 +185,7 @@ export function FeaturedProjects({ projects, title, viewAllLabel }: FeaturedProj
                 ))
               ) : (
                 <p className="type-body text-muted-foreground">
-                  Current experiments and active delivery work appear here.
+                  Nothing active here yet. This column is reserved for work currently being built.
                 </p>
               )}
             </div>
@@ -221,7 +222,7 @@ export function FeaturedProjects({ projects, title, viewAllLabel }: FeaturedProj
                 ))
               ) : (
                 <p className="type-body text-muted-foreground">
-                  Future work and near-term case studies appear here.
+                  Planned work will appear here as the roadmap expands beyond the current live portfolio.
                 </p>
               )}
             </div>

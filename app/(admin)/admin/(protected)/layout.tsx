@@ -17,11 +17,11 @@ export default async function AdminLayout({
 
   return (
     <div className={`${APP_SHELL_CLASS} py-8`}>
-      <div className="overflow-hidden border border-border/70 bg-background/92">
+      <div className="flex min-h-[calc(100vh-10rem)] overflow-hidden rounded-2xl border bg-background/90">
         <AdminSidebar />
-        <main className="min-h-[calc(100vh-13rem)]">
+        <main className="flex-1 overflow-y-auto">
           <AdminActionToast />
-          <div className="p-5 md:p-8">{children}</div>
+          <div className="p-6 md:p-8">{children}</div>
         </main>
       </div>
     </div>

@@ -59,7 +59,7 @@ export default function HeroSplit({
   };
 
   return (
-    <section className="relative w-full flex flex-col items-center overflow-hidden px-0 py-2">
+    <section className="relative w-full flex flex-col items-center overflow-hidden px-4 py-1">
       <Glassmorphism
         noShadow
         className="relative w-full max-w-7xl h-[600px] md:h-[80vh] min-h-[600px] max-h-[600px] overflow-hidden md:rounded-[2.5rem]"
@@ -70,21 +70,21 @@ export default function HeroSplit({
             {(isInitial || isTech) && (
               <Button
                 variant="outline"
-                className="gap-2 bg-background/60 backdrop-blur-xl border-primary/20 hover:border-primary shadow-xl px-5"
+                className="rounded-full gap-2 bg-background/60 backdrop-blur-xl border-primary/20 hover:border-primary shadow-xl transition-all hover:scale-105 active:scale-95 px-5"
                 onClick={() => goTo(1)}
               >
                 <Briefcase size={16} className="text-primary" />
-                <span>{heroContent.exploreProfessionalLabel}</span>
+                <span className="font-bold text-sm">{heroContent.exploreProfessionalLabel}</span>
               </Button>
             )}
             {isProfessional && (
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className="bg-primary text-primary-foreground shadow-xl"
-                  onClick={() => goTo(0.5)}
-                  title={heroContent.resetViewLabel}
-                >
+              <Button
+                variant="secondary"
+                size="icon"
+                className="rounded-full bg-primary text-primary-foreground shadow-xl transition-all hover:scale-105 active:scale-95"
+                onClick={() => goTo(0.5)}
+                title={heroContent.resetViewLabel}
+              >
                 <RotateCcw size={18} />
               </Button>
             )}
@@ -94,21 +94,21 @@ export default function HeroSplit({
             {(isInitial || isProfessional) && (
               <Button
                 variant="outline"
-                className="gap-2 bg-background/60 backdrop-blur-xl border-primary/20 hover:border-primary shadow-xl px-5"
+                className="rounded-full gap-2 bg-background/60 backdrop-blur-xl border-primary/20 hover:border-primary shadow-xl transition-all hover:scale-105 active:scale-95 px-5"
                 onClick={() => goTo(0)}
               >
-                <span>{heroContent.exploreTechLabel}</span>
+                <span className="font-bold text-sm">{heroContent.exploreTechLabel}</span>
                 <Code size={16} className="text-primary" />
               </Button>
             )}
             {isTech && (
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className="bg-primary text-primary-foreground shadow-xl"
-                  onClick={() => goTo(0.5)}
-                  title={heroContent.resetViewLabel}
-                >
+              <Button
+                variant="secondary"
+                size="icon"
+                className="rounded-full bg-primary text-primary-foreground shadow-xl transition-all hover:scale-105 active:scale-95"
+                onClick={() => goTo(0.5)}
+                title={heroContent.resetViewLabel}
+              >
                 <RotateCcw size={18} />
               </Button>
             )}
@@ -125,11 +125,11 @@ export default function HeroSplit({
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="absolute left-0 right-0 z-40 flex flex-col items-center pointer-events-none"
             >
-              <div className="bg-background/20 backdrop-blur-md border border-white/10 shadow-lg p-2">
-                <h1 className="type-card-title text-center text-[1.15rem] md:text-[1.75rem] whitespace-nowrap">
+              <div className="bg-background/20 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg p-2">
+                <h1 className="text-xl md:text-3xl font-black text-foreground tracking-tight text-center uppercase whitespace-nowrap">
                   {heroContent.displayName}
                 </h1>
-                <div className="mt-2 h-px w-12 bg-primary mx-auto" />
+                <div className="h-1 w-10 bg-primary mx-auto mt-1 rounded-full" />
               </div>
             </motion.div>
           )}

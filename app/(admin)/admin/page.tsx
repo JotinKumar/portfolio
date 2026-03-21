@@ -86,14 +86,12 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-12">
-      <div className="mx-auto flex w-full max-w-[1280px] px-4">
-      <Card className="mx-auto w-full max-w-md border-border/70 bg-card/88">
-        <CardHeader className="space-y-3 text-center">
-          <p className="kicker text-muted-foreground">Admin Access</p>
-          <CardTitle className="type-section-title text-[2rem]">Sign In</CardTitle>
-          <CardDescription className="type-body text-muted-foreground">
-            Enter your admin credentials to continue.
+    <div className="min-h-screen flex items-center justify-center bg-background py-12">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl text-center">Admin Login</CardTitle>
+          <CardDescription className="text-center">
+            Enter your admin credentials to continue
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -146,7 +144,6 @@ export default function AdminLoginPage() {
           </Form>
         </CardContent>
       </Card>
-      </div>
     </div>
   );
 }

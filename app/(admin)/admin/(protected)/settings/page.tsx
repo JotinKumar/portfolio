@@ -3,19 +3,13 @@ import { revalidatePath } from "next/cache";
 import { createSupabaseSecretClient } from "@/lib/supabase-secret";
 import { getUser } from "@/lib/supabase-server";
 import { isAdminEmail } from "@/lib/admin-auth";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AdminPageHeader } from "@/components/admin/page-header";
-import { SettingsSection } from "@/components/admin/settings-section";
-import { FileUploadField } from "@/components/admin/file-upload-field";
-import { HeroContentMatrix } from "@/components/admin/hero-content-matrix";
-import { PublicPageContentList } from "@/components/admin/public-page-content-list";
-import { SocialSettingsTable } from "@/components/admin/social-settings-table";
-import type { HeroContent, PageContent, PublicPage, SiteConfig, SocialLink } from "@/lib/db-types";
+import type { Competency, HeroContent, NavigationItem, PageContent, SiteConfig, SocialLink } from "@/lib/db-types";
 
 export const dynamic = "force-dynamic";
-
-const PUBLIC_PAGE_ORDER: PublicPage[] = ["HOME", "PROFILE", "ARTICLES", "PROJECTS", "CONTACT"];
 
 async function assertAdmin() {
   const user = await getUser();
@@ -40,14 +34,6 @@ function parseCSV(input: string): string[] {
     .filter(Boolean);
 }
 
-function normalizeText(value: FormDataEntryValue | null) {
-  return String(value ?? "").trim();
-}
-
-function sortPages(pages: PageContent[]) {
-  return [...pages].sort((left, right) => PUBLIC_PAGE_ORDER.indexOf(left.page) - PUBLIC_PAGE_ORDER.indexOf(right.page));
-}
-
 async function updateSiteConfig(formData: FormData) {
   "use server";
 
@@ -55,15 +41,15 @@ async function updateSiteConfig(formData: FormData) {
   const supabase = createSupabaseSecretClient();
 
   const payload = {
-    siteName: normalizeText(formData.get("siteName")),
-    siteTagline: normalizeText(formData.get("siteTagline")),
-    logoUrl: normalizeText(formData.get("logoUrl")),
-    logoAlt: normalizeText(formData.get("logoAlt")),
-    resumeUrl: normalizeText(formData.get("resumeUrl")),
-    primaryEmail: normalizeText(formData.get("primaryEmail")),
-    locationLabel: normalizeText(formData.get("locationLabel")),
-    defaultTitle: normalizeText(formData.get("defaultTitle")),
-    defaultDescription: normalizeText(formData.get("defaultDescription")),
+    siteName: String(formData.get("siteName") ?? "").trim(),
+    siteTagline: String(formData.get("siteTagline") ?? "").trim(),
+    logoUrl: String(formData.get("logoUrl") ?? "").trim(),
+    logoAlt: String(formData.get("logoAlt") ?? "").trim(),
+    resumeUrl: String(formData.get("resumeUrl") ?? "").trim(),
+    primaryEmail: String(formData.get("primaryEmail") ?? "").trim(),
+    locationLabel: String(formData.get("locationLabel") ?? "").trim(),
+    defaultTitle: String(formData.get("defaultTitle") ?? "").trim(),
+    defaultDescription: String(formData.get("defaultDescription") ?? "").trim(),
     updatedAt: new Date().toISOString(),
   };
 
@@ -83,29 +69,29 @@ async function updateHeroContent(formData: FormData) {
   const supabase = createSupabaseSecretClient();
 
   const payload = {
-    displayName: normalizeText(formData.get("displayName")),
-    professionalTitle: normalizeText(formData.get("professionalTitle")),
-    professionalSubtitle: normalizeText(formData.get("professionalSubtitle")),
-    techTitle: normalizeText(formData.get("techTitle")),
-    techSubtitle: normalizeText(formData.get("techSubtitle")),
-    professionalSkills: parseCSV(normalizeText(formData.get("professionalSkills"))),
-    professionalInitialSkills: parseCSV(normalizeText(formData.get("professionalInitialSkills"))),
-    techSkills: parseCSV(normalizeText(formData.get("techSkills"))),
-    techInitialSkills: parseCSV(normalizeText(formData.get("techInitialSkills"))),
-    professionalImageUrl: normalizeText(formData.get("professionalImageUrl")),
-    techImageUrl: normalizeText(formData.get("techImageUrl")),
-    exploreProfessionalLabel: normalizeText(formData.get("exploreProfessionalLabel")),
-    exploreTechLabel: normalizeText(formData.get("exploreTechLabel")),
-    resetViewLabel: normalizeText(formData.get("resetViewLabel")),
-    downloadResumeLabel: normalizeText(formData.get("downloadResumeLabel")),
-    getInTouchLabel: normalizeText(formData.get("getInTouchLabel")),
-    viewProjectsLabel: normalizeText(formData.get("viewProjectsLabel")),
-    viewArticlesLabel: normalizeText(formData.get("viewArticlesLabel")),
-    homeWorkSectionTitle: normalizeText(formData.get("homeWorkSectionTitle")),
-    homeFeaturedArticlesTitle: normalizeText(formData.get("homeFeaturedArticlesTitle")),
-    homeFeaturedProjectsTitle: normalizeText(formData.get("homeFeaturedProjectsTitle")),
-    homeViewAllArticlesLabel: normalizeText(formData.get("homeViewAllArticlesLabel")),
-    homeViewAllProjectsLabel: normalizeText(formData.get("homeViewAllProjectsLabel")),
+    displayName: String(formData.get("displayName") ?? "").trim(),
+    professionalTitle: String(formData.get("professionalTitle") ?? "").trim(),
+    professionalSubtitle: String(formData.get("professionalSubtitle") ?? "").trim(),
+    techTitle: String(formData.get("techTitle") ?? "").trim(),
+    techSubtitle: String(formData.get("techSubtitle") ?? "").trim(),
+    professionalSkills: parseCSV(String(formData.get("professionalSkills") ?? "")),
+    professionalInitialSkills: parseCSV(String(formData.get("professionalInitialSkills") ?? "")),
+    techSkills: parseCSV(String(formData.get("techSkills") ?? "")),
+    techInitialSkills: parseCSV(String(formData.get("techInitialSkills") ?? "")),
+    professionalImageUrl: String(formData.get("professionalImageUrl") ?? "").trim(),
+    techImageUrl: String(formData.get("techImageUrl") ?? "").trim(),
+    exploreProfessionalLabel: String(formData.get("exploreProfessionalLabel") ?? "").trim(),
+    exploreTechLabel: String(formData.get("exploreTechLabel") ?? "").trim(),
+    resetViewLabel: String(formData.get("resetViewLabel") ?? "").trim(),
+    downloadResumeLabel: String(formData.get("downloadResumeLabel") ?? "").trim(),
+    getInTouchLabel: String(formData.get("getInTouchLabel") ?? "").trim(),
+    viewProjectsLabel: String(formData.get("viewProjectsLabel") ?? "").trim(),
+    viewArticlesLabel: String(formData.get("viewArticlesLabel") ?? "").trim(),
+    homeWorkSectionTitle: String(formData.get("homeWorkSectionTitle") ?? "").trim(),
+    homeFeaturedArticlesTitle: String(formData.get("homeFeaturedArticlesTitle") ?? "").trim(),
+    homeFeaturedProjectsTitle: String(formData.get("homeFeaturedProjectsTitle") ?? "").trim(),
+    homeViewAllArticlesLabel: String(formData.get("homeViewAllArticlesLabel") ?? "").trim(),
+    homeViewAllProjectsLabel: String(formData.get("homeViewAllProjectsLabel") ?? "").trim(),
     updatedAt: new Date().toISOString(),
   };
 
@@ -124,31 +110,18 @@ async function updatePageContent(formData: FormData) {
   await assertAdmin();
   const supabase = createSupabaseSecretClient();
 
-  const page = normalizeText(formData.get("page"));
+  const page = String(formData.get("page") ?? "").trim();
   if (!page) {
     redirect("/admin/settings?error=invalid_page_content");
   }
 
-  const rawContent = normalizeText(formData.get("contentJson"));
-  let parsedContent: Record<string, unknown> | null = null;
-
-  if (rawContent) {
-    try {
-      const value = JSON.parse(rawContent);
-      parsedContent = typeof value === "object" && value !== null ? (value as Record<string, unknown>) : null;
-    } catch {
-      redirect("/admin/settings?error=invalid_page_content_json");
-    }
-  }
-
   const payload = {
-    title: normalizeText(formData.get("title")),
-    subtitle: normalizeText(formData.get("subtitle")),
-    emptyTitle: normalizeText(formData.get("emptyTitle")) || null,
-    emptyMessage: normalizeText(formData.get("emptyMessage")) || null,
-    primaryCta: normalizeText(formData.get("primaryCta")) || null,
-    secondaryCta: normalizeText(formData.get("secondaryCta")) || null,
-    content: parsedContent,
+    title: String(formData.get("title") ?? "").trim(),
+    subtitle: String(formData.get("subtitle") ?? "").trim(),
+    emptyTitle: String(formData.get("emptyTitle") ?? "").trim() || null,
+    emptyMessage: String(formData.get("emptyMessage") ?? "").trim() || null,
+    primaryCta: String(formData.get("primaryCta") ?? "").trim() || null,
+    secondaryCta: String(formData.get("secondaryCta") ?? "").trim() || null,
     updatedAt: new Date().toISOString(),
   };
 
@@ -161,19 +134,102 @@ async function updatePageContent(formData: FormData) {
   redirect("/admin/settings?success=page_content_updated");
 }
 
+async function createNavigationItem(formData: FormData) {
+  "use server";
+
+  await assertAdmin();
+  const supabase = createSupabaseSecretClient();
+  const id = String(formData.get("id") ?? "").trim();
+
+  const payload = {
+    id,
+    label: String(formData.get("label") ?? "").trim(),
+    href: String(formData.get("href") ?? "").trim(),
+    position: String(formData.get("position") ?? "HEADER").trim(),
+    order: Number(formData.get("order") ?? 0) || 0,
+    visible: formData.get("visible") === "on",
+    isExternal: formData.get("isExternal") === "on",
+    openInNewTab: formData.get("openInNewTab") === "on",
+    updatedAt: new Date().toISOString(),
+  };
+
+  if (!id || !payload.label || !payload.href) {
+    redirect("/admin/settings?error=invalid_navigation_item");
+  }
+
+  const { error } = await supabase.from("NavigationItem").insert(payload);
+  if (error) {
+    redirect("/admin/settings?error=navigation_item_create_failed");
+  }
+
+  revalidateAllPublic();
+  redirect("/admin/settings?success=navigation_item_created");
+}
+
+async function updateNavigationItem(formData: FormData) {
+  "use server";
+
+  await assertAdmin();
+  const supabase = createSupabaseSecretClient();
+  const id = String(formData.get("id") ?? "").trim();
+
+  const payload = {
+    label: String(formData.get("label") ?? "").trim(),
+    href: String(formData.get("href") ?? "").trim(),
+    position: String(formData.get("position") ?? "HEADER").trim(),
+    order: Number(formData.get("order") ?? 0) || 0,
+    visible: formData.get("visible") === "on",
+    isExternal: formData.get("isExternal") === "on",
+    openInNewTab: formData.get("openInNewTab") === "on",
+    updatedAt: new Date().toISOString(),
+  };
+
+  if (!id) {
+    redirect("/admin/settings?error=invalid_navigation_item");
+  }
+
+  const { error } = await supabase.from("NavigationItem").update(payload).eq("id", id);
+  if (error) {
+    redirect("/admin/settings?error=navigation_item_update_failed");
+  }
+
+  revalidateAllPublic();
+  redirect("/admin/settings?success=navigation_item_updated");
+}
+
+async function deleteNavigationItem(formData: FormData) {
+  "use server";
+
+  await assertAdmin();
+  const supabase = createSupabaseSecretClient();
+  const id = String(formData.get("id") ?? "").trim();
+
+  if (!id) {
+    redirect("/admin/settings?error=invalid_navigation_item");
+  }
+
+  const { error } = await supabase.from("NavigationItem").delete().eq("id", id);
+  if (error) {
+    redirect("/admin/settings?error=navigation_item_delete_failed");
+  }
+
+  revalidateAllPublic();
+  redirect("/admin/settings?success=navigation_item_deleted");
+}
+
 async function createSocialLink(formData: FormData) {
   "use server";
 
   await assertAdmin();
   const supabase = createSupabaseSecretClient();
-  const id = normalizeText(formData.get("id"));
+  const id = String(formData.get("id") ?? "").trim();
 
   const payload = {
     id,
-    platform: normalizeText(formData.get("platform")),
-    label: normalizeText(formData.get("label")),
-    url: normalizeText(formData.get("url")),
-    position: normalizeText(formData.get("position")) || "FOOTER",
+    platform: String(formData.get("platform") ?? "").trim(),
+    label: String(formData.get("label") ?? "").trim(),
+    url: String(formData.get("url") ?? "").trim(),
+    position: String(formData.get("position") ?? "FOOTER").trim(),
     order: Number(formData.get("order") ?? 0) || 0,
     visible: formData.get("visible") === "on",
     updatedAt: new Date().toISOString(),
@@ -197,13 +253,13 @@ async function updateSocialLink(formData: FormData) {
 
   await assertAdmin();
   const supabase = createSupabaseSecretClient();
-  const id = normalizeText(formData.get("id"));
+  const id = String(formData.get("id") ?? "").trim();
 
   const payload = {
-    platform: normalizeText(formData.get("platform")),
-    label: normalizeText(formData.get("label")),
-    url: normalizeText(formData.get("url")),
-    position: normalizeText(formData.get("position")) || "FOOTER",
+    platform: String(formData.get("platform") ?? "").trim(),
+    label: String(formData.get("label") ?? "").trim(),
+    url: String(formData.get("url") ?? "").trim(),
+    position: String(formData.get("position") ?? "FOOTER").trim(),
     order: Number(formData.get("order") ?? 0) || 0,
     visible: formData.get("visible") === "on",
     updatedAt: new Date().toISOString(),
@@ -227,7 +283,7 @@ async function deleteSocialLink(formData: FormData) {
 
   await assertAdmin();
   const supabase = createSupabaseSecretClient();
-  const id = normalizeText(formData.get("id"));
+  const id = String(formData.get("id") ?? "").trim();
 
   if (!id) {
     redirect("/admin/settings?error=invalid_social_link");
@@ -242,49 +298,142 @@ async function deleteSocialLink(formData: FormData) {
   redirect("/admin/settings?success=social_link_deleted");
 }
 
+async function createCompetency(formData: FormData) {
+  "use server";
+
+  await assertAdmin();
+  const supabase = createSupabaseSecretClient();
+  const id = String(formData.get("id") ?? "").trim();
+
+  const payload = {
+    id,
+    name: String(formData.get("name") ?? "").trim(),
+    category: String(formData.get("category") ?? "").trim(),
+    order: Number(formData.get("order") ?? 0) || 0,
+    visible: formData.get("visible") === "on",
+    updatedAt: new Date().toISOString(),
+  };
+
+  if (!id || !payload.name || !payload.category) {
+    redirect("/admin/settings?error=invalid_competency");
+  }
+
+  const { error } = await supabase.from("Competency").insert(payload);
+  if (error) {
+    redirect("/admin/settings?error=competency_create_failed");
+  }
+
+  revalidateAllPublic();
+  redirect("/admin/settings?success=competency_created");
+}
+
+async function updateCompetency(formData: FormData) {
+  "use server";
+
+  await assertAdmin();
+  const supabase = createSupabaseSecretClient();
+  const id = String(formData.get("id") ?? "").trim();
+
+  const payload = {
+    name: String(formData.get("name") ?? "").trim(),
+    category: String(formData.get("category") ?? "").trim(),
+    order: Number(formData.get("order") ?? 0) || 0,
+    visible: formData.get("visible") === "on",
+    updatedAt: new Date().toISOString(),
+  };
+
+  if (!id) {
+    redirect("/admin/settings?error=invalid_competency");
+  }
+
+  const { error } = await supabase.from("Competency").update(payload).eq("id", id);
+  if (error) {
+    redirect("/admin/settings?error=competency_update_failed");
+  }
+
+  revalidateAllPublic();
+  redirect("/admin/settings?success=competency_updated");
+}
+
+async function deleteCompetency(formData: FormData) {
+  "use server";
+
+  await assertAdmin();
+  const supabase = createSupabaseSecretClient();
+  const id = String(formData.get("id") ?? "").trim();
+
+  if (!id) {
+    redirect("/admin/settings?error=invalid_competency");
+  }
+
+  const { error } = await supabase.from("Competency").delete().eq("id", id);
+  if (error) {
+    redirect("/admin/settings?error=competency_delete_failed");
+  }
+
+  revalidateAllPublic();
+  redirect("/admin/settings?success=competency_deleted");
+}
+
 export default async function SettingsPage() {
   const supabase = createSupabaseSecretClient();
 
-  const [siteConfigResult, heroResult, pagesResult, socialResult] = await Promise.all([
+  const [siteConfigResult, heroResult, pagesResult, navResult, socialResult, competencyResult] = await Promise.all([
     supabase.from("SiteConfig").select("*").eq("id", "default").maybeSingle(),
     supabase.from("HeroContent").select("*").eq("id", "default").maybeSingle(),
     supabase
       .from("PageContent")
-      .select("id,page,title,subtitle,emptyTitle,emptyMessage,primaryCta,secondaryCta,content,createdAt,updatedAt"),
+      .select("id,page,title,subtitle,emptyTitle,emptyMessage,primaryCta,secondaryCta,content,createdAt,updatedAt")
+      .order("page", { ascending: true }),
+    supabase
+      .from("NavigationItem")
+      .select("id,label,href,order,position,visible,isExternal,openInNewTab,createdAt,updatedAt")
+      .order("position", { ascending: true })
+      .order("order", { ascending: true }),
     supabase
       .from("SocialLink")
       .select("id,platform,label,url,position,order,visible,createdAt,updatedAt")
       .order("position", { ascending: true })
+      .order("order", { ascending: true }),
+    supabase
+      .from("Competency")
+      .select("id,name,category,order,visible,createdAt,updatedAt")
+      .order("category", { ascending: true })
       .order("order", { ascending: true }),
   ]);
 
   if (siteConfigResult.error) throw siteConfigResult.error;
   if (heroResult.error) throw heroResult.error;
   if (pagesResult.error) throw pagesResult.error;
+  if (navResult.error) throw navResult.error;
   if (socialResult.error) throw socialResult.error;
+  if (competencyResult.error) throw competencyResult.error;
 
   const siteConfig = siteConfigResult.data as SiteConfig | null;
   const hero = heroResult.data as HeroContent | null;
-  const pages = sortPages((pagesResult.data ?? []) as PageContent[]);
+  const pages = (pagesResult.data ?? []) as PageContent[];
+  const navigationItems = (navResult.data ?? []) as NavigationItem[];
   const socialLinks = (socialResult.data ?? []) as SocialLink[];
+  const competencies = (competencyResult.data ?? []) as Competency[];
 
   return (
     <div className="space-y-8">
       <AdminPageHeader
         title="Settings"
-        description="Manage the site shell, hero content, public page content, and social links from one place."
+        description="Manage global site content, navigation, social links, and competencies."
       />
 
-      <SettingsSection
-        title="Site Config"
-        description="Core site shell values that feed the public header, footer, metadata, and downloads."
-        action={<span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Single source of truth</span>}
-      >
-        <form action={updateSiteConfig} className="space-y-6">
-          <div className="grid gap-4 lg:grid-cols-2">
+      <Card>
+        <CardHeader>
+          <CardTitle>Site Config</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form action={updateSiteConfig} className="grid gap-3">
             <Input name="siteName" placeholder="Site Name" defaultValue={siteConfig?.siteName ?? ""} required />
             <Input name="siteTagline" placeholder="Tagline" defaultValue={siteConfig?.siteTagline ?? ""} required />
+            <Input name="logoUrl" placeholder="Logo URL" defaultValue={siteConfig?.logoUrl ?? ""} required />
             <Input name="logoAlt" placeholder="Logo alt text" defaultValue={siteConfig?.logoAlt ?? ""} required />
+            <Input name="resumeUrl" placeholder="Resume URL" defaultValue={siteConfig?.resumeUrl ?? ""} required />
             <Input name="primaryEmail" placeholder="Primary email" defaultValue={siteConfig?.primaryEmail ?? ""} required />
             <Input name="locationLabel" placeholder="Location label" defaultValue={siteConfig?.locationLabel ?? ""} required />
             <Input name="defaultTitle" placeholder="Default meta title" defaultValue={siteConfig?.defaultTitle ?? ""} required />
@@ -293,47 +442,325 @@ export default async function SettingsPage() {
               placeholder="Default meta description"
               defaultValue={siteConfig?.defaultDescription ?? ""}
               required
-              className="lg:col-span-2"
             />
-          </div>
+            <Button type="submit" className="w-fit">
+              Save Site Config
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
 
-          <div className="grid gap-5 lg:grid-cols-2">
-            <FileUploadField
-              name="logoUrl"
-              label="Logo asset"
-              description="Upload a logo or paste a URL. This feeds the public header."
-              value={siteConfig?.logoUrl ?? ""}
-              folder="site-config/logo"
-              accept="image/*,.svg"
+      <Card>
+        <CardHeader>
+          <CardTitle>Hero Content</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form action={updateHeroContent} className="grid gap-3">
+            <Input name="displayName" placeholder="Display name" defaultValue={hero?.displayName ?? ""} required />
+            <Input
+              name="professionalTitle"
+              placeholder="Professional title"
+              defaultValue={hero?.professionalTitle ?? ""}
               required
             />
-            <FileUploadField
-              name="resumeUrl"
-              label="Resume file"
-              description="Upload the downloadable resume file used by the public hero."
-              value={siteConfig?.resumeUrl ?? ""}
-              folder="site-config/resume"
-              accept=".pdf,application/pdf"
+            <Input
+              name="professionalSubtitle"
+              placeholder="Professional subtitle"
+              defaultValue={hero?.professionalSubtitle ?? ""}
               required
             />
-          </div>
+            <Input name="techTitle" placeholder="Tech title" defaultValue={hero?.techTitle ?? ""} required />
+            <Input name="techSubtitle" placeholder="Tech subtitle" defaultValue={hero?.techSubtitle ?? ""} required />
+            <Input
+              name="professionalSkills"
+              placeholder="Professional skills (comma separated)"
+              defaultValue={(hero?.professionalSkills ?? []).join(", ")}
+              required
+            />
+            <Input
+              name="professionalInitialSkills"
+              placeholder="Professional initial skills (comma separated)"
+              defaultValue={(hero?.professionalInitialSkills ?? []).join(", ")}
+              required
+            />
+            <Input
+              name="techSkills"
+              placeholder="Tech skills (comma separated)"
+              defaultValue={(hero?.techSkills ?? []).join(", ")}
+              required
+            />
+            <Input
+              name="techInitialSkills"
+              placeholder="Tech initial skills (comma separated)"
+              defaultValue={(hero?.techInitialSkills ?? []).join(", ")}
+              required
+            />
+            <Input
+              name="professionalImageUrl"
+              placeholder="Professional image URL"
+              defaultValue={hero?.professionalImageUrl ?? ""}
+              required
+            />
+            <Input name="techImageUrl" placeholder="Tech image URL" defaultValue={hero?.techImageUrl ?? ""} required />
+            <Input
+              name="exploreProfessionalLabel"
+              placeholder="Explore Professional label"
+              defaultValue={hero?.exploreProfessionalLabel ?? ""}
+              required
+            />
+            <Input
+              name="exploreTechLabel"
+              placeholder="Explore Tech label"
+              defaultValue={hero?.exploreTechLabel ?? ""}
+              required
+            />
+            <Input name="resetViewLabel" placeholder="Reset label" defaultValue={hero?.resetViewLabel ?? ""} required />
+            <Input
+              name="downloadResumeLabel"
+              placeholder="Download resume label"
+              defaultValue={hero?.downloadResumeLabel ?? ""}
+              required
+            />
+            <Input name="getInTouchLabel" placeholder="Get in touch label" defaultValue={hero?.getInTouchLabel ?? ""} required />
+            <Input
+              name="viewProjectsLabel"
+              placeholder="View projects label"
+              defaultValue={hero?.viewProjectsLabel ?? ""}
+              required
+            />
+            <Input
+              name="viewArticlesLabel"
+              placeholder="View blogs label"
+              defaultValue={hero?.viewArticlesLabel ?? ""}
+              required
+            />
+            <Input
+              name="homeWorkSectionTitle"
+              placeholder="Home work section title"
+              defaultValue={hero?.homeWorkSectionTitle ?? ""}
+              required
+            />
+            <Input
+              name="homeFeaturedArticlesTitle"
+              placeholder="Home featured blogs title"
+              defaultValue={hero?.homeFeaturedArticlesTitle ?? ""}
+              required
+            />
+            <Input
+              name="homeFeaturedProjectsTitle"
+              placeholder="Home featured projects title"
+              defaultValue={hero?.homeFeaturedProjectsTitle ?? ""}
+              required
+            />
+            <Input
+              name="homeViewAllArticlesLabel"
+              placeholder="Home view all blogs label"
+              defaultValue={hero?.homeViewAllArticlesLabel ?? ""}
+              required
+            />
+            <Input
+              name="homeViewAllProjectsLabel"
+              placeholder="Home view all projects label"
+              defaultValue={hero?.homeViewAllProjectsLabel ?? ""}
+              required
+            />
+            <Button type="submit" className="w-fit">
+              Save Hero Content
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
 
-          <Button type="submit" className="w-fit">
-            Save Site Config
-          </Button>
-        </form>
-      </SettingsSection>
+      <Card>
+        <CardHeader>
+          <CardTitle>Public Page Content</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {pages.map((page) => (
+            <form key={page.id} action={updatePageContent} className="grid gap-3 border rounded-lg p-4">
+              <input type="hidden" name="page" value={page.page} />
+              <p className="font-semibold">{page.page}</p>
+              <Input name="title" placeholder="Title" defaultValue={page.title} required />
+              <Input name="subtitle" placeholder="Subtitle" defaultValue={page.subtitle} required />
+              <Input name="emptyTitle" placeholder="Empty title" defaultValue={page.emptyTitle ?? ""} />
+              <Input name="emptyMessage" placeholder="Empty message" defaultValue={page.emptyMessage ?? ""} />
+              <Input name="primaryCta" placeholder="Primary CTA" defaultValue={page.primaryCta ?? ""} />
+              <Input name="secondaryCta" placeholder="Secondary CTA" defaultValue={page.secondaryCta ?? ""} />
+              <Button type="submit" className="w-fit">
+                Save {page.page}
+              </Button>
+            </form>
+          ))}
+        </CardContent>
+      </Card>
 
-      <HeroContentMatrix hero={hero} action={updateHeroContent} />
+      <Card>
+        <CardHeader>
+          <CardTitle>Navigation Items</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <form action={createNavigationItem} className="grid gap-3 border rounded-lg p-4">
+            <p className="font-semibold">Create Navigation Item</p>
+            <Input name="id" placeholder="Unique ID (example: HEADER-99)" required />
+            <Input name="label" placeholder="Label" required />
+            <Input name="href" placeholder="Href" required />
+            <select
+              aria-label="navigation position"
+              name="position"
+              defaultValue="HEADER"
+              className="h-10 rounded-md border bg-background px-3 text-sm"
+            >
+              <option value="HEADER">HEADER</option>
+              <option value="FOOTER_QUICK">FOOTER_QUICK</option>
+              <option value="FOOTER_RESOURCE">FOOTER_RESOURCE</option>
+              <option value="FOOTER_LEGAL">FOOTER_LEGAL</option>
+            </select>
+            <Input name="order" type="number" defaultValue={0} />
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" name="visible" defaultChecked /> Visible
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" name="isExternal" /> External link
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" name="openInNewTab" /> Open in new tab
+            </label>
+            <Button type="submit" className="w-fit">Create Navigation Item</Button>
+          </form>
 
-      <PublicPageContentList pages={pages} action={updatePageContent} />
+          {navigationItems.map((item) => (
+            <form key={item.id} action={updateNavigationItem} className="grid gap-3 border rounded-lg p-4">
+              <input type="hidden" name="id" value={item.id} />
+              <p className="font-semibold">{item.id}</p>
+              <Input name="label" defaultValue={item.label} required />
+              <Input name="href" defaultValue={item.href} required />
+              <select
+                aria-label="navigation position"
+                name="position"
+                defaultValue={item.position}
+                className="h-10 rounded-md border bg-background px-3 text-sm"
+              >
+                <option value="HEADER">HEADER</option>
+                <option value="FOOTER_QUICK">FOOTER_QUICK</option>
+                <option value="FOOTER_RESOURCE">FOOTER_RESOURCE</option>
+                <option value="FOOTER_LEGAL">FOOTER_LEGAL</option>
+              </select>
+              <Input name="order" type="number" defaultValue={item.order} />
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" name="visible" defaultChecked={item.visible} /> Visible
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" name="isExternal" defaultChecked={item.isExternal} /> External link
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" name="openInNewTab" defaultChecked={item.openInNewTab} /> Open in new tab
+              </label>
+              <div className="flex gap-2">
+                <Button type="submit" className="w-fit">Save</Button>
+                <Button formAction={deleteNavigationItem} type="submit" variant="destructive" className="w-fit">
+                  Delete
+                </Button>
+              </div>
+            </form>
+          ))}
+        </CardContent>
+      </Card>
 
-      <SocialSettingsTable
-        socialLinks={socialLinks}
-        createAction={createSocialLink}
-        updateAction={updateSocialLink}
-        deleteAction={deleteSocialLink}
-      />
+      <Card>
+        <CardHeader>
+          <CardTitle>Social Links</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <form action={createSocialLink} className="grid gap-3 border rounded-lg p-4">
+            <p className="font-semibold">Create Social Link</p>
+            <Input name="id" placeholder="Unique ID (example: social-youtube)" required />
+            <Input name="platform" placeholder="Platform" required />
+            <Input name="label" placeholder="Label" required />
+            <Input name="url" placeholder="URL" required />
+            <select
+              aria-label="social position"
+              name="position"
+              defaultValue="FOOTER"
+              className="h-10 rounded-md border bg-background px-3 text-sm"
+            >
+              <option value="FOOTER">FOOTER</option>
+              <option value="CONTACT">CONTACT</option>
+            </select>
+            <Input name="order" type="number" defaultValue={0} />
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" name="visible" defaultChecked /> Visible
+            </label>
+            <Button type="submit" className="w-fit">Create Social Link</Button>
+          </form>
+
+          {socialLinks.map((item) => (
+            <form key={item.id} action={updateSocialLink} className="grid gap-3 border rounded-lg p-4">
+              <input type="hidden" name="id" value={item.id} />
+              <p className="font-semibold">{item.id}</p>
+              <Input name="platform" defaultValue={item.platform} required />
+              <Input name="label" defaultValue={item.label} required />
+              <Input name="url" defaultValue={item.url} required />
+              <select
+                aria-label="social position"
+                name="position"
+                defaultValue={item.position}
+                className="h-10 rounded-md border bg-background px-3 text-sm"
+              >
+                <option value="FOOTER">FOOTER</option>
+                <option value="CONTACT">CONTACT</option>
+              </select>
+              <Input name="order" type="number" defaultValue={item.order} />
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" name="visible" defaultChecked={item.visible} /> Visible
+              </label>
+              <div className="flex gap-2">
+                <Button type="submit" className="w-fit">Save</Button>
+                <Button formAction={deleteSocialLink} type="submit" variant="destructive" className="w-fit">
+                  Delete
+                </Button>
+              </div>
+            </form>
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Competencies</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <form action={createCompetency} className="grid gap-3 border rounded-lg p-4">
+            <p className="font-semibold">Create Competency</p>
+            <Input name="id" placeholder="Unique ID (example: COMMERCIAL_DELIVERY-99)" required />
+            <Input name="name" placeholder="Competency name" required />
+            <Input name="category" placeholder="Category" required />
+            <Input name="order" type="number" defaultValue={0} />
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" name="visible" defaultChecked /> Visible
+            </label>
+            <Button type="submit" className="w-fit">Create Competency</Button>
+          </form>
+
+          {competencies.map((item) => (
+            <form key={item.id} action={updateCompetency} className="grid gap-3 border rounded-lg p-4">
+              <input type="hidden" name="id" value={item.id} />
+              <p className="font-semibold">{item.id}</p>
+              <Input name="name" defaultValue={item.name} required />
+              <Input name="category" defaultValue={item.category} required />
+              <Input name="order" type="number" defaultValue={item.order} />
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" name="visible" defaultChecked={item.visible} /> Visible
+              </label>
+              <div className="flex gap-2">
+                <Button type="submit" className="w-fit">Save</Button>
+                <Button formAction={deleteCompetency} type="submit" variant="destructive" className="w-fit">
+                  Delete
+                </Button>
+              </div>
+            </form>
+          ))}
+        </CardContent>
+      </Card>
     </div>
   );
 }

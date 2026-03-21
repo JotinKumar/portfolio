@@ -20,8 +20,7 @@ export function ProjectCard({ project, featured = false }: ProjectCardProps) {
   if (featured) {
     return (
       <Card className="group h-full overflow-hidden border-border/70 bg-card/90 transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-lg [content-visibility:auto]">
-        <div className="relative aspect-[21/8] overflow-hidden border-b border-border/60 bg-muted">
-          <Link href={`/projects/${project.slug}`} className="absolute inset-0 z-10" aria-label={`Open ${project.title}`} />
+        <Link href={`/projects/${project.slug}`} className="relative block aspect-[21/8] overflow-hidden border-b border-border/60 bg-muted">
           {project.coverImage ? (
             <Image
               src={project.coverImage}
@@ -46,9 +45,7 @@ export function ProjectCard({ project, featured = false }: ProjectCardProps) {
                 <span className="type-meta text-white/76">{project.status}</span>
               </div>
               <h3 className="font-serif text-[clamp(1.65rem,1.4vw+1rem,2.55rem)] leading-[0.98] tracking-[-0.03em] text-white">
-                <Link href={`/projects/${project.slug}`} className="relative z-20 transition-colors hover:text-white/88">
-                  {project.title}
-                </Link>
+                {project.title}
               </h3>
               <p className="type-body max-w-[46ch] text-white/82">{project.shortDesc}</p>
               <div className="flex flex-wrap gap-2 pt-1">
@@ -60,7 +57,7 @@ export function ProjectCard({ project, featured = false }: ProjectCardProps) {
               </div>
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 {project.liveUrl ? (
-                  <Button size="sm" className="relative z-20 type-nav bg-white text-black hover:bg-white/90" asChild>
+                  <Button size="sm" className="type-nav bg-white text-black hover:bg-white/90" asChild>
                     <Link href={project.liveUrl} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="w-4 h-4 mr-1" />
                       View live
@@ -68,7 +65,7 @@ export function ProjectCard({ project, featured = false }: ProjectCardProps) {
                   </Button>
                 ) : null}
                 {project.githubUrl ? (
-                  <Button size="sm" variant="outline" className="relative z-20 type-nav border-white/30 bg-black/10 text-white hover:bg-white/10 hover:text-white" asChild>
+                  <Button size="sm" variant="outline" className="type-nav border-white/30 bg-black/10 text-white hover:bg-white/10 hover:text-white" asChild>
                     <Link href={project.githubUrl} target="_blank" rel="noopener noreferrer">
                       <Github className="w-4 h-4 mr-1" />
                       Source
@@ -78,7 +75,7 @@ export function ProjectCard({ project, featured = false }: ProjectCardProps) {
               </div>
             </div>
           </div>
-        </div>
+        </Link>
       </Card>
     );
   }

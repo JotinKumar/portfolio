@@ -1,16 +1,14 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { ArrowLeft, Calendar, Clock, FileText, Tag } from "lucide-react";
-import { AdminPageHeader } from "@/components/admin/page-header";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { AdminPageHeader } from "@/components/admin/page-header";
+import { createServerSupabaseClient, getUser } from "@/lib/supabase-server";
 import { isAdminEmail } from "@/lib/admin-auth";
 import type { Article } from "@/lib/db-types";
-import { createServerSupabaseClient, getUser } from "@/lib/supabase-server";
 
 export const dynamic = "force-dynamic";
 
@@ -68,7 +66,7 @@ export default async function EditBlogPage({ params }: EditBlogPageProps) {
       <div className="space-y-6">
         <AdminPageHeader title="Edit Blog" />
         <Card>
-          <CardContent className="space-y-3 p-6">
+          <CardContent className="p-6 space-y-3">
             <p className="text-muted-foreground">Blog not found.</p>
             <Button variant="outline" asChild>
               <Link href="/admin/blogs">Back to Blogs</Link>
@@ -80,14 +78,12 @@ export default async function EditBlogPage({ params }: EditBlogPageProps) {
   }
 
   const article = data as Article;
-  const updatedDate = new Date(article.updatedAt).toLocaleDateString();
-  const publishedDate = article.publishedAt ? new Date(article.publishedAt).toLocaleDateString() : "Draft";
 
   return (
     <div className="space-y-6">
       <AdminPageHeader
         title="Edit Blog"
-        description="Edit the article in the same broad rhythm as the public page: hero, media, taxonomy, then the full body."
+        description="Update blog content, metadata, and publish state."
         action={
           <Button variant="outline" asChild>
             <Link href="/admin/blogs">Back to Blogs</Link>
@@ -95,90 +91,27 @@ export default async function EditBlogPage({ params }: EditBlogPageProps) {
         }
       />
 
-      <form action={updateBlog} className="space-y-6">
-        <input type="hidden" name="id" defaultValue={article.id} />
-
-        <section className="space-y-4 rounded-2xl border bg-card/70 p-6 md:p-8">
-          <div className="flex items-center justify-between gap-3">
-            <Button variant="outline" size="sm" asChild>
-              <Link href="/admin/blogs">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Blogs
-              </Link>
-            </Button>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant={article.published ? "default" : "secondary"}>{article.published ? "Published" : "Draft"}</Badge>
-              <Badge variant="outline">Editor view</Badge>
-            </div>
-          </div>
-
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]">
-            <div className="space-y-4">
-              <Input
-                name="title"
-                defaultValue={article.title}
-                required
-                className="h-auto border-0 px-0 text-3xl font-black tracking-tight shadow-none focus-visible:ring-0 md:text-5xl"
-              />
-              <Textarea
-                name="excerpt"
-                defaultValue={article.excerpt}
-                required
-                className="min-h-[96px] border-0 px-0 text-base text-muted-foreground shadow-none focus-visible:ring-0 md:text-lg"
-              />
-            </div>
-
-            <div className="space-y-4 rounded-2xl border border-border/60 bg-background/70 p-4">
-              <div className="space-y-2">
-                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Meta</p>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Calendar className="h-4 w-4" />
-                  Updated {updatedDate}
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  Public date {publishedDate}
-                </div>
-              </div>
-              <Input name="readTime" type="number" min={1} defaultValue={article.readTime} required />
-              <Input name="category" defaultValue={article.category} required />
-              <Input name="slug" defaultValue={article.slug} required />
-            </div>
-          </div>
-        </section>
-
-        <section className="space-y-4 rounded-2xl border bg-muted/35 p-6">
-          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <FileText className="h-4 w-4" />
-            Cover media
-          </div>
-          <Input name="coverImage" defaultValue={article.coverImage ?? ""} placeholder="Cover image URL (optional)" />
-        </section>
-
-        <section className="space-y-4 rounded-2xl border bg-background/80 p-6 md:p-8">
-          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <Tag className="h-4 w-4" />
-            Taxonomy
-          </div>
-          <Input name="tags" defaultValue={article.tags} required />
-        </section>
-
-        <section className="space-y-4 rounded-2xl border bg-background/80 p-6 md:p-8">
-          <h2 className="text-xl font-semibold md:text-2xl">Article Body</h2>
-          <Textarea
-            aria-label="blog content"
-            name="content"
-            className="min-h-[360px] whitespace-pre-wrap"
-            defaultValue={article.content}
-            required
-          />
-        </section>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Publishing</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Update Blog</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form action={updateBlog} className="grid gap-4">
+            <input type="hidden" name="id" defaultValue={article.id} />
+            <Input name="title" defaultValue={article.title} required />
+            <Input name="slug" defaultValue={article.slug} required />
+            <Input name="category" defaultValue={article.category} required />
+            <Input name="tags" defaultValue={article.tags} required />
+            <Input name="readTime" type="number" min={1} defaultValue={article.readTime} required />
+            <Input name="coverImage" defaultValue={article.coverImage ?? ""} placeholder="Cover image URL (optional)" />
+            <Input name="excerpt" defaultValue={article.excerpt} required />
+            <Textarea
+              aria-label="blog content"
+              name="content"
+              className="min-h-[280px]"
+              defaultValue={article.content}
+              required
+            />
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" name="featured" defaultChecked={article.featured} /> Featured
             </label>
@@ -186,9 +119,9 @@ export default async function EditBlogPage({ params }: EditBlogPageProps) {
               <input type="checkbox" name="published" defaultChecked={article.published} /> Published
             </label>
             <Button type="submit">Save Changes</Button>
-          </CardContent>
-        </Card>
-      </form>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

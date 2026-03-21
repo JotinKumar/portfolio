@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type FilterOption = {
@@ -47,11 +46,10 @@ export function FilterTabs({
       <Link
         href={toHref(undefined)}
         className={cn(
-          buttonVariants({ variant: !activeValue ? "default" : "outline", size: "sm" }),
-          "min-w-[7rem] justify-center",
+          "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
           !activeValue
-            ? ""
-            : "bg-muted/40"
+            ? "border-primary bg-primary text-primary-foreground"
+            : "border-border bg-muted/50 hover:bg-muted"
         )}
       >
         {allLabel}
@@ -62,11 +60,10 @@ export function FilterTabs({
           key={option.value}
           href={toHref(option.value)}
           className={cn(
-            buttonVariants({ variant: activeValue === option.value ? "default" : "outline", size: "sm" }),
-            "min-w-[7rem] justify-center",
+            "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
             activeValue === option.value
-              ? ""
-              : "bg-muted/40"
+              ? "border-primary bg-primary text-primary-foreground"
+              : "border-border bg-muted/50 hover:bg-muted"
           )}
         >
           {option.label}
