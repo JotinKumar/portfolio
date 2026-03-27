@@ -1,5 +1,6 @@
 const assert = require("node:assert/strict");
 const { getSafeRedirectPath, isTrustedStateChangingRequest } = require("../lib/request-security.ts");
+const { buildContentSecurityPolicy } = require("../next.config.ts");
 
 function run() {
   assert.equal(getSafeRedirectPath("/admin/dashboard"), "/admin/dashboard");
@@ -25,6 +26,15 @@ function run() {
     },
   });
   assert.equal(isTrustedStateChangingRequest(crossSiteReq), false);
+
+  const devCsp = buildContentSecurityPolicy(true);
+  assert.match(devCsp, /script-src[^;]*'unsafe-eval'/);
+  assert.match(devCsp, /connect-src[^;]*ws:\/\/localhost:\*/);
+  assert.doesNotMatch(devCsp, /upgrade-insecure-requests/);
+
+  const prodCsp = buildContentSecurityPolicy(false);
+  assert.doesNotMatch(prodCsp, /script-src[^;]*'unsafe-eval'/);
+  assert.match(prodCsp, /upgrade-insecure-requests/);
 
   console.log("security self-test passed");
 }
