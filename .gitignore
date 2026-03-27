@@ -28,6 +28,9 @@
 playwright-report/
 test-results/
 tests/
+!tests/
+tests/*
+!tests/public-detail-pages.spec.ts
 
 # debug
 npm-debug.log*

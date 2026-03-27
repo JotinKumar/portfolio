@@ -1,11 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Calendar, Clock, FileText, Tag } from "lucide-react";
+import { BlogDetailShell } from "@/components/sections/blogs/blog-detail-shell";
 import { PageContent } from "@/components/layout/page-primitives";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PAGE_SECTION_Y_CLASS } from "@/lib/layout";
+import { getPreviewArticle } from "@/lib/preview-detail-content";
 import { getPublishedArticleBySlug } from "@/lib/server/queries";
 import type { Article } from "@/lib/db-types";
 
@@ -35,12 +33,14 @@ const parseTags = (raw: string): string[] => {
 
 export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   const { slug } = await params;
-  let article: Article | null = null;
+  let article: Article | null = getPreviewArticle(slug);
 
-  try {
-    article = await getPublishedArticleBySlug(slug);
-  } catch {
-    article = null;
+  if (!article) {
+    try {
+      article = await getPublishedArticleBySlug(slug);
+    } catch {
+      article = null;
+    }
   }
 
   if (!article) {
@@ -70,80 +70,16 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 
   return (
     <article className={PAGE_SECTION_Y_CLASS}>
-      <PageContent className="space-y-8">
-        <div className="flex items-center justify-between gap-3">
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/blogs">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Blogs
-            </Link>
-          </Button>
-        </div>
-
-        <header className="space-y-5 rounded-2xl border bg-card/70 p-6 md:p-8">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">{article.category}</Badge>
-            {tags.slice(0, 3).map((tag) => (
-              <Link key={tag} href={`/blogs?tag=${encodeURIComponent(tag)}`}>
-                <Badge variant="outline" className="hover:bg-accent">
-                  <Tag className="mr-1 h-3 w-3" />
-                  {tag}
-                </Badge>
-              </Link>
-            ))}
-          </div>
-
-          <h1 className="text-3xl font-black tracking-tight md:text-5xl">{article.title}</h1>
-
-          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-1">
-              <Calendar className="h-4 w-4" />
-              {publishedDate}
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <Clock className="h-4 w-4" />
-              {article.readTime} min read
-            </span>
-          </div>
-        </header>
-
-        <div className="relative aspect-[16/7] overflow-hidden rounded-2xl border bg-muted">
-          {article.coverImage ? (
-            <Image
-              src={article.coverImage}
-              alt={article.title}
-              fill
-              sizes="(max-width: 1024px) 100vw, 1024px"
-              className="object-cover"
-              priority
-            />
-          ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-muted to-muted/60 text-muted-foreground">
-              <FileText className="h-8 w-8" />
-              <span className="text-xs uppercase tracking-widest">Blog</span>
-            </div>
-          )}
-        </div>
-
-        <div className="prose prose-neutral max-w-none rounded-2xl border bg-background/80 p-6 whitespace-pre-wrap dark:prose-invert md:p-8">
-          {article.content}
-        </div>
-
-        {tags.length > 0 ? (
-          <section className="space-y-3 rounded-2xl border bg-card/60 p-5">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Explore by tags</h2>
-            <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
-                <Link key={tag} href={`/blogs?tag=${encodeURIComponent(tag)}`}>
-                  <Badge variant="secondary" className="px-3 py-1 hover:bg-accent">
-                    #{tag}
-                  </Badge>
-                </Link>
-              ))}
-            </div>
-          </section>
-        ) : null}
-      </PageContent>
+      <BlogDetailShell
+        title={article.title}
+        category={article.category}
+        excerpt={article.excerpt}
+        publishedDate={publishedDate}
+        readTime={article.readTime}
+        tags={tags}
+        coverImage={article.coverImage}
+        content={article.content}
+      />
     </article>
   );
 }
