@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createServerSupabaseClient, createServerSupabasePublicClient } from "@/lib/supabase-server";
 import type {
   Article,
   Competency,
@@ -57,7 +57,7 @@ export type SiteShellData = {
 };
 
 export const getFeaturedArticles = cache(async (limit = 3): Promise<ArticleCardData[]> => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServerSupabasePublicClient();
   const { data, error } = await supabase
     .from("Blog")
     .select("id,title,slug,excerpt,coverImage,category,readTime,createdAt,publishedAt")
@@ -71,7 +71,7 @@ export const getFeaturedArticles = cache(async (limit = 3): Promise<ArticleCardD
 });
 
 export const getFeaturedProjects = cache(async (limit = 3): Promise<ProjectCardData[]> => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServerSupabasePublicClient();
   const { data, error } = await supabase
     .from("Project")
     .select("id,title,slug,shortDesc,category,status,liveUrl,githubUrl,coverImage,techStack,order")
@@ -84,7 +84,7 @@ export const getFeaturedProjects = cache(async (limit = 3): Promise<ProjectCardD
 });
 
 export const getWorkExperienceCards = cache(async (): Promise<WorkExperienceCard[]> => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServerSupabasePublicClient();
   const { data, error } = await supabase
     .from("WorkExperienceCard")
     .select("id,company,role,location,description,achievements,skills,startDate,endDate,current,order")
@@ -98,7 +98,7 @@ export const getProfileData = cache(async (): Promise<{
   settings: Settings | null;
   experienceCards: WorkExperienceCard[];
 }> => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServerSupabasePublicClient();
   const [settingsResult, experienceResult] = await Promise.all([
     supabase
       .from("Settings")
@@ -123,12 +123,12 @@ export const getProfileData = cache(async (): Promise<{
 });
 
 export const getSiteShellData = cache(async (): Promise<SiteShellData> => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServerSupabasePublicClient();
   const [siteConfigResult, navResult, socialResult] = await Promise.all([
     supabase
       .from("SiteConfig")
       .select(
-        "id,siteName,siteTagline,logoUrl,logoAlt,resumeUrl,primaryEmail,locationLabel,defaultTitle,defaultDescription,updatedAt"
+        "id,siteName,siteTagline,logoUrl,logoAlt,resumeUrl,primaryEmail,phone,locationLabel,defaultTitle,defaultDescription,updatedAt"
       )
       .eq("id", "default")
       .maybeSingle(),
@@ -162,7 +162,7 @@ export const getSiteShellData = cache(async (): Promise<SiteShellData> => {
 });
 
 export const getHeroContent = cache(async (): Promise<HeroContent | null> => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServerSupabasePublicClient();
   const { data, error } = await supabase
     .from("HeroContent")
     .select(
@@ -176,7 +176,7 @@ export const getHeroContent = cache(async (): Promise<HeroContent | null> => {
 });
 
 export const getPageContent = cache(async (page: PublicPage): Promise<PageContent | null> => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServerSupabasePublicClient();
   const { data, error } = await supabase
     .from("PageContent")
     .select("id,page,title,subtitle,emptyTitle,emptyMessage,primaryCta,secondaryCta,content,createdAt,updatedAt")
@@ -188,7 +188,7 @@ export const getPageContent = cache(async (page: PublicPage): Promise<PageConten
 });
 
 export const getCompetencies = cache(async (): Promise<Competency[]> => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServerSupabasePublicClient();
   const { data, error } = await supabase
     .from("Competency")
     .select("id,name,category,order,visible,createdAt,updatedAt")
@@ -201,7 +201,7 @@ export const getCompetencies = cache(async (): Promise<Competency[]> => {
 });
 
 export const getSocialLinksByPosition = cache(async (position: "FOOTER" | "CONTACT"): Promise<SocialLink[]> => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServerSupabasePublicClient();
   const { data, error } = await supabase
     .from("SocialLink")
     .select("id,platform,label,url,position,order,visible,createdAt,updatedAt")
@@ -215,7 +215,7 @@ export const getSocialLinksByPosition = cache(async (position: "FOOTER" | "CONTA
 
 export const getPublishedArticles = cache(
   async (category?: string, search?: string, tag?: string): Promise<ArticleCardData[]> => {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createServerSupabasePublicClient();
     let query = supabase
       .from("Blog")
       .select("id,title,slug,excerpt,coverImage,category,readTime,createdAt,publishedAt")
@@ -243,14 +243,14 @@ export const getPublishedArticles = cache(
 );
 
 export const getPublishedArticleCategories = cache(async (): Promise<string[]> => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServerSupabasePublicClient();
   const { data, error } = await supabase.from("Blog").select("category").eq("published", true);
   if (error) throw error;
   return Array.from(new Set((data ?? []).map((row) => row.category)));
 });
 
 export const getProjects = cache(async (): Promise<ProjectCardData[]> => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServerSupabasePublicClient();
   const { data, error } = await supabase
     .from("Project")
     .select("id,title,slug,shortDesc,category,status,liveUrl,githubUrl,coverImage,techStack,order")
@@ -260,14 +260,14 @@ export const getProjects = cache(async (): Promise<ProjectCardData[]> => {
 });
 
 export const getProjectCategories = cache(async (): Promise<string[]> => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServerSupabasePublicClient();
   const { data, error } = await supabase.from("Project").select("category");
   if (error) throw error;
   return Array.from(new Set((data ?? []).map((row) => row.category)));
 });
 
 export const getProjectBySlug = cache(async (slug: string): Promise<Project | null> => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServerSupabasePublicClient();
   const { data, error } = await supabase
     .from("Project")
     .select(
@@ -281,7 +281,7 @@ export const getProjectBySlug = cache(async (slug: string): Promise<Project | nu
 });
 
 export const getPublishedArticleBySlug = cache(async (slug: string): Promise<Article | null> => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServerSupabasePublicClient();
   const { data, error } = await supabase
     .from("Blog")
     .select("id,title,slug,excerpt,content,coverImage,tags,category,published,featured,readTime,createdAt,updatedAt,publishedAt")

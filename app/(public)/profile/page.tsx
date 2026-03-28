@@ -23,6 +23,7 @@ type NormalizedExperience = {
 type LanguageEntry = {
   label: string;
   proficiency: number;
+  rating: number;
 };
 
 type EducationEntry = {
@@ -38,10 +39,31 @@ type SkillMeterEntry = {
 };
 
 const PLACEHOLDER_LANGUAGES: LanguageEntry[] = [
-  { label: "Language", proficiency: 0 },
-  { label: "Language", proficiency: 0 },
-  { label: "Language", proficiency: 0 },
+  { label: "Language", proficiency: 0, rating: 0 },
+  { label: "Language", proficiency: 0, rating: 0 },
+  { label: "Language", proficiency: 0, rating: 0 },
 ];
+
+const LANGUAGE_PRESETS: Record<string, { proficiency: number; rating: number }> = {
+  english: { proficiency: 91, rating: 4.5 },
+  odia: { proficiency: 98, rating: 5 },
+  hindi: { proficiency: 83, rating: 4 },
+  telugu: { proficiency: 64, rating: 3 },
+};
+
+const ratingFromProficiency = (value: number) => {
+  if (value >= 96) return 5;
+  if (value >= 88) return 4.5;
+  if (value >= 78) return 4;
+  if (value >= 68) return 3.5;
+  if (value >= 58) return 3;
+  if (value >= 48) return 2.5;
+  if (value >= 38) return 2;
+  if (value >= 28) return 1.5;
+  if (value >= 18) return 1;
+  if (value > 0) return 0.5;
+  return 0;
+};
 
 const PLACEHOLDER_SKILLS: SkillMeterEntry[] = [
   { label: "Add skill", level: 0, placeholder: true },
@@ -102,7 +124,13 @@ const asLanguages = (content: Record<string, unknown> | null | undefined): Langu
       const label = typeof item.label === "string" ? item.label : null;
       const proficiency = typeof item.proficiency === "number" ? item.proficiency : null;
       if (!label || proficiency === null) return null;
-      return { label, proficiency: Math.max(0, Math.min(100, proficiency)) };
+      const preset = LANGUAGE_PRESETS[label.toLowerCase()];
+      const normalizedProficiency = preset?.proficiency ?? Math.max(0, Math.min(100, proficiency));
+      return {
+        label,
+        proficiency: normalizedProficiency,
+        rating: preset?.rating ?? ratingFromProficiency(normalizedProficiency),
+      };
     })
     .filter((item): item is LanguageEntry => item !== null);
 };
@@ -219,6 +247,7 @@ export default async function ProfilePage() {
   const displayTitle = profilePageContent?.subtitle ?? settings?.heroSubtitle ?? siteConfig?.siteTagline ?? "";
   const displaySummary = asText(pageContent, "summary", settings?.aboutMe ?? "");
   const displayEmail = siteConfig?.primaryEmail ?? settings?.emailAddress ?? "";
+  const displayPhone = siteConfig?.phone ?? asText(pageContent, "phone", "");
   const displayResumeUrl = siteConfig?.resumeUrl ?? settings?.resumeUrl ?? "#";
   const displayLocation = siteConfig?.locationLabel ?? "";
   const yearsExperience = deriveYearsExperience(experiences);
@@ -239,20 +268,18 @@ export default async function ProfilePage() {
   return (
     <section className={PAGE_SECTION_Y_CLASS}>
       <ProfileEditorialShell
-        introBadge={asText(pageContent, "profileIntroBadge", "Profile")}
         displayName={displayName}
         displayTitle={displayTitle}
         displaySummary={displaySummary}
         displayLocation={displayLocation}
         displayEmail={displayEmail}
+        displayPhone={displayPhone}
         yearsExperience={yearsExperience}
         languageEntries={languageEntries}
         professionalSkillMeters={professionalSkillMeters}
         technicalSkillMeters={technicalSkillMeters}
         displayResumeUrl={displayResumeUrl}
         socialLinks={socialLinks}
-        primaryCta={profilePageContent?.primaryCta ?? "Download Resume"}
-        secondaryCta={profilePageContent?.secondaryCta ?? "Contact Me"}
         timelineTitle={asText(pageContent, "timelineTitle", "Experience")}
         timelineSubtitle={asText(
           pageContent,

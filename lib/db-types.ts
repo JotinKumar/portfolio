@@ -90,6 +90,7 @@ export interface SiteConfig {
   logoAlt: string;
   resumeUrl: string;
   primaryEmail: string;
+  phone: string;
   locationLabel: string;
   defaultTitle: string;
   defaultDescription: string;

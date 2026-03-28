@@ -1,14 +1,18 @@
 import "dotenv/config";
 import { Prisma, PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
 
 const connectionString = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
 if (!connectionString) {
   throw new Error('Missing DIRECT_URL or DATABASE_URL for Prisma seed.');
 }
 
-const adapter = new PrismaPg({ connectionString });
-const prisma = new PrismaClient({ adapter });
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: connectionString,
+    },
+  },
+});
 
 async function main() {
   console.log('Seeding database...');
@@ -42,6 +46,7 @@ async function main() {
     logoAlt: 'Jotin Portfolio Logo',
     resumeUrl: '/jotin-madugula-resume.pdf',
     primaryEmail: 'contact@jotin.in',
+    phone: '+91 90596 71178',
     locationLabel: 'Hyderabad, India',
     defaultTitle: 'Jotin Kumar Madugula - Portfolio',
     defaultDescription: 'Business Process Expert & Full Stack Developer',
@@ -163,6 +168,30 @@ async function main() {
       content: {
         summary:
           'A seasoned professional with 21+ years of experience in the BPO/ITES industry, including 13 years in US Healthcare Operations and 8+ years in Pricing and Financial Strategy.',
+        languages: [
+          { label: 'English', proficiency: 91 },
+          { label: 'Odia', proficiency: 98 },
+          { label: 'Hindi', proficiency: 83 },
+          { label: 'Telugu', proficiency: 64 },
+        ],
+        education: [
+          {
+            title: 'Bachelor of Computer Applications (BCA)',
+            subtitle: 'Dr. CV Raman University',
+            meta: '2010 • Chhattisgarh',
+          },
+          {
+            title: 'Higher Secondary Education (Commerce)',
+            subtitle: 'Kabi Samrat Upendra Bhanja College',
+            meta: '1998 • Bhanjanagar, Odisha',
+          },
+          {
+            title: 'Board of Secondary Education (10th)',
+            subtitle: 'Sribatsa High School',
+            meta: '1993 • Bhanjanagar, Odisha',
+          },
+        ],
+        hobbies: ['Video Games', 'Podcast', 'Musci', 'Movies', 'Travel'],
         profileIntroBadge: 'Hybrid Resume Profile',
         professionalSummaryTitle: 'Professional Summary',
         professionalSummarySubtitle: 'Executive overview tailored for pricing, operations, and transformation leadership.',

@@ -26,9 +26,6 @@ export function BlogDetailShell({
   coverImage,
   content,
 }: BlogDetailShellProps) {
-  const leadTags = tags.slice(0, 4);
-  const archiveTags = tags.slice(4);
-
   return (
     <PageContent className="grid gap-8 xl:grid-cols-[minmax(13rem,0.22fr)_minmax(0,0.78fr)] xl:items-start">
       <aside className="space-y-6 xl:sticky xl:top-28 xl:self-start" data-testid="blog-meta-rail">
@@ -86,27 +83,13 @@ export function BlogDetailShell({
       </aside>
 
       <article className="space-y-10" data-testid="blog-article-body">
-        <header className="space-y-6 border-b border-border/70 pb-8">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">{category}</Badge>
-            {leadTags.map((tag) => (
-              <Link key={tag} href={`/blogs?tag=${encodeURIComponent(tag)}`}>
-                <Badge variant="outline" className="hover:bg-accent">
-                  <Tag className="mr-1 h-3 w-3" />
-                  {tag}
-                </Badge>
-              </Link>
-            ))}
-          </div>
-
-          <div className="space-y-4">
-            <p className="kicker text-muted-foreground">Journal Entry</p>
-            <h1 className="type-section-title max-w-[16ch] text-[2.65rem] leading-[0.92] md:text-[4.4rem]">
-              {title}
-            </h1>
-            {excerpt ? <p className="type-body-lg max-w-[44rem] text-muted-foreground">{excerpt}</p> : null}
-          </div>
-        </header>
+        <div className="space-y-4">
+          <p className="kicker text-muted-foreground">Journal Entry</p>
+          <h1 className="type-section-title max-w-[16ch] text-[2.65rem] leading-[0.92] md:text-[4.4rem]">
+            {title}
+          </h1>
+          {excerpt ? <p className="type-body-lg max-w-[44rem] text-muted-foreground">{excerpt}</p> : null}
+        </div>
 
         {coverImage ? (
           <figure
@@ -137,24 +120,6 @@ export function BlogDetailShell({
               {content}
             </div>
           </div>
-
-          {archiveTags.length > 0 ? (
-            <aside className="space-y-4 border border-border/70 bg-card/56 p-5 lg:sticky lg:top-28">
-              <div className="space-y-1">
-                <p className="kicker text-muted-foreground">More Markers</p>
-                <h2 className="type-card-title text-[1.3rem]">Extended tag set</h2>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {archiveTags.map((tag) => (
-                  <Link key={tag} href={`/blogs?tag=${encodeURIComponent(tag)}`}>
-                    <Badge variant="secondary" className="hover:bg-accent">
-                      #{tag}
-                    </Badge>
-                  </Link>
-                ))}
-              </div>
-            </aside>
-          ) : null}
         </div>
       </article>
     </PageContent>

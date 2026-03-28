@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import { createClient } from "@supabase/supabase-js";
 import { cookies } from 'next/headers'
 
 // Server-side Supabase client
@@ -33,6 +34,24 @@ export async function createServerSupabaseClient() {
       },
     }
   )
+}
+
+// Server-side client for public read paths. This avoids auth cookie refreshes on public pages.
+export function createServerSupabasePublicClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+  if (!url || !publishableKey) {
+    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.");
+  }
+
+  return createClient(url, publishableKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+      detectSessionInUrl: false,
+    },
+  });
 }
 
 // Auth helper to get user on server

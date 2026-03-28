@@ -1,32 +1,84 @@
+"use client";
+
+import { animate, motion, useInView, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+
 type LanguageRingProps = {
   label: string;
   proficiency: number;
-  detail: string;
   placeholder?: boolean;
 };
 
-export function LanguageRing({ label, proficiency, detail, placeholder = false }: LanguageRingProps) {
+export function LanguageRing({ label, proficiency, placeholder = false }: LanguageRingProps) {
+  const ringRef = useRef<HTMLDivElement | null>(null);
+  const isInView = useInView(ringRef, { once: true, amount: 0.4 });
+  const prefersReducedMotion = useReducedMotion();
+  const [displayValue, setDisplayValue] = useState(prefersReducedMotion ? proficiency : 0);
+  const circumference = 2 * Math.PI * 24;
+  const dashOffset = circumference - (circumference * displayValue) / 100;
+
+  useEffect(() => {
+    if (placeholder) return;
+    if (prefersReducedMotion) {
+      setDisplayValue(proficiency);
+      return;
+    }
+    if (!isInView) return;
+
+    const controls = animate(0, proficiency, {
+      duration: 1.15,
+      ease: [0.22, 1, 0.36, 1],
+      onUpdate: (value) => setDisplayValue(Math.round(value)),
+    });
+
+    return () => controls.stop();
+  }, [isInView, placeholder, prefersReducedMotion, proficiency]);
+
   return (
-    <div className="grid grid-cols-[4.75rem_minmax(0,1fr)] items-center gap-3">
-      <div
-        className={`grid size-[4.75rem] place-items-center rounded-full border ${
-          placeholder ? "border-dashed border-border/60 bg-transparent" : "border-border/70 bg-background"
-        }`}
-        style={
-          placeholder
-            ? undefined
-            : {
-                backgroundImage: `conic-gradient(from 180deg, var(--color-foreground) ${proficiency}%, transparent ${proficiency}% 100%)`,
+    <div ref={ringRef} className="flex flex-col items-center gap-2 text-center">
+      <div className="relative grid size-[3.7rem] place-items-center">
+        <svg className="-rotate-90 size-full" viewBox="0 0 56 56" aria-hidden="true">
+          <circle
+            cx="28"
+            cy="28"
+            r="24"
+            fill="none"
+            stroke="color-mix(in oklch, var(--color-border) 75%, transparent)"
+            strokeWidth="5"
+            strokeDasharray={placeholder ? "3 5" : undefined}
+          />
+          {placeholder ? null : (
+            <motion.circle
+              cx="28"
+              cy="28"
+              r="24"
+              fill="none"
+              stroke="var(--color-foreground)"
+              strokeWidth="5"
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              animate={{ strokeDashoffset: dashOffset }}
+              initial={{ strokeDashoffset: circumference }}
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { duration: 1.15, ease: [0.22, 1, 0.36, 1] }
               }
-        }
-      >
-        <div className="grid size-[3.55rem] place-items-center rounded-full bg-card">
-          <span className="type-body text-[0.88rem]">{placeholder ? "..." : `${proficiency}%`}</span>
+            />
+          )}
+        </svg>
+        <div
+          className={`absolute inset-[0.55rem] grid place-items-center rounded-full ${
+            placeholder ? "border border-dashed border-border/60 bg-transparent" : "bg-card"
+          }`}
+        >
+          <span className="type-body text-[0.72rem]">{placeholder ? "..." : `${displayValue}%`}</span>
         </div>
       </div>
+
       <div className="space-y-1">
-        <p className="type-body">{label}</p>
-        <p className="type-meta text-muted-foreground">{detail}</p>
+        <p className="type-body text-[0.88rem]">{label}</p>
+        {placeholder ? <p className="type-meta text-muted-foreground">Set in settings</p> : null}
       </div>
     </div>
   );

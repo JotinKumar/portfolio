@@ -61,6 +61,7 @@ async function updateSiteConfig(formData: FormData) {
     logoAlt: normalizeText(formData.get("logoAlt")),
     resumeUrl: normalizeText(formData.get("resumeUrl")),
     primaryEmail: normalizeText(formData.get("primaryEmail")),
+    phone: normalizeText(formData.get("phone")),
     locationLabel: normalizeText(formData.get("locationLabel")),
     defaultTitle: normalizeText(formData.get("defaultTitle")),
     defaultDescription: normalizeText(formData.get("defaultDescription")),
@@ -286,6 +287,7 @@ export default async function SettingsPage() {
             <Input name="siteTagline" placeholder="Tagline" defaultValue={siteConfig?.siteTagline ?? ""} required />
             <Input name="logoAlt" placeholder="Logo alt text" defaultValue={siteConfig?.logoAlt ?? ""} required />
             <Input name="primaryEmail" placeholder="Primary email" defaultValue={siteConfig?.primaryEmail ?? ""} required />
+            <Input name="phone" placeholder="Phone" defaultValue={siteConfig?.phone ?? ""} />
             <Input name="locationLabel" placeholder="Location label" defaultValue={siteConfig?.locationLabel ?? ""} required />
             <Input name="defaultTitle" placeholder="Default meta title" defaultValue={siteConfig?.defaultTitle ?? ""} required />
             <Input

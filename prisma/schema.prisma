@@ -4,6 +4,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum NavPosition {
@@ -122,6 +124,7 @@ model SiteConfig {
   logoAlt            String
   resumeUrl          String
   primaryEmail       String
+  phone              String   @default("")
   locationLabel      String
   defaultTitle       String
   defaultDescription String
