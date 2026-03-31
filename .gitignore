@@ -32,6 +32,7 @@ tests/
 !tests/
 tests/*
 !tests/public-detail-pages.spec.ts
+!tests/home-blog-carousel.spec.ts
 
 # debug
 npm-debug.log*
