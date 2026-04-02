@@ -21,6 +21,8 @@ That is the standard I wanted these detail pages to move toward. The design shou
   coverImage: "/images/projects/portfolio-cover.jpg",
   tags: JSON.stringify(["Editorial Design", "Writing", "Portfolio UX", "Information Hierarchy", "Reading Experience", "Content Systems"]),
   category: "Design Notes",
+  authorName: "Jotin Kumar",
+  authorAvatar: null,
   published: true,
   featured: true,
   readTime: 6,

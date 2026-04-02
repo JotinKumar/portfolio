@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ProjectDetailShell } from "@/components/sections/projects/project-detail-shell";
+import { ProjectDetailShell } from "@/components/projects/project-detail-shell";
 import { PageContent } from "@/components/layout/page-primitives";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PAGE_SECTION_Y_CLASS } from "@/lib/layout";

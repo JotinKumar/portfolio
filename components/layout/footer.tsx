@@ -1,14 +1,15 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Github, Linkedin, Twitter, Mail, Heart } from "lucide-react";
+import { Github, Linkedin, Mail, Heart } from "lucide-react";
 import type { NavigationItem, SiteConfig, SocialLink } from "@/lib/db-types";
+import { isExternalSocialLink, normalizeSocialPlatform, resolveSocialLinkTarget } from "@/lib/social-links";
 
 const iconForPlatform = (platform: string) => {
-  const normalized = platform.toLowerCase();
-  if (normalized.includes("github")) return Github;
-  if (normalized.includes("linkedin")) return Linkedin;
-  if (normalized.includes("twitter")) return Twitter;
+  const normalized = normalizeSocialPlatform(platform);
+  if (normalized === "github") return Github;
+  if (normalized === "linkedin") return Linkedin;
+  if (normalized === "x") return XIcon;
   return Mail;
 };
 
@@ -47,11 +48,17 @@ export function Footer({
             </div>
             <p className="text-muted-foreground text-sm">{tagline}</p>
             <div className="flex space-x-2">
-              {socialLinks.map((social) => {
+              {socialLinks.filter((social) => resolveSocialLinkTarget(social)).map((social) => {
                 const Icon = iconForPlatform(social.platform);
+                const href = resolveSocialLinkTarget(social);
+
+                if (!href) {
+                  return null;
+                }
+
                 return (
                   <Button key={social.id} variant="ghost" size="icon" asChild>
-                    <Link href={social.url} target="_blank" rel="noopener noreferrer">
+                    <Link href={href} target={isExternalSocialLink(social) ? "_blank" : undefined} rel={isExternalSocialLink(social) ? "noopener noreferrer" : undefined}>
                       <Icon className="h-4 w-4" />
                       <span className="sr-only">{social.label}</span>
                     </Link>
@@ -98,5 +105,13 @@ export function Footer({
         </div>
       </div>
     </footer>
+  );
+}
+
+function XIcon(props: React.ComponentProps<"svg">) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+      <path d="M18.244 2H21.5l-7.11 8.128L22.75 22h-6.545l-5.123-6.73L5.2 22H1.94l7.606-8.693L1.5 2h6.71l4.63 6.116L18.244 2Zm-1.142 18h1.804L7.228 3.895H5.292L17.102 20Z" />
+    </svg>
   );
 }

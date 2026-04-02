@@ -10,7 +10,8 @@ import {
   Settings, 
   LogOut,
   User,
-  Mail
+  Mail,
+  Rows3
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -34,6 +35,11 @@ const sidebarItems = [
     title: 'Work Experience',
     href: '/admin/experience',
     icon: User,
+  },
+  {
+    title: 'Milestones',
+    href: '/admin/milestones',
+    icon: Rows3,
   },
   {
     title: 'Messages',

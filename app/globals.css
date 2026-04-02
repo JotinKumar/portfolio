@@ -79,12 +79,6 @@
 }
 
 :root {
-  --font-body: "Archivo SemiCondensed", "Aptos", "Segoe UI", sans-serif;
-  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
-  --font-code: "IBM Plex Mono", "Cascadia Code", Consolas, monospace;
-  --font-poppins: var(--font-body);
-  --font-libre-baskerville: var(--font-display);
-  --font-ibm-plex-mono: var(--font-code);
   --radius: 0rem;
   --background: oklch(0.984 0.006 82);
   --foreground: oklch(0.332 0.021 44);

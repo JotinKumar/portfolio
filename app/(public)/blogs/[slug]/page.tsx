@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BlogDetailShell } from "@/components/sections/blogs/blog-detail-shell";
+import { BlogDetailShell } from "@/components/blogs/blog-detail-shell";
 import { PageContent } from "@/components/layout/page-primitives";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PAGE_SECTION_Y_CLASS } from "@/lib/layout";
@@ -73,6 +73,8 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
       <BlogDetailShell
         title={article.title}
         category={article.category}
+        authorName={article.authorName}
+        authorAvatar={article.authorAvatar}
         excerpt={article.excerpt}
         publishedDate={publishedDate}
         readTime={article.readTime}

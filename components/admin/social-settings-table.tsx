@@ -2,9 +2,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SettingsSection } from "@/components/admin/settings-section";
-import type { SocialLink, SocialPosition } from "@/lib/db-types";
+import type { SocialLink, SocialLinkKind, SocialPosition } from "@/lib/db-types";
 
-const SOCIAL_POSITIONS: SocialPosition[] = ["FOOTER", "CONTACT"];
+const SOCIAL_POSITIONS: SocialPosition[] = ["FOOTER", "CONTACT", "PROFILE"];
+const SOCIAL_KINDS: SocialLinkKind[] = ["SOCIAL", "CONTACT"];
 
 export function SocialSettingsTable({
   socialLinks,
@@ -29,9 +30,17 @@ export function SocialSettingsTable({
             <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">Create social link</h3>
           </div>
           <Input name="id" placeholder="Unique ID" required />
+          <select aria-label="social kind" name="kind" defaultValue="SOCIAL" className="h-11 rounded-none border border-input bg-background px-3 text-sm">
+            {SOCIAL_KINDS.map((kind) => (
+              <option key={kind} value={kind}>
+                {kind}
+              </option>
+            ))}
+          </select>
           <Input name="platform" placeholder="Platform" required />
           <Input name="label" placeholder="Label" required />
-          <Input name="url" placeholder="URL" required />
+          <Input name="value" placeholder="Display value" required />
+          <Input name="url" placeholder="URL or mailto/tel target" />
           <select
             aria-label="social position"
             name="position"
@@ -59,7 +68,9 @@ export function SocialSettingsTable({
               <tr>
                 <th className="px-4 py-3">Platform</th>
                 <th className="px-4 py-3">Label</th>
+                <th className="px-4 py-3">Value</th>
                 <th className="px-4 py-3">URL</th>
+                <th className="px-4 py-3">Kind</th>
                 <th className="px-4 py-3">Position</th>
                 <th className="px-4 py-3">Order</th>
                 <th className="px-4 py-3">Visible</th>
@@ -76,7 +87,25 @@ export function SocialSettingsTable({
                     <Input name="label" form={`social-${item.id}`} defaultValue={item.label} required />
                   </td>
                   <td className="px-4 py-3">
-                    <Input name="url" form={`social-${item.id}`} defaultValue={item.url} required />
+                    <Input name="value" form={`social-${item.id}`} defaultValue={item.value} required />
+                  </td>
+                  <td className="px-4 py-3">
+                    <Input name="url" form={`social-${item.id}`} defaultValue={item.url ?? ""} />
+                  </td>
+                  <td className="px-4 py-3">
+                    <select
+                      aria-label="social kind"
+                      name="kind"
+                      form={`social-${item.id}`}
+                      defaultValue={item.kind}
+                      className="h-11 w-full rounded-none border border-input bg-background px-3 text-sm"
+                    >
+                      {SOCIAL_KINDS.map((kind) => (
+                        <option key={kind} value={kind}>
+                          {kind}
+                        </option>
+                      ))}
+                    </select>
                   </td>
                   <td className="px-4 py-3">
                     <select

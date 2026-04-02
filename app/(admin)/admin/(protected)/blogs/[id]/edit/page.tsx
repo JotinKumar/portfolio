@@ -33,6 +33,8 @@ async function updateBlog(formData: FormData) {
     excerpt: String(formData.get("excerpt") ?? "").trim(),
     content: String(formData.get("content") ?? "").trim(),
     category: String(formData.get("category") ?? "").trim(),
+    authorName: String(formData.get("authorName") ?? "Jotin Kumar Madugula").trim(),
+    authorAvatar: String(formData.get("authorAvatar") ?? "").trim() || null,
     tags: String(formData.get("tags") ?? "").trim(),
     readTime: Number(formData.get("readTime") ?? 1) || 1,
     featured: formData.get("featured") === "on",
@@ -142,6 +144,8 @@ export default async function EditBlogPage({ params }: EditBlogPageProps) {
               </div>
               <Input name="readTime" type="number" min={1} defaultValue={article.readTime} required />
               <Input name="category" defaultValue={article.category} required />
+              <Input name="authorName" defaultValue={article.authorName} placeholder="Author Name" required />
+              <Input name="authorAvatar" defaultValue={article.authorAvatar ?? ""} placeholder="Author Avatar URL" />
               <Input name="slug" defaultValue={article.slug} required />
             </div>
           </div>

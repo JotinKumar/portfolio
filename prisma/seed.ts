@@ -1,5 +1,27 @@
-import "dotenv/config";
+import fs from "node:fs";
+import path from "node:path";
 import { Prisma, PrismaClient } from '@prisma/client';
+
+const envPath = path.resolve(process.cwd(), ".env");
+if (fs.existsSync(envPath)) {
+  const envFile = fs.readFileSync(envPath, "utf8");
+
+  for (const line of envFile.split(/\r?\n/)) {
+    const trimmedLine = line.trim();
+    if (!trimmedLine || trimmedLine.startsWith("#")) continue;
+
+    const separatorIndex = trimmedLine.indexOf("=");
+    if (separatorIndex === -1) continue;
+
+    const key = trimmedLine.slice(0, separatorIndex).trim();
+    const rawValue = trimmedLine.slice(separatorIndex + 1).trim();
+    const value = rawValue.replace(/^['"]|['"]$/g, "");
+
+    if (!(key in process.env)) {
+      process.env[key] = value;
+    }
+  }
+}
 
 const connectionString = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
 if (!connectionString) {
@@ -16,27 +38,6 @@ const prisma = new PrismaClient({
 
 async function main() {
   console.log('Seeding database...');
-
-  const settingsData = {
-    id: 'default',
-    resumeUrl: '/jotin-madugula-resume.pdf',
-    linkedinUrl: 'https://linkedin.com/in/jotin',
-    githubUrl: 'https://github.com/jotin',
-    twitterUrl: '',
-    emailAddress: 'contact@jotin.in',
-    heroTitle: 'Jotin Kumar Madugula',
-    heroSubtitle: 'Business Process Expert & AI Enthusiast',
-    techHeroTitle: 'Jotin Kumar Madugula',
-    techHeroSubtitle: 'Full Stack Developer & AI Explorer',
-    aboutMe: 'Transforming operations through intelligent automation.',
-    profileImage: '/profile.jpg',
-  };
-
-  await prisma.settings.upsert({
-    where: { id: 'default' },
-    update: settingsData,
-    create: settingsData,
-  });
 
   const siteConfigData = {
     id: 'default',
@@ -83,13 +84,166 @@ async function main() {
   }
 
   const socialLinks = [
-    { id: 'social-github', platform: 'github', label: 'GitHub', url: 'https://github.com/jotin', position: 'FOOTER', order: 1 },
-    { id: 'social-linkedin', platform: 'linkedin', label: 'LinkedIn', url: 'https://linkedin.com/in/jotin', position: 'FOOTER', order: 2 },
-    { id: 'social-twitter', platform: 'twitter', label: 'Twitter', url: 'https://twitter.com/jotin', position: 'FOOTER', order: 3 },
-    { id: 'social-email', platform: 'email', label: 'Email', url: 'mailto:contact@jotin.in', position: 'FOOTER', order: 4 },
-    { id: 'contact-linkedin', platform: 'linkedin', label: 'LinkedIn', url: 'https://linkedin.com/in/jotin', position: 'CONTACT', order: 1 },
-    { id: 'contact-github', platform: 'github', label: 'GitHub', url: 'https://github.com/jotin', position: 'CONTACT', order: 2 },
-    { id: 'contact-twitter', platform: 'twitter', label: 'Twitter', url: 'https://twitter.com/jotin', position: 'CONTACT', order: 3 },
+    {
+      id: 'social-github',
+      kind: 'SOCIAL',
+      platform: 'github',
+      label: 'GitHub',
+      value: 'GitHub',
+      url: 'https://github.com/jotin',
+      position: 'FOOTER',
+      order: 1,
+    },
+    {
+      id: 'social-linkedin',
+      kind: 'SOCIAL',
+      platform: 'linkedin',
+      label: 'LinkedIn',
+      value: 'LinkedIn',
+      url: 'https://linkedin.com/in/jotin',
+      position: 'FOOTER',
+      order: 2,
+    },
+    {
+      id: 'social-x',
+      kind: 'SOCIAL',
+      platform: 'x',
+      label: 'X',
+      value: 'X.com',
+      url: 'https://x.com/jotin',
+      position: 'FOOTER',
+      order: 3,
+    },
+    {
+      id: 'profile-github',
+      kind: 'SOCIAL',
+      platform: 'github',
+      label: 'GitHub',
+      value: 'GitHub',
+      url: 'https://github.com/jotin',
+      position: 'PROFILE',
+      order: 1,
+    },
+    {
+      id: 'profile-linkedin',
+      kind: 'SOCIAL',
+      platform: 'linkedin',
+      label: 'LinkedIn',
+      value: 'LinkedIn',
+      url: 'https://linkedin.com/in/jotin',
+      position: 'PROFILE',
+      order: 2,
+    },
+    {
+      id: 'profile-x',
+      kind: 'SOCIAL',
+      platform: 'x',
+      label: 'X',
+      value: 'X.com',
+      url: 'https://x.com/jotin',
+      position: 'PROFILE',
+      order: 3,
+    },
+    {
+      id: 'contact-phone',
+      kind: 'CONTACT',
+      platform: 'phone',
+      label: 'Phone Number',
+      value: '+91 90596 71178',
+      url: 'tel:+919059671178',
+      position: 'CONTACT',
+      order: 1,
+    },
+    {
+      id: 'contact-whatsapp',
+      kind: 'CONTACT',
+      platform: 'whatsapp',
+      label: 'Whatsapp number',
+      value: '+91 90596 71178',
+      url: 'https://wa.me/919059671178',
+      position: 'CONTACT',
+      order: 2,
+    },
+    {
+      id: 'contact-personal-email',
+      kind: 'CONTACT',
+      platform: 'email',
+      label: 'Personal email',
+      value: 'contact@jotin.in',
+      url: 'mailto:contact@jotin.in',
+      position: 'CONTACT',
+      order: 3,
+    },
+    {
+      id: 'contact-support-email',
+      kind: 'CONTACT',
+      platform: 'email',
+      label: 'Support email',
+      value: 'support@jotin.in',
+      url: 'mailto:support@jotin.in',
+      position: 'CONTACT',
+      order: 4,
+    },
+    {
+      id: 'contact-location',
+      kind: 'CONTACT',
+      platform: 'location',
+      label: 'Location',
+      value: 'Hyderabad, India',
+      url: 'https://www.google.com/maps?q=Hyderabad%2C%20India',
+      position: 'CONTACT',
+      order: 5,
+    },
+    {
+      id: 'profile-phone',
+      kind: 'CONTACT',
+      platform: 'phone',
+      label: 'Phone Number',
+      value: '+91 90596 71178',
+      url: 'tel:+919059671178',
+      position: 'PROFILE',
+      order: 4,
+    },
+    {
+      id: 'profile-whatsapp',
+      kind: 'CONTACT',
+      platform: 'whatsapp',
+      label: 'Whatsapp number',
+      value: '+91 90596 71178',
+      url: 'https://wa.me/919059671178',
+      position: 'PROFILE',
+      order: 5,
+    },
+    {
+      id: 'profile-personal-email',
+      kind: 'CONTACT',
+      platform: 'email',
+      label: 'Personal email',
+      value: 'contact@jotin.in',
+      url: 'mailto:contact@jotin.in',
+      position: 'PROFILE',
+      order: 6,
+    },
+    {
+      id: 'profile-support-email',
+      kind: 'CONTACT',
+      platform: 'email',
+      label: 'Support email',
+      value: 'support@jotin.in',
+      url: 'mailto:support@jotin.in',
+      position: 'PROFILE',
+      order: 7,
+    },
+    {
+      id: 'profile-location',
+      kind: 'CONTACT',
+      platform: 'location',
+      label: 'Location',
+      value: 'Hyderabad, India',
+      url: 'https://www.google.com/maps?q=Hyderabad%2C%20India',
+      position: 'PROFILE',
+      order: 8,
+    },
   ] as const;
 
   for (const item of socialLinks) {
@@ -274,27 +428,6 @@ async function main() {
     });
   }
 
-  const competencies = [
-    { name: 'Strategic Pricing & RFX Ownership', category: 'COMMERCIAL_DELIVERY', order: 1 },
-    { name: 'Multi-Geo Cost Modelling', category: 'COMMERCIAL_DELIVERY', order: 2 },
-    { name: 'Executive Financial Storytelling', category: 'COMMERCIAL_DELIVERY', order: 3 },
-    { name: 'Price-to-Win Strategy', category: 'COMMERCIAL_DELIVERY', order: 4 },
-    { name: 'US Healthcare Life Cycle Expertise', category: 'COMMERCIAL_DELIVERY', order: 5 },
-    { name: 'Operations Leadership', category: 'OPERATIONS_TECH', order: 1 },
-    { name: 'Process Re-engineering', category: 'OPERATIONS_TECH', order: 2 },
-    { name: 'RPA and Automation', category: 'OPERATIONS_TECH', order: 3 },
-    { name: 'MIS & Performance Analytics', category: 'OPERATIONS_TECH', order: 4 },
-    { name: 'Global Stakeholder Governance', category: 'OPERATIONS_TECH', order: 5 },
-  ] as const;
-
-  for (const item of competencies) {
-    await prisma.competency.upsert({
-      where: { id: `${item.category}-${item.order}` },
-      update: item,
-      create: { id: `${item.category}-${item.order}`, ...item },
-    });
-  }
-
   const workExperienceCards = [
     {
       id: 'work-card-1',
@@ -345,12 +478,39 @@ async function main() {
     });
   }
 
-  const article1Data = {
-    title: 'AI Transformation in Business Processes',
-    slug: 'ai-transformation-business-processes',
-    excerpt:
-      'How artificial intelligence is revolutionizing the way we approach business process optimization and what it means for the future of work.',
-    content: `# AI Transformation in Business Processes
+  const profileMilestones = [
+    { id: "milestone-process-associate", title: "Process Associate", month: "Jun", year: 2004, order: 1, visible: true },
+    { id: "milestone-sr-mis-analyst", title: "Sr. MIS Analyst", month: "Apr", year: 2007, order: 2, visible: true },
+    { id: "milestone-team-lead-ops-mis", title: "Team Lead (Ops & MIS)", month: "Apr", year: 2008, order: 3, visible: true },
+    { id: "milestone-assistant-manager", title: "Assistant Manager", month: "Apr", year: 2010, order: 4, visible: true },
+    { id: "milestone-deputy-manager", title: "Deputy Manager", month: "Oct", year: 2011, order: 5, visible: true },
+    { id: "milestone-operations-manager", title: "Operations Manager", month: "Apr", year: 2013, order: 6, visible: true },
+    {
+      id: "milestone-senior-manager-pricing-healthcare",
+      title: "Senior Manager, Pricing & Healthcare Solutions",
+      month: "Oct",
+      year: 2016,
+      order: 7,
+      visible: true,
+    },
+    { id: "milestone-director-pricing-solutions", title: "Director, Pricing & Solutions", month: "Jan", year: 2026, order: 8, visible: true },
+  ] as const;
+
+  for (const milestone of profileMilestones) {
+    await prisma.profileMilestone.upsert({
+      where: { id: milestone.id },
+      update: milestone,
+      create: milestone,
+    });
+  }
+
+  const blogSeedRows = [
+    {
+      title: 'AI Transformation in Business Processes',
+      slug: 'ai-transformation-business-processes',
+      excerpt:
+        'How artificial intelligence is revolutionizing the way we approach business process optimization and what it means for the future of work.',
+      content: `# AI Transformation in Business Processes
 
 Artificial Intelligence is not just a buzzword anymore - it is a fundamental shift in how we approach business processes. In this article, we explore practical applications of AI in process optimization and real-world impact on organizations.
 
@@ -373,26 +533,19 @@ Traditional business processes often involve repetitive tasks that consume valua
 4. Invest in employee training
 
 The future of work is not about replacing humans - it is about augmenting human capabilities with AI.`,
-    tags: 'AI,Business Processes,Automation,Digital Transformation',
-    category: 'Technology',
-    published: true,
-    featured: true,
-    readTime: 5,
-    publishedAt: new Date(),
-  };
-
-  await prisma.blog.upsert({
-    where: { slug: article1Data.slug },
-    update: article1Data,
-    create: article1Data,
-  });
-
-  const article2Data = {
-    title: 'Remote Work Productivity Tips for Teams',
-    slug: 'remote-work-productivity-tips',
-    excerpt:
-      'Practical strategies for maintaining high productivity levels while working remotely, based on real-world experience managing distributed teams.',
-    content: `# Remote Work Productivity Tips for Teams
+      tags: 'AI,Business Processes,Automation,Digital Transformation',
+      category: 'Technology',
+      published: true,
+      featured: true,
+      readTime: 5,
+      publishedAt: new Date(),
+    },
+    {
+      title: 'Remote Work Productivity Tips for Teams',
+      slug: 'remote-work-productivity-tips',
+      excerpt:
+        'Practical strategies for maintaining high productivity levels while working remotely, based on real-world experience managing distributed teams.',
+      content: `# Remote Work Productivity Tips for Teams
 
 Remote work has become the new normal, but maintaining productivity in a distributed environment requires intentional strategies and tools.
 
@@ -419,19 +572,107 @@ The right tools can make or break a remote team's productivity:
 ## Creating Boundaries
 
 One of the biggest challenges in remote work is maintaining work-life balance.`,
-    tags: 'Remote Work,Productivity,Team Management,Leadership',
-    category: 'Leadership',
-    published: true,
-    featured: false,
-    readTime: 7,
-    publishedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-  };
+      tags: 'Remote Work,Productivity,Team Management,Leadership',
+      category: 'Leadership',
+      published: true,
+      featured: false,
+      readTime: 7,
+      publishedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    },
+    {
+      title: 'Designing Pricing Narratives That Survive Executive Review',
+      slug: 'pricing-narratives-executive-review',
+      excerpt:
+        'A practical way to turn pricing assumptions, cost drivers, and margin logic into a narrative leaders can approve quickly.',
+      content: `# Designing Pricing Narratives That Survive Executive Review
 
-  await prisma.blog.upsert({
-    where: { slug: article2Data.slug },
-    update: article2Data,
-    create: article2Data,
-  });
+Strong pricing models rarely fail because the numbers are wrong. They fail because the story around the numbers is weak.
+
+## Start With The Decision
+
+Before building slides or spreadsheets, define the decision your audience needs to make. Approval becomes easier when assumptions, trade-offs, and risks are visible early.
+
+## Build The Story Around Three Anchors
+
+1. Commercial context
+2. Delivery confidence
+3. Margin protection
+
+## Keep The Narrative Tight
+
+Executives do not need every calculation. They need confidence that the model is grounded, resilient, and explainable.`,
+      tags: 'Pricing,Strategy,Executive Communication,Commercial',
+      category: 'Business',
+      published: true,
+      featured: false,
+      readTime: 6,
+      publishedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
+    },
+    {
+      title: 'What Good Operations Dashboards Actually Need',
+      slug: 'good-operations-dashboards',
+      excerpt:
+        'The best dashboards do not show everything. They surface the few signals that help managers intervene early and clearly.',
+      content: `# What Good Operations Dashboards Actually Need
+
+Many dashboards become unusable because they chase completeness instead of clarity.
+
+## Start With Intervention
+
+Every metric should support a decision or trigger action. If a number is interesting but not actionable, it probably does not belong on the first screen.
+
+## Prioritize Signal Over Density
+
+- Trends before snapshots
+- Exceptions before averages
+- Ownership before decoration
+
+## Design For Weekly Use
+
+A dashboard should still make sense when someone returns to it after a week away from the work.`,
+      tags: 'Operations,Dashboards,Analytics,Management',
+      category: 'Operations',
+      published: true,
+      featured: false,
+      readTime: 4,
+      publishedAt: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000),
+    },
+    {
+      title: 'Automation Is Most Useful Before a Team Scales',
+      slug: 'automation-before-scaling',
+      excerpt:
+        'Automation has the biggest leverage when it is used to prevent messy scale, not just to clean up after it.',
+      content: `# Automation Is Most Useful Before a Team Scales
+
+Teams often wait too long to automate because the current process still feels manageable.
+
+## Small Friction Compounds Fast
+
+An extra five minutes in a workflow can feel harmless for a five-person team. It becomes expensive when volume doubles and the process is copied across regions.
+
+## Where To Start
+
+Look for handoffs, manual validations, and repeated data movement. Those are usually the first places where automation creates meaningful leverage.
+
+## Automate With Ownership
+
+Every automated step still needs an owner, a fallback path, and a clear definition of success.`,
+      tags: 'Automation,Scale,Operations,Process Design',
+      category: 'Technology',
+      published: true,
+      featured: false,
+      readTime: 5,
+      publishedAt: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000),
+    },
+  ] as const;
+
+  for (const article of blogSeedRows) {
+    await prisma.blog.upsert({
+      where: { slug: article.slug },
+      update: article,
+      create: article,
+    });
+  }
 
   const project1Data = {
     title: 'Personal Portfolio Website',

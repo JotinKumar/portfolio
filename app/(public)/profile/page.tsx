@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import { PAGE_SECTION_Y_CLASS } from "@/lib/layout";
-import type { Settings, WorkExperienceCard } from "@/lib/db-types";
-import { getCompetencies, getPageContent, getProfileData, getSiteShellData } from "@/lib/server/queries";
+import type { ProfileMilestone, WorkExperienceCard } from "@/lib/db-types";
+import { getWorkExperienceCards, getProfileMilestones, getPageContent, getSiteShellData } from "@/lib/server/queries";
 import { isManagedPublicPageEnabled } from "@/lib/public-page-visibility";
-import { ProfileEditorialShell } from "@/components/sections/profile/profile-editorial-shell";
+import { ProfileEditorialShell } from "@/components/profile/profile-editorial-shell";
+import { findSocialLinkByPlatform, resolveSocialLinkDisplayValue } from "@/lib/social-links";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +38,17 @@ type SkillMeterEntry = {
   level: number;
   placeholder?: boolean;
 };
+
+const DEFAULT_PROFILE_MILESTONES: ProfileMilestone[] = [
+  { id: "milestone-process-associate", title: "Process Associate", month: "Jun", year: 2004, order: 1, visible: true, createdAt: "", updatedAt: "" },
+  { id: "milestone-sr-mis-analyst", title: "Sr. MIS Analyst", month: "Apr", year: 2007, order: 2, visible: true, createdAt: "", updatedAt: "" },
+  { id: "milestone-team-lead-ops-mis", title: "Team Lead (Ops & MIS)", month: "Apr", year: 2008, order: 3, visible: true, createdAt: "", updatedAt: "" },
+  { id: "milestone-assistant-manager", title: "Assistant Manager", month: "Apr", year: 2010, order: 4, visible: true, createdAt: "", updatedAt: "" },
+  { id: "milestone-deputy-manager", title: "Deputy Manager", month: "Oct", year: 2011, order: 5, visible: true, createdAt: "", updatedAt: "" },
+  { id: "milestone-operations-manager", title: "Operations Manager", month: "Apr", year: 2013, order: 6, visible: true, createdAt: "", updatedAt: "" },
+  { id: "milestone-senior-manager-pricing-healthcare", title: "Senior Manager, Pricing & Healthcare Solutions", month: "Oct", year: 2016, order: 7, visible: true, createdAt: "", updatedAt: "" },
+  { id: "milestone-director-pricing-solutions", title: "Director, Pricing & Solutions", month: "Jan", year: 2026, order: 8, visible: true, createdAt: "", updatedAt: "" },
+];
 
 const PLACEHOLDER_LANGUAGES: LanguageEntry[] = [
   { label: "Language", proficiency: 0, rating: 0 },
@@ -80,17 +92,9 @@ const parseStringArray = (value: string): string[] => {
   }
 };
 
-const deriveYearsExperience = (experiences: { startDate: string }[]): number => {
-  const years = experiences
-    .map((item) => {
-      const match = item.startDate.match(/(19|20)\d{2}/);
-      return match ? Number(match[0]) : Number.NaN;
-    })
-    .filter((year) => Number.isFinite(year));
-
-  if (years.length === 0) return 0;
-
-  const firstYear = Math.min(...years);
+const deriveYearsExperience = (milestones: ProfileMilestone[]): number => {
+  const firstYear = milestones[0]?.year;
+  if (!firstYear) return 0;
   const currentYear = new Date().getFullYear();
   return Math.max(0, currentYear - firstYear);
 };
@@ -200,27 +204,29 @@ const asSkillMeters = (
 };
 
 export default async function ProfilePage() {
-  let settings: Settings | null = null;
   let experienceCards: WorkExperienceCard[] = [];
   let profilePageContent: Awaited<ReturnType<typeof getPageContent>> = null;
-  let competencies: Awaited<ReturnType<typeof getCompetencies>> = [];
   let siteConfig: Awaited<ReturnType<typeof getSiteShellData>>["siteConfig"] = null;
   let socialLinks: Awaited<ReturnType<typeof getSiteShellData>>["footerSocialLinks"] = [];
+  let milestones: ProfileMilestone[] = [];
 
   try {
-    const [profileData, pageContent, competencyRows, shellData] = await Promise.all([
-      getProfileData(),
+    const [experienceData, milestoneData, pageContent, shellData] = await Promise.all([
+      getWorkExperienceCards(),
+      getProfileMilestones(),
       getPageContent("PROFILE"),
-      getCompetencies(),
       getSiteShellData(),
     ]);
 
-    settings = profileData.settings;
-    experienceCards = profileData.experienceCards;
+    experienceCards = experienceData;
+    milestones = milestoneData;
     profilePageContent = pageContent;
-    competencies = competencyRows;
     siteConfig = shellData.siteConfig;
-    socialLinks = shellData.footerSocialLinks;
+    socialLinks = [
+      ...(shellData.profileSocialLinks ?? []),
+      ...(shellData.contactSocialLinks ?? []),
+      ...shellData.footerSocialLinks,
+    ];
   } catch {
     // Render empty state when database is unavailable.
   }
@@ -243,27 +249,30 @@ export default async function ProfilePage() {
   }));
 
   const pageContent = profilePageContent?.content as Record<string, unknown> | null;
-  const displayName = profilePageContent?.title ?? settings?.heroTitle ?? siteConfig?.siteName ?? "Profile";
-  const displayTitle = profilePageContent?.subtitle ?? settings?.heroSubtitle ?? siteConfig?.siteTagline ?? "";
-  const displaySummary = asText(pageContent, "summary", settings?.aboutMe ?? "");
-  const displayEmail = siteConfig?.primaryEmail ?? settings?.emailAddress ?? "";
-  const displayPhone = siteConfig?.phone ?? asText(pageContent, "phone", "");
-  const displayResumeUrl = siteConfig?.resumeUrl ?? settings?.resumeUrl ?? "#";
-  const displayLocation = siteConfig?.locationLabel ?? "";
-  const yearsExperience = deriveYearsExperience(experiences);
-  const professionalCompetencies = competencies
-    .filter((item) => item.category === "COMMERCIAL_DELIVERY")
-    .map((item) => item.name);
-  const technicalCompetencies = competencies
-    .filter((item) => item.category === "OPERATIONS_TECH")
-    .map((item) => item.name);
+  const displayName = profilePageContent?.title ?? siteConfig?.siteName ?? "Profile";
+  const displayTitle = profilePageContent?.subtitle ?? siteConfig?.siteTagline ?? "";
+  const displaySummary = asText(pageContent, "summary", "");
+  const resolvedMilestones = milestones.length > 0 ? milestones : DEFAULT_PROFILE_MILESTONES;
+  const locationLink = findSocialLinkByPlatform(socialLinks, "location");
+  const displayEmail =
+    findSocialLinkByPlatform(socialLinks, "personal_email")?.value ||
+    findSocialLinkByPlatform(socialLinks, "email")?.value ||
+    siteConfig?.primaryEmail ||
+    "";
+  const displayPhone =
+    findSocialLinkByPlatform(socialLinks, "phone")?.value ||
+    findSocialLinkByPlatform(socialLinks, "whatsapp")?.value ||
+    siteConfig?.phone ||
+    asText(pageContent, "phone", "");
+  const displayLocation = locationLink ? resolveSocialLinkDisplayValue(locationLink) : siteConfig?.locationLabel ?? "";
+  const yearsExperience = deriveYearsExperience(resolvedMilestones);
 
   const languages = asLanguages(pageContent);
   const education = asEducation(pageContent);
   const hobbies = asStringArray(pageContent, "hobbies", []);
   const languageEntries = languages.length > 0 ? languages : PLACEHOLDER_LANGUAGES;
-  const professionalSkillMeters = asSkillMeters(pageContent, "professionalSkills", professionalCompetencies);
-  const technicalSkillMeters = asSkillMeters(pageContent, "technicalSkills", technicalCompetencies);
+  const professionalSkillMeters = asSkillMeters(pageContent, "professionalSkills", []);
+  const technicalSkillMeters = asSkillMeters(pageContent, "technicalSkills", []);
 
   return (
     <section className={PAGE_SECTION_Y_CLASS}>
@@ -278,8 +287,9 @@ export default async function ProfilePage() {
         languageEntries={languageEntries}
         professionalSkillMeters={professionalSkillMeters}
         technicalSkillMeters={technicalSkillMeters}
-        displayResumeUrl={displayResumeUrl}
-        socialLinks={socialLinks}
+        socialLinks={(socialLinks.filter((item) => item.position === "PROFILE").length > 0
+          ? socialLinks.filter((item) => item.position === "PROFILE")
+          : socialLinks.filter((item) => item.position === "FOOTER"))}
         timelineTitle={asText(pageContent, "timelineTitle", "Experience")}
         timelineSubtitle={asText(
           pageContent,

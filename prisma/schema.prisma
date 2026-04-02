@@ -18,6 +18,12 @@ enum NavPosition {
 enum SocialPosition {
   FOOTER
   CONTACT
+  PROFILE
+}
+
+enum SocialLinkKind {
+  SOCIAL
+  CONTACT
 }
 
 enum PublicPage {
@@ -37,6 +43,8 @@ model Blog {
   coverImage  String?
   tags        String
   category    String
+  authorName  String    @default("Jotin Kumar Madugula")
+  authorAvatar String?
   published   Boolean   @default(false)
   featured    Boolean   @default(false)
   readTime    Int
@@ -90,6 +98,19 @@ model WorkExperienceCard {
   @@index([order])
 }
 
+model ProfileMilestone {
+  id        String   @id @default(cuid())
+  title     String
+  month     String
+  year      Int
+  order     Int      @default(0)
+  visible   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order, visible])
+}
+
 model Contact {
   id        String   @id @default(cuid())
   name      String
@@ -100,21 +121,6 @@ model Contact {
   @@index([createdAt])
 }
 
-model Settings {
-  id               String   @id @default(cuid())
-  resumeUrl        String
-  linkedinUrl      String
-  githubUrl        String
-  twitterUrl       String?
-  emailAddress     String
-  heroTitle        String
-  heroSubtitle     String
-  techHeroTitle    String
-  techHeroSubtitle String
-  aboutMe          String
-  profileImage     String
-  updatedAt        DateTime @updatedAt
-}
 
 model SiteConfig {
   id                 String   @id @default("default")
@@ -148,8 +154,10 @@ model NavigationItem {
 
 model SocialLink {
   id        String         @id @default(cuid())
+  kind      SocialLinkKind @default(SOCIAL)
   platform  String
   label     String
+  value     String         @default("")
   url       String
   position  SocialPosition
   order     Int            @default(0)
@@ -202,15 +210,4 @@ model PageContent {
   updatedAt      DateTime   @updatedAt
 }
 
-model Competency {
-  id        String   @id @default(cuid())
-  name      String
-  category  String
-  order     Int      @default(0)
-  visible   Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([category, order, visible])
-}
 

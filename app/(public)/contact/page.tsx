@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { PageContent, PageHeader } from "@/components/layout/page-primitives";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ContactFormCard } from "@/components/sections/contact-form-card";
+import { ContactFormCard } from "@/components/contact/contact-form-card";
 import { PAGE_SECTION_Y_CLASS } from "@/lib/layout";
 import { getPageContent, getSiteShellData, getSocialLinksByPosition } from "@/lib/server/queries";
-import { Mail, MapPin, Clock } from "lucide-react";
+import { Mail, MapPin, Clock, Phone } from "lucide-react";
+import { isExternalSocialLink, normalizeSocialPlatform, resolveSocialLinkDisplayValue, resolveSocialLinkTarget } from "@/lib/social-links";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,8 @@ export default async function ContactPage() {
   }
 
   const content = pageContent?.content as Record<string, unknown> | null;
+  const contactInfoRows = contactSocials.filter((item) => item.kind === "CONTACT");
+  const socialRows = contactSocials.filter((item) => item.kind === "SOCIAL" && resolveSocialLinkTarget(item));
 
   return (
     <section className={PAGE_SECTION_Y_CLASS}>
@@ -62,22 +65,53 @@ export default async function ContactPage() {
                 <CardDescription>{asText(content, "infoSubtitle", "")}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                {contactInfoRows.length > 0 ? (
+                  contactInfoRows.map((social) => {
+                    const Icon = iconForPlatform(social.platform);
+                    const href = resolveSocialLinkTarget(social);
+                    const value = resolveSocialLinkDisplayValue(social);
+
+                    return (
+                      <div key={social.id} className="flex items-start space-x-3">
+                        <Icon className="mt-0.5 h-5 w-5 text-primary" />
+                        <div>
+                          <p className="font-medium">{social.label}</p>
+                          {href ? (
+                            <a
+                              href={href}
+                              target={isExternalSocialLink(social) ? "_blank" : undefined}
+                              rel={isExternalSocialLink(social) ? "noopener noreferrer" : undefined}
+                              className="text-muted-foreground transition-colors hover:text-foreground"
+                            >
+                              {value}
+                            </a>
+                          ) : (
+                            <p className="text-muted-foreground">{value}</p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <>
+                    <div className="flex items-start space-x-3">
+                      <Mail className="mt-0.5 h-5 w-5 text-primary" />
+                      <div>
+                        <p className="font-medium">{asText(content, "infoEmailLabel", "Email")}</p>
+                        <p className="text-muted-foreground">{siteConfig?.primaryEmail ?? ""}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <MapPin className="mt-0.5 h-5 w-5 text-primary" />
+                      <div>
+                        <p className="font-medium">{asText(content, "infoLocationLabel", "Location")}</p>
+                        <p className="text-muted-foreground">{asText(content, "infoLocationValue", siteConfig?.locationLabel ?? "")}</p>
+                      </div>
+                    </div>
+                  </>
+                )}
                 <div className="flex items-start space-x-3">
-                  <Mail className="w-5 h-5 text-primary mt-0.5" />
-                  <div>
-                    <p className="font-medium">{asText(content, "infoEmailLabel", "Email")}</p>
-                    <p className="text-muted-foreground">{siteConfig?.primaryEmail ?? ""}</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <MapPin className="w-5 h-5 text-primary mt-0.5" />
-                  <div>
-                    <p className="font-medium">{asText(content, "infoLocationLabel", "Location")}</p>
-                    <p className="text-muted-foreground">{asText(content, "infoLocationValue", siteConfig?.locationLabel ?? "")}</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <Clock className="w-5 h-5 text-primary mt-0.5" />
+                  <Clock className="mt-0.5 h-5 w-5 text-primary" />
                   <div>
                     <p className="font-medium">{asText(content, "infoResponseTimeLabel", "Response Time")}</p>
                     <p className="text-muted-foreground">{asText(content, "infoResponseTimeValue", "")}</p>
@@ -93,13 +127,21 @@ export default async function ContactPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-4">
-                  {contactSocials.map((social) => (
-                    <Button key={social.id} variant="outline" size="sm" asChild>
-                      <a href={social.url} target="_blank" rel="noopener noreferrer">
-                        {social.label}
-                      </a>
-                    </Button>
-                  ))}
+                  {socialRows.map((social) => {
+                    const href = resolveSocialLinkTarget(social);
+
+                    if (!href) {
+                      return null;
+                    }
+
+                    return (
+                      <Button key={social.id} variant="outline" size="sm" asChild>
+                        <a href={href} target={isExternalSocialLink(social) ? "_blank" : undefined} rel={isExternalSocialLink(social) ? "noopener noreferrer" : undefined}>
+                          {social.label}
+                        </a>
+                      </Button>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -108,4 +150,11 @@ export default async function ContactPage() {
       </PageContent>
     </section>
   );
+}
+
+function iconForPlatform(platform: string) {
+  const normalized = normalizeSocialPlatform(platform);
+  if (normalized === "location") return MapPin;
+  if (normalized === "phone" || normalized === "whatsapp") return Phone;
+  return Mail;
 }

@@ -171,16 +171,18 @@ async function createSocialLink(formData: FormData) {
 
   const payload = {
     id,
+    kind: normalizeText(formData.get("kind")) || "SOCIAL",
     platform: normalizeText(formData.get("platform")),
     label: normalizeText(formData.get("label")),
-    url: normalizeText(formData.get("url")),
+    value: normalizeText(formData.get("value")),
+    url: normalizeText(formData.get("url")) || null,
     position: normalizeText(formData.get("position")) || "FOOTER",
     order: Number(formData.get("order") ?? 0) || 0,
     visible: formData.get("visible") === "on",
     updatedAt: new Date().toISOString(),
   };
 
-  if (!id || !payload.platform || !payload.label || !payload.url) {
+  if (!id || !payload.platform || !payload.label || !payload.value) {
     redirect("/admin/settings?error=invalid_social_link");
   }
 
@@ -201,9 +203,11 @@ async function updateSocialLink(formData: FormData) {
   const id = normalizeText(formData.get("id"));
 
   const payload = {
+    kind: normalizeText(formData.get("kind")) || "SOCIAL",
     platform: normalizeText(formData.get("platform")),
     label: normalizeText(formData.get("label")),
-    url: normalizeText(formData.get("url")),
+    value: normalizeText(formData.get("value")),
+    url: normalizeText(formData.get("url")) || null,
     position: normalizeText(formData.get("position")) || "FOOTER",
     order: Number(formData.get("order") ?? 0) || 0,
     visible: formData.get("visible") === "on",
@@ -254,7 +258,7 @@ export default async function SettingsPage() {
       .select("id,page,title,subtitle,emptyTitle,emptyMessage,primaryCta,secondaryCta,content,createdAt,updatedAt"),
     supabase
       .from("SocialLink")
-      .select("id,platform,label,url,position,order,visible,createdAt,updatedAt")
+      .select("id,kind,platform,label,value,url,position,order,visible,createdAt,updatedAt")
       .order("position", { ascending: true })
       .order("order", { ascending: true }),
   ]);

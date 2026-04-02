@@ -1,15 +1,15 @@
 import { cache } from "react";
 import { createServerSupabaseClient, createServerSupabasePublicClient } from "@/lib/supabase-server";
+import { groupSocialLinksByPosition, normalizeSocialLink, type SocialLinkRow } from "@/lib/social-links";
 import type {
   Article,
-  Competency,
   Contact,
   HeroContent,
   NavigationItem,
   PageContent,
+  ProfileMilestone,
   Project,
   PublicPage,
-  Settings,
   SiteConfig,
   SocialLink,
   WorkExperienceCard,
@@ -17,7 +17,7 @@ import type {
 
 export type ArticleCardData = Pick<
   Article,
-  "id" | "title" | "slug" | "excerpt" | "coverImage" | "category" | "readTime" | "createdAt" | "publishedAt"
+  "id" | "title" | "slug" | "excerpt" | "coverImage" | "category" | "authorName" | "authorAvatar" | "readTime" | "createdAt" | "publishedAt"
 >;
 
 export type ProjectCardData = Pick<
@@ -54,20 +54,47 @@ export type SiteShellData = {
   footerResourceLinks: NavigationItem[];
   footerLegalLinks: NavigationItem[];
   footerSocialLinks: SocialLink[];
+  contactSocialLinks?: SocialLink[];
+  profileSocialLinks?: SocialLink[];
 };
 
 export const getFeaturedArticles = cache(async (limit = 3): Promise<ArticleCardData[]> => {
   const supabase = createServerSupabasePublicClient();
-  const { data, error } = await supabase
+
+  const { data: featuredRows, error: featuredError } = await supabase
     .from("Blog")
-    .select("id,title,slug,excerpt,coverImage,category,readTime,createdAt,publishedAt")
+    .select("id,title,slug,excerpt,coverImage,category,authorName,authorAvatar,readTime,createdAt,publishedAt")
     .eq("featured", true)
     .eq("published", true)
     .order("publishedAt", { ascending: false, nullsFirst: false })
-    .limit(limit);
+    .limit(1);
 
-  if (error) throw error;
-  return (data ?? []) as ArticleCardData[];
+  if (featuredError) throw featuredError;
+
+  const featuredArticles = (featuredRows ?? []) as ArticleCardData[];
+  const featuredIds = featuredArticles.map((article) => article.id);
+  const remainingLimit = Math.max(0, limit - featuredArticles.length);
+
+  if (remainingLimit === 0) {
+    return featuredArticles;
+  }
+
+  let publishedQuery = supabase
+    .from("Blog")
+    .select("id,title,slug,excerpt,coverImage,category,authorName,authorAvatar,readTime,createdAt,publishedAt")
+    .eq("published", true)
+    .order("publishedAt", { ascending: false, nullsFirst: false })
+    .limit(remainingLimit + featuredIds.length);
+
+  if (featuredIds.length > 0) {
+    publishedQuery = publishedQuery.not("id", "in", `(${featuredIds.map((id) => `"${id}"`).join(",")})`);
+  }
+
+  const { data: publishedRows, error: publishedError } = await publishedQuery;
+
+  if (publishedError) throw publishedError;
+
+  return [...featuredArticles, ...((publishedRows ?? []) as ArticleCardData[]).slice(0, remainingLimit)];
 });
 
 export const getFeaturedProjects = cache(async (limit = 3): Promise<ProjectCardData[]> => {
@@ -94,33 +121,22 @@ export const getWorkExperienceCards = cache(async (): Promise<WorkExperienceCard
   return (data ?? []) as WorkExperienceCard[];
 });
 
-export const getProfileData = cache(async (): Promise<{
-  settings: Settings | null;
-  experienceCards: WorkExperienceCard[];
-}> => {
+export const getProfileMilestones = cache(async (): Promise<ProfileMilestone[]> => {
   const supabase = createServerSupabasePublicClient();
-  const [settingsResult, experienceResult] = await Promise.all([
-    supabase
-      .from("Settings")
-      .select(
-        "id,resumeUrl,linkedinUrl,githubUrl,twitterUrl,emailAddress,heroTitle,heroSubtitle,techHeroTitle,techHeroSubtitle,aboutMe,profileImage,updatedAt"
-      )
-      .limit(1)
-      .maybeSingle(),
-    supabase
-      .from("WorkExperienceCard")
-      .select("id,company,role,location,description,achievements,skills,startDate,endDate,current,order")
-      .order("order", { ascending: true }),
-  ]);
+  const { data, error } = await supabase
+    .from("ProfileMilestone")
+    .select("id,title,month,year,order,visible,createdAt,updatedAt")
+    .eq("visible", true)
+    .order("order", { ascending: true });
 
-  if (settingsResult.error) throw settingsResult.error;
-  if (experienceResult.error) throw experienceResult.error;
+  if (error) {
+    return [];
+  }
 
-  return {
-    settings: (settingsResult.data as Settings | null) ?? null,
-    experienceCards: (experienceResult.data ?? []) as WorkExperienceCard[],
-  };
+  return (data ?? []) as ProfileMilestone[];
 });
+
+
 
 export const getSiteShellData = cache(async (): Promise<SiteShellData> => {
   const supabase = createServerSupabasePublicClient();
@@ -139,7 +155,7 @@ export const getSiteShellData = cache(async (): Promise<SiteShellData> => {
       .order("order", { ascending: true }),
     supabase
       .from("SocialLink")
-      .select("id,platform,label,url,position,order,visible,createdAt,updatedAt")
+      .select("*")
       .eq("visible", true)
       .order("order", { ascending: true }),
   ]);
@@ -149,7 +165,8 @@ export const getSiteShellData = cache(async (): Promise<SiteShellData> => {
   if (socialResult.error) throw socialResult.error;
 
   const navItems = (navResult.data ?? []) as NavigationItem[];
-  const socialItems = (socialResult.data ?? []) as SocialLink[];
+  const socialItems = (socialResult.data ?? []).map((item) => normalizeSocialLink(item as SocialLinkRow));
+  const socialGroups = groupSocialLinksByPosition(socialItems);
 
   return {
     siteConfig: (siteConfigResult.data as SiteConfig | null) ?? null,
@@ -157,7 +174,9 @@ export const getSiteShellData = cache(async (): Promise<SiteShellData> => {
     footerQuickLinks: navItems.filter((item) => item.position === "FOOTER_QUICK"),
     footerResourceLinks: navItems.filter((item) => item.position === "FOOTER_RESOURCE"),
     footerLegalLinks: navItems.filter((item) => item.position === "FOOTER_LEGAL"),
-    footerSocialLinks: socialItems.filter((item) => item.position === "FOOTER"),
+    footerSocialLinks: socialGroups.FOOTER,
+    contactSocialLinks: socialGroups.CONTACT,
+    profileSocialLinks: socialGroups.PROFILE,
   };
 });
 
@@ -187,30 +206,19 @@ export const getPageContent = cache(async (page: PublicPage): Promise<PageConten
   return (data as PageContent | null) ?? null;
 });
 
-export const getCompetencies = cache(async (): Promise<Competency[]> => {
-  const supabase = createServerSupabasePublicClient();
-  const { data, error } = await supabase
-    .from("Competency")
-    .select("id,name,category,order,visible,createdAt,updatedAt")
-    .eq("visible", true)
-    .order("category", { ascending: true })
-    .order("order", { ascending: true });
 
-  if (error) throw error;
-  return (data ?? []) as Competency[];
-});
 
-export const getSocialLinksByPosition = cache(async (position: "FOOTER" | "CONTACT"): Promise<SocialLink[]> => {
+export const getSocialLinksByPosition = cache(async (position: "FOOTER" | "CONTACT" | "PROFILE"): Promise<SocialLink[]> => {
   const supabase = createServerSupabasePublicClient();
   const { data, error } = await supabase
     .from("SocialLink")
-    .select("id,platform,label,url,position,order,visible,createdAt,updatedAt")
+    .select("*")
     .eq("position", position)
     .eq("visible", true)
     .order("order", { ascending: true });
 
   if (error) throw error;
-  return (data ?? []) as SocialLink[];
+  return (data ?? []).map((item) => normalizeSocialLink(item as SocialLinkRow));
 });
 
 export const getPublishedArticles = cache(
@@ -218,7 +226,7 @@ export const getPublishedArticles = cache(
     const supabase = createServerSupabasePublicClient();
     let query = supabase
       .from("Blog")
-      .select("id,title,slug,excerpt,coverImage,category,readTime,createdAt,publishedAt")
+      .select("id,title,slug,excerpt,coverImage,category,authorName,authorAvatar,readTime,createdAt,publishedAt")
       .eq("published", true)
       .order("publishedAt", { ascending: false, nullsFirst: false });
 
@@ -247,6 +255,24 @@ export const getPublishedArticleCategories = cache(async (): Promise<string[]> =
   const { data, error } = await supabase.from("Blog").select("category").eq("published", true);
   if (error) throw error;
   return Array.from(new Set((data ?? []).map((row) => row.category)));
+});
+
+export const getPublishedArticleTags = cache(async (): Promise<string[]> => {
+  const supabase = createServerSupabasePublicClient();
+  const { data, error } = await supabase.from("Blog").select("tags").eq("published", true);
+  if (error) throw error;
+  
+  const allTags = new Set<string>();
+  (data ?? []).forEach(row => {
+    if (row.tags) {
+      row.tags.split(',').forEach((tag: string) => {
+        const trimmed = tag.trim();
+        if (trimmed) allTags.add(trimmed);
+      });
+    }
+  });
+  
+  return Array.from(allTags).sort();
 });
 
 export const getProjects = cache(async (): Promise<ProjectCardData[]> => {
@@ -284,7 +310,7 @@ export const getPublishedArticleBySlug = cache(async (slug: string): Promise<Art
   const supabase = createServerSupabasePublicClient();
   const { data, error } = await supabase
     .from("Blog")
-    .select("id,title,slug,excerpt,content,coverImage,tags,category,published,featured,readTime,createdAt,updatedAt,publishedAt")
+    .select("id,title,slug,excerpt,content,coverImage,tags,category,authorName,authorAvatar,published,featured,readTime,createdAt,updatedAt,publishedAt")
     .eq("slug", slug)
     .eq("published", true)
     .maybeSingle();

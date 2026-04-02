@@ -7,6 +7,8 @@ export interface Blog {
   coverImage: string | null;
   tags: string;
   category: string;
+  authorName: string;
+  authorAvatar: string | null;
   published: boolean;
   featured: boolean;
   readTime: number;
@@ -54,6 +56,17 @@ export interface WorkExperienceCard {
   updatedAt: string;
 }
 
+export interface ProfileMilestone {
+  id: string;
+  title: string;
+  month: string;
+  year: number;
+  order: number;
+  visible: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Contact {
   id: string;
   name: string;
@@ -62,24 +75,10 @@ export interface Contact {
   createdAt: string;
 }
 
-export interface Settings {
-  id: string;
-  resumeUrl: string;
-  linkedinUrl: string;
-  githubUrl: string;
-  twitterUrl: string | null;
-  emailAddress: string;
-  heroTitle: string;
-  heroSubtitle: string;
-  techHeroTitle: string;
-  techHeroSubtitle: string;
-  aboutMe: string;
-  profileImage: string;
-  updatedAt: string;
-}
 
 export type NavPosition = "HEADER" | "FOOTER_QUICK" | "FOOTER_RESOURCE" | "FOOTER_LEGAL";
-export type SocialPosition = "FOOTER" | "CONTACT";
+export type SocialPosition = "FOOTER" | "CONTACT" | "PROFILE";
+export type SocialLinkKind = "SOCIAL" | "CONTACT";
 export type PublicPage = "HOME" | "PROFILE" | "ARTICLES" | "PROJECTS" | "CONTACT";
 
 export interface SiteConfig {
@@ -112,8 +111,10 @@ export interface NavigationItem {
 
 export interface SocialLink {
   id: string;
+  kind: SocialLinkKind;
   platform: string;
   label: string;
+  value: string;
   url: string;
   position: SocialPosition;
   order: number;
@@ -164,12 +165,3 @@ export interface PageContent {
   updatedAt: string;
 }
 
-export interface Competency {
-  id: string;
-  name: string;
-  category: string;
-  order: number;
-  visible: boolean;
-  createdAt: string;
-  updatedAt: string;
-}

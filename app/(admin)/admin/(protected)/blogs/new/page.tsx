@@ -41,6 +41,8 @@ async function createBlog(formData: FormData) {
     excerpt: String(formData.get("excerpt") ?? "").trim(),
     content: String(formData.get("content") ?? "").trim(),
     category: String(formData.get("category") ?? "").trim(),
+    authorName: String(formData.get("authorName") ?? "Jotin Kumar Madugula").trim(),
+    authorAvatar: String(formData.get("authorAvatar") ?? "").trim() || null,
     tags: String(formData.get("tags") ?? "").trim(),
     readTime: Number(formData.get("readTime") ?? 1) || 1,
     featured: formData.get("featured") === "on",
@@ -83,6 +85,8 @@ export default function NewBlogPage() {
             <Input name="title" placeholder="Title" required />
             <Input name="slug" placeholder="Slug (optional, auto-generated)" />
             <Input name="category" placeholder="Category" required />
+            <Input name="authorName" placeholder="Author Name" defaultValue="Jotin Kumar Madugula" required />
+            <Input name="authorAvatar" placeholder="Author Avatar URL (optional)" />
             <Input name="tags" placeholder="Tags (comma separated)" required />
             <Input name="readTime" type="number" min={1} defaultValue={5} required />
             <Input name="coverImage" placeholder="Cover image URL (optional)" />

@@ -6,10 +6,10 @@ import { PageContent } from "@/components/layout/page-primitives";
 import { PAGE_SECTION_Y_CLASS } from "@/lib/layout";
 import { getPageContent, getProjectCategories, getProjects } from "@/lib/server/queries";
 import type { Project } from "@/lib/db-types";
-import { ProjectsShowcaseHero } from "@/components/sections/projects/projects-showcase-hero";
-import { ProjectsCaseStudyLead } from "@/components/sections/projects/projects-case-study-lead";
-import { ProjectsStatusRail } from "@/components/sections/projects/projects-status-rail";
-import { ProjectsArchiveGrid } from "@/components/sections/projects/projects-archive-grid";
+import { ProjectsShowcaseHero } from "@/components/projects/projects-showcase-hero";
+import { ProjectsCaseStudyLead } from "@/components/projects/projects-case-study-lead";
+import { ProjectsStatusRail } from "@/components/projects/projects-status-rail";
+import { ProjectsArchiveGrid } from "@/components/projects/projects-archive-grid";
 
 export const dynamic = "force-dynamic";
 

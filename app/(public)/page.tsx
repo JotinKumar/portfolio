@@ -1,15 +1,36 @@
-import { WorkTimeline } from "@/components/sections/work-timeline";
-import { FeaturedArticles } from "@/components/sections/featured-articles";
-import { FeaturedProjects } from "@/components/sections/featured-projects";
-import { HeroSplitClient } from "@/components/sections/hero/HeroSplitClient";
+import { WorkTimeline } from "@/components/home/work-timeline";
+import { FeaturedArticles } from "@/components/home/featured-articles";
+import { FeaturedProjects } from "@/components/home/featured-projects";
+import { HeroSplitClient } from "@/components/home/HeroSplitClient";
 import {
   getFeaturedArticles,
   getFeaturedProjects,
   getHeroContent,
+  getProfileMilestones,
   getSiteShellData,
   getWorkExperienceCards,
 } from "@/lib/server/queries";
-import type { WorkExperienceCard } from "@/lib/db-types";
+import type { ProfileMilestone, WorkExperienceCard } from "@/lib/db-types";
+
+const FALLBACK_HOME_MILESTONES: ProfileMilestone[] = [
+  { id: "milestone-process-associate", title: "Process Associate", month: "Jun", year: 2004, order: 1, visible: true, createdAt: "", updatedAt: "" },
+  { id: "milestone-sr-mis-analyst", title: "Sr. MIS Analyst", month: "Apr", year: 2007, order: 2, visible: true, createdAt: "", updatedAt: "" },
+  { id: "milestone-team-lead-ops-mis", title: "Team Lead (Ops & MIS)", month: "Apr", year: 2008, order: 3, visible: true, createdAt: "", updatedAt: "" },
+  { id: "milestone-assistant-manager", title: "Assistant Manager", month: "Apr", year: 2010, order: 4, visible: true, createdAt: "", updatedAt: "" },
+  { id: "milestone-deputy-manager", title: "Deputy Manager", month: "Oct", year: 2011, order: 5, visible: true, createdAt: "", updatedAt: "" },
+  { id: "milestone-operations-manager", title: "Operations Manager", month: "Apr", year: 2013, order: 6, visible: true, createdAt: "", updatedAt: "" },
+  {
+    id: "milestone-senior-manager-pricing-healthcare",
+    title: "Senior Manager, Pricing & Healthcare Solutions",
+    month: "Oct",
+    year: 2016,
+    order: 7,
+    visible: true,
+    createdAt: "",
+    updatedAt: "",
+  },
+  { id: "milestone-director-pricing-solutions", title: "Director, Pricing & Solutions", month: "Jan", year: 2026, order: 8, visible: true, createdAt: "", updatedAt: "" },
+];
 
 export const revalidate = 3600;
 
@@ -22,7 +43,7 @@ export default async function Home() {
     }
   };
 
-  const [shellData, heroContent, workExperienceCards, featuredArticles, featuredProjects] = await Promise.all([
+  const [shellData, heroContent, workExperienceCards, featuredArticles, featuredProjects, milestones] = await Promise.all([
     safeQuery(getSiteShellData, {
       siteConfig: null,
       headerNav: [],
@@ -33,14 +54,15 @@ export default async function Home() {
     }),
     safeQuery(getHeroContent, null),
     safeQuery(getWorkExperienceCards, [] as WorkExperienceCard[]),
-    safeQuery(() => getFeaturedArticles(3), [] as Awaited<ReturnType<typeof getFeaturedArticles>>),
+    safeQuery(() => getFeaturedArticles(4), [] as Awaited<ReturnType<typeof getFeaturedArticles>>),
     safeQuery(() => getFeaturedProjects(3), [] as Awaited<ReturnType<typeof getFeaturedProjects>>),
+    safeQuery(getProfileMilestones, [] as ProfileMilestone[]),
   ]);
 
   if (!heroContent) {
     return (
       <div>
-        <WorkTimeline experiences={[]} title="Work Experience" />
+        <WorkTimeline experiences={[]} milestones={FALLBACK_HOME_MILESTONES} title="Work Experience" />
         <FeaturedArticles articles={featuredArticles} title="Featured Blogs" viewAllLabel="View All Blogs" />
         <FeaturedProjects projects={featuredProjects} title="Featured Projects" viewAllLabel="View All Projects" />
       </div>
@@ -72,7 +94,7 @@ export default async function Home() {
   return (
     <div>
       <HeroSplitClient heroContent={heroContent} siteConfig={shellData.siteConfig} />
-      <WorkTimeline experiences={formattedExperiences} title={heroContent.homeWorkSectionTitle} />
+      <WorkTimeline experiences={formattedExperiences} milestones={milestones.length > 0 ? milestones : FALLBACK_HOME_MILESTONES} title={heroContent.homeWorkSectionTitle} />
       <FeaturedArticles
         articles={featuredArticles}
         title={heroContent.homeFeaturedArticlesTitle}
