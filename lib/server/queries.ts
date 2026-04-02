@@ -60,41 +60,17 @@ export type SiteShellData = {
 
 export const getFeaturedArticles = cache(async (limit = 3): Promise<ArticleCardData[]> => {
   const supabase = createServerSupabasePublicClient();
-
-  const { data: featuredRows, error: featuredError } = await supabase
+  const { data, error } = await supabase
     .from("Blog")
-    .select("id,title,slug,excerpt,coverImage,category,authorName,authorAvatar,readTime,createdAt,publishedAt")
-    .eq("featured", true)
+    .select("id,title,slug,excerpt,coverImage,category,authorName,authorAvatar,readTime,createdAt,publishedAt,featured")
     .eq("published", true)
+    .order("featured", { ascending: false })
     .order("publishedAt", { ascending: false, nullsFirst: false })
-    .limit(1);
+    .limit(limit);
 
-  if (featuredError) throw featuredError;
+  if (error) throw error;
 
-  const featuredArticles = (featuredRows ?? []) as ArticleCardData[];
-  const featuredIds = featuredArticles.map((article) => article.id);
-  const remainingLimit = Math.max(0, limit - featuredArticles.length);
-
-  if (remainingLimit === 0) {
-    return featuredArticles;
-  }
-
-  let publishedQuery = supabase
-    .from("Blog")
-    .select("id,title,slug,excerpt,coverImage,category,authorName,authorAvatar,readTime,createdAt,publishedAt")
-    .eq("published", true)
-    .order("publishedAt", { ascending: false, nullsFirst: false })
-    .limit(remainingLimit + featuredIds.length);
-
-  if (featuredIds.length > 0) {
-    publishedQuery = publishedQuery.not("id", "in", `(${featuredIds.map((id) => `"${id}"`).join(",")})`);
-  }
-
-  const { data: publishedRows, error: publishedError } = await publishedQuery;
-
-  if (publishedError) throw publishedError;
-
-  return [...featuredArticles, ...((publishedRows ?? []) as ArticleCardData[]).slice(0, remainingLimit)];
+  return ((data ?? []) as (ArticleCardData & { featured: boolean })[]).map(({ featured: _featured, ...article }) => article);
 });
 
 export const getFeaturedProjects = cache(async (limit = 3): Promise<ProjectCardData[]> => {

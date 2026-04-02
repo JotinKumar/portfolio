@@ -1,16 +1,14 @@
-"use client";
-
 import Image from "next/image";
-import { motion, useInView, useReducedMotion } from "framer-motion";
-import { BriefcaseBusiness, Gamepad2, Github, Headphones, Linkedin, Mail, MapPin, Phone, Plane, Podcast, Popcorn } from "lucide-react";
 import { PageContent } from "@/components/layout/page-primitives";
 import { ProfileSidebarBlock } from "@/components/profile/profile-sidebar-block";
 import { ProfileTimelineBlock } from "@/components/profile/profile-timeline-block";
 import { LanguageRing } from "@/components/profile/language-ring";
 import { ProfileMagneticYears } from "@/components/profile/profile-magnetic-years";
+import { ProfileSkillMeters } from "@/components/profile/profile-skill-meters.client";
+import { ProfileHobbyPreview } from "@/components/profile/profile-hobby-preview.client";
 import type { SocialLink } from "@/lib/db-types";
-import { useEffect, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
+import { BriefcaseBusiness, Headphones, Linkedin, Mail, MapPin, Phone, Plane, Podcast, Popcorn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type SkillMeterEntry = {
@@ -42,15 +40,6 @@ type ExperienceEntry = {
   description: string;
   achievements: string[];
   skills: string[];
-};
-
-type HobbyPreview = {
-  src: string;
-};
-
-type PreviewPosition = {
-  left: number;
-  top: number;
 };
 
 type HeroMetaItem = {
@@ -93,37 +82,16 @@ const summarizeLine = (value: string, fallback: string) => {
   return normalized.length > 44 ? `${normalized.slice(0, 41).trimEnd()}...` : normalized;
 };
 
-const HOBBY_PREVIEWS: Record<string, HobbyPreview> = {
-  "video games": { src: "/images/gifs/videogame.gif" },
-  podcast: { src: "/images/gifs/podcast.gif" },
-  musci: { src: "/images/gifs/music.gif" },
-  music: { src: "/images/gifs/music.gif" },
-  movies: { src: "/images/gifs/movie.gif" },
-  travel: { src: "/images/gifs/travel.gif" },
-};
-
-const PREVIEW_CURSOR_OFFSET = 18;
-const PREVIEW_VIEWPORT_MARGIN = 16;
-const HOBBY_PREVIEW_FRAME_SIZE = 200;
-
-const resolvePreviewPosition = (x: number, y: number): PreviewPosition => {
-  if (typeof window === "undefined") {
-    return {
-      left: x + PREVIEW_CURSOR_OFFSET,
-      top: y + PREVIEW_CURSOR_OFFSET,
-    };
-  }
-
-  const maxLeft = Math.max(PREVIEW_VIEWPORT_MARGIN, window.innerWidth - HOBBY_PREVIEW_FRAME_SIZE - PREVIEW_VIEWPORT_MARGIN);
-  const maxTop = Math.max(PREVIEW_VIEWPORT_MARGIN, window.innerHeight - HOBBY_PREVIEW_FRAME_SIZE - PREVIEW_VIEWPORT_MARGIN);
-
-  return {
-    left: Math.min(Math.max(PREVIEW_VIEWPORT_MARGIN, x + PREVIEW_CURSOR_OFFSET), maxLeft),
-    top: Math.min(Math.max(PREVIEW_VIEWPORT_MARGIN, y + PREVIEW_CURSOR_OFFSET), maxTop),
-  };
-};
-
 const normalizeHobbyLabel = (label: string) => (label.trim().toLowerCase() === "musci" ? "Music" : label.trim());
+
+const iconForPlatform = (platform: string) => {
+  const normalized = platform.toLowerCase();
+  if (normalized.includes("linkedin")) return Linkedin;
+  if (normalized.includes("mail") || normalized.includes("email")) return Mail;
+  if (normalized.includes("phone")) return Phone;
+  if (normalized.includes("location")) return MapPin;
+  return ExternalIcon;
+};
 
 export function ProfileEditorialShell({
   displayName,
@@ -164,44 +132,6 @@ export function ProfileEditorialShell({
   education: EducationEntry[];
   hobbies: string[];
 }) {
-  const [nameHovered, setNameHovered] = useState(false);
-  const [activeHobbyPreview, setActiveHobbyPreview] = useState<HobbyPreview | null>(null);
-  const [previewPosition, setPreviewPosition] = useState<PreviewPosition>({ left: 0, top: 0 });
-  const [portraitRevealed, setPortraitRevealed] = useState(false);
-  const [canPreviewHobbies, setCanPreviewHobbies] = useState(false);
-
-  const heroRef = useRef<HTMLElement | null>(null);
-  const sidebarRef = useRef<HTMLElement | null>(null);
-  const professionalSkillsRef = useRef<HTMLDivElement | null>(null);
-  const technicalSkillsRef = useRef<HTMLDivElement | null>(null);
-
-  const heroInView = useInView(heroRef, { once: true, amount: 0.15 });
-  const sidebarInView = useInView(sidebarRef, { once: true, amount: 0.1 });
-  const professionalSkillsInView = useInView(professionalSkillsRef, { once: true, amount: 0.4 });
-  const technicalSkillsInView = useInView(technicalSkillsRef, { once: true, amount: 0.4 });
-  const prefersReducedMotion = useReducedMotion();
-
-  useEffect(() => {
-    if (heroInView) {
-      const timer = setTimeout(() => setPortraitRevealed(true), 300);
-      return () => clearTimeout(timer);
-    }
-
-    setPortraitRevealed(false);
-  }, [heroInView]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const mediaQuery = window.matchMedia("(min-width: 1024px) and (hover: hover) and (pointer: fine)");
-    const syncPreviewCapability = () => setCanPreviewHobbies(mediaQuery.matches);
-
-    syncPreviewCapability();
-    mediaQuery.addEventListener?.("change", syncPreviewCapability);
-
-    return () => mediaQuery.removeEventListener?.("change", syncPreviewCapability);
-  }, []);
-
   const { firstLine: firstLineNameSegments, secondLine: secondLineName } = buildDisplayNameLines(displayName);
   const heroMeta = [
     displayLocation ? { label: `Based in ${displayLocation}`, icon: MapPin } : null,
@@ -211,15 +141,6 @@ export function ProfileEditorialShell({
   const heroSummary =
     displaySummary.trim() ||
     "A seasoned professional focused on pricing strategy, operational delivery, and systems that turn complex work into measurable outcomes.";
-
-  const iconForPlatform = (platform: string) => {
-    const normalized = platform.toLowerCase();
-    if (normalized.includes("linkedin")) return Linkedin;
-    if (normalized.includes("github")) return Github;
-    if (normalized.includes("twitter") || normalized === "x" || normalized.includes("x.com")) return XIcon;
-    if (normalized.includes("mail") || normalized.includes("email")) return Mail;
-    return ExternalIcon;
-  };
 
   const sanitizedPhone = displayPhone.replace(/[^\d+]/g, "");
   const whatsappHref = sanitizedPhone ? `https://wa.me/${sanitizedPhone.replace(/^\+/, "")}` : "";
@@ -242,6 +163,7 @@ export function ProfileEditorialShell({
         ...(whatsappHref ? [{ id: "sidebar-whatsapp", platform: "whatsapp", label: "WhatsApp", url: whatsappHref }] : []),
         { id: "sidebar-contact", platform: "contact", label: "Contact", url: "/contact" },
       ];
+
   const mobileContactLinks = [
     displayLocation
       ? {
@@ -269,48 +191,13 @@ export function ProfileEditorialShell({
       : null,
   ].filter((item): item is { id: string; platform: string; label: string; url: string } => item !== null);
 
-  const hobbiesWithIcons = hobbies.map((hobby) => ({
-    label: normalizeHobbyLabel(hobby),
-    preview: HOBBY_PREVIEWS[hobby.toLowerCase()] ?? null,
-    icon:
-      hobby.toLowerCase() === "video games"
-        ? Gamepad2
-        : hobby.toLowerCase() === "podcast"
-          ? Podcast
-          : hobby.toLowerCase() === "music"
-            ? Headphones
-            : hobby.toLowerCase() === "movies"
-              ? Popcorn
-              : hobby.toLowerCase() === "travel"
-                ? Plane
-                : BriefcaseBusiness,
-  }));
-
-  const showHobbyPreview = (preview: HobbyPreview, x: number, y: number) => {
-    if (!canPreviewHobbies) return;
-    setActiveHobbyPreview(preview);
-    setPreviewPosition(resolvePreviewPosition(x, y));
-  };
-
-  const hideHobbyPreview = () => {
-    setActiveHobbyPreview(null);
-  };
-
   const compactContactLinks = [...mobileContactLinks, ...sidebarQuickLinks];
+  const normalizedHobbies = hobbies.map(normalizeHobbyLabel);
 
   const renderContactLinks = (compact: boolean) => (
     <div data-testid="profile-quick-links" className={compact ? "grid gap-2" : "grid gap-2 sm:grid-cols-2 lg:flex lg:flex-wrap"}>
       {compactContactLinks.map((social) => {
-        const Icon =
-          social.platform === "location"
-            ? MapPin
-            : social.platform === "phone"
-              ? Phone
-              : social.platform === "whatsapp"
-                ? WhatsAppIcon
-                : social.platform === "contact"
-                  ? Mail
-                  : iconForPlatform(social.platform);
+        const Icon = social.platform === "whatsapp" ? WhatsAppIcon : iconForPlatform(social.platform);
         const label =
           social.platform.toLowerCase().includes("twitter") ||
           social.platform.toLowerCase() === "x" ||
@@ -367,7 +254,7 @@ export function ProfileEditorialShell({
   return (
     <PageContent>
       <div className="space-y-8 border border-border/60 bg-background">
-        <section ref={heroRef} className="animate-in fade-in slide-in-from-top-3 duration-500 overflow-hidden bg-background">
+        <section className="animate-in fade-in slide-in-from-top-3 duration-500 overflow-hidden bg-background">
           <div className="relative grid border-b border-border/60 lg:grid-cols-[16rem_minmax(0,1fr)]">
             <div className="border-b border-border/60 px-5 py-5 sm:px-6 sm:py-6 lg:border-b-0 lg:border-r">
               <div className="hidden space-y-2.5 lg:block">
@@ -392,7 +279,6 @@ export function ProfileEditorialShell({
                   </div>
                 )}
               </div>
-
             </div>
 
             <div className="relative">
@@ -404,7 +290,7 @@ export function ProfileEditorialShell({
                 </div>
                 <div
                   data-testid="profile-portrait-mobile"
-                  data-portrait-revealed={portraitRevealed || prefersReducedMotion ? "true" : "false"}
+                  data-portrait-revealed="true"
                   className="absolute right-3 top-4 z-30 h-16 w-16 overflow-hidden rounded-full border border-white/22 bg-[#d0d0d0] shadow-[0_10px_22px_rgba(0,0,0,0.24)] sm:right-7 sm:top-7 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:hidden"
                 >
                   <Image
@@ -413,9 +299,7 @@ export function ProfileEditorialShell({
                     fill
                     sizes="(max-width: 640px) 5rem, (max-width: 1024px) 7rem, 0px"
                     priority
-                    className={`object-cover object-[52%_center] transition-all duration-[1200ms] ease-linear motion-reduce:transition-none ${
-                      portraitRevealed || prefersReducedMotion ? "grayscale-0" : "grayscale"
-                    }`}
+                    className="object-cover object-[52%_center]"
                   />
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.16)_0%,rgba(255,255,255,0.02)_30%,rgba(0,0,0,0.16)_100%)]" />
                 </div>
@@ -424,23 +308,8 @@ export function ProfileEditorialShell({
                   <p className="font-serif text-[clamp(1.4rem,1.35vw+1rem,2.25rem)] italic leading-[0.92] tracking-[-0.04em] text-white/92">
                     Hi, I&apos;m
                   </p>
-                  <motion.div
-                    className="space-y-1"
-                    onHoverStart={() => setNameHovered(true)}
-                    onHoverEnd={() => setNameHovered(false)}
-                  >
-                    <motion.h1
-                      className="flex max-w-full flex-nowrap items-baseline gap-x-[0.14em] whitespace-nowrap font-sans text-[clamp(1.7rem,3.6vw,4rem)] font-medium uppercase leading-[0.88] tracking-[0.008em] text-white"
-                      animate={
-                        prefersReducedMotion
-                          ? undefined
-                          : {
-                              letterSpacing: nameHovered ? "0.016em" : "0.008em",
-                              opacity: nameHovered ? 0.96 : 1,
-                            }
-                      }
-                      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                    >
+                  <div className="group space-y-1">
+                    <h1 className="flex max-w-full flex-nowrap items-baseline gap-x-[0.14em] whitespace-nowrap font-sans text-[clamp(1.7rem,3.6vw,4rem)] font-medium uppercase leading-[0.88] tracking-[0.008em] text-white transition-[letter-spacing,opacity] duration-300 group-hover:tracking-[0.016em] group-hover:opacity-95">
                       {firstLineNameSegments.map((segment) => (
                         <span
                           key={segment.text}
@@ -453,24 +322,13 @@ export function ProfileEditorialShell({
                           {segment.text}
                         </span>
                       ))}
-                    </motion.h1>
+                    </h1>
                     {secondLineName ? (
-                      <motion.h2
-                        className="font-sans text-[clamp(2.55rem,5.4vw,6rem)] font-extrabold uppercase leading-[0.86] tracking-[0.008em] text-white"
-                        animate={
-                          prefersReducedMotion
-                            ? undefined
-                            : {
-                                y: nameHovered ? 2 : 0,
-                                opacity: nameHovered ? 0.97 : 1,
-                              }
-                        }
-                        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                      >
+                      <h2 className="font-sans text-[clamp(2.55rem,5.4vw,6rem)] font-extrabold uppercase leading-[0.86] tracking-[0.008em] text-white transition-transform duration-300 group-hover:translate-y-[2px] group-hover:opacity-95">
                         {secondLineName}
-                      </motion.h2>
+                      </h2>
                     ) : null}
-                  </motion.div>
+                  </div>
                   <p className="max-w-[28rem] font-sans text-[0.72rem] uppercase tracking-[0.24em] text-white/72 sm:text-[0.78rem]">
                     {displayTitle || "Professional profile"}
                   </p>
@@ -492,7 +350,7 @@ export function ProfileEditorialShell({
             <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[16rem] lg:block">
               <div
                 data-testid="profile-portrait"
-                data-portrait-revealed={portraitRevealed || prefersReducedMotion ? "true" : "false"}
+                data-portrait-revealed="true"
                 className="absolute left-[2.75rem] top-[7.75rem] h-[20.5rem] w-[17rem] overflow-hidden border border-[#1f1f21] bg-[#d0d0d0] shadow-[0_16px_26px_rgba(0,0,0,0.12)]"
               >
                 <Image
@@ -501,9 +359,7 @@ export function ProfileEditorialShell({
                   fill
                   sizes="17rem"
                   priority
-                  className={`object-cover object-[52%_center] transition-all duration-[1600ms] ease-linear motion-reduce:transition-none ${
-                    portraitRevealed || prefersReducedMotion ? "grayscale-0" : "grayscale"
-                  }`}
+                  className="object-cover object-[52%_center]"
                 />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0)_22%,rgba(0,0,0,0.12)_100%)]" />
               </div>
@@ -512,14 +368,7 @@ export function ProfileEditorialShell({
         </section>
 
         <div className="grid gap-8 lg:grid-cols-[minmax(16rem,0.3fr)_minmax(0,0.7fr)] lg:items-start">
-          <motion.aside
-            ref={sidebarRef}
-            data-testid="profile-sidebar"
-            initial={prefersReducedMotion ? false : { opacity: 0, x: -16 }}
-            animate={prefersReducedMotion ? { opacity: 1, x: 0 } : { opacity: sidebarInView ? 1 : 0, x: sidebarInView ? 0 : -16 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="hidden space-y-7 bg-transparent p-5 lg:sticky lg:top-28 lg:block lg:self-start"
-          >
+          <aside data-testid="profile-sidebar" className="hidden space-y-7 bg-transparent p-5 lg:sticky lg:top-28 lg:block lg:self-start">
             {sidebarQuickLinks.length > 0 ? (
               <ProfileSidebarBlock title="Social" compact className="space-y-3 pt-0 before:hidden lg:gap-4">
                 {renderContactLinks(false)}
@@ -542,121 +391,10 @@ export function ProfileEditorialShell({
               </div>
             </ProfileSidebarBlock>
 
-            <div ref={professionalSkillsRef} data-testid="profile-professional-skills" data-skills-visible={professionalSkillsInView ? "true" : "false"}>
-              <ProfileSidebarBlock title="Professional skills">
-                <div className="space-y-3">
-                  {professionalSkillMeters.map((item, index) => (
-                    <div key={`${item.label}-${index}`} className="space-y-1.5">
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="type-body">{item.label}</span>
-                        <span className="type-meta text-muted-foreground">{item.placeholder ? "pending" : `${item.level}%`}</span>
-                      </div>
-                      <div className="h-2 border border-border/60 bg-transparent">
-                        <motion.div
-                          className={`h-full origin-left ${item.placeholder ? "scale-x-0" : "bg-foreground"}`}
-                          initial={prefersReducedMotion ? false : { scaleX: 0 }}
-                          animate={
-                            item.placeholder
-                              ? { scaleX: 0 }
-                              : prefersReducedMotion
-                                ? { scaleX: 1 }
-                                : { scaleX: professionalSkillsInView ? item.level / 100 : 0 }
-                          }
-                          transition={{
-                            duration: 0.9,
-                            delay: prefersReducedMotion ? 0 : index * 0.08,
-                            ease: [0.22, 1, 0.36, 1],
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ProfileSidebarBlock>
-            </div>
-
-            <div ref={technicalSkillsRef} data-testid="profile-technical-skills" data-skills-visible={technicalSkillsInView ? "true" : "false"}>
-              <ProfileSidebarBlock title="Technical skills">
-                <div className="space-y-3">
-                  {technicalSkillMeters.map((item, index) => (
-                    <div key={`${item.label}-${index}`} className="space-y-1.5">
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="type-body">{item.label}</span>
-                        <span className="type-meta text-muted-foreground">{item.placeholder ? "pending" : `${item.level}%`}</span>
-                      </div>
-                      <div className="h-2 border border-border/60 bg-transparent">
-                        <motion.div
-                          className={`h-full origin-left ${item.placeholder ? "scale-x-0" : "bg-foreground"}`}
-                          initial={prefersReducedMotion ? false : { scaleX: 0 }}
-                          animate={
-                            item.placeholder
-                              ? { scaleX: 0 }
-                              : prefersReducedMotion
-                                ? { scaleX: 1 }
-                                : { scaleX: technicalSkillsInView ? item.level / 100 : 0 }
-                          }
-                          transition={{
-                            duration: 0.9,
-                            delay: prefersReducedMotion ? 0 : index * 0.08 + 0.2,
-                            ease: [0.22, 1, 0.36, 1],
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ProfileSidebarBlock>
-            </div>
-
-            <ProfileSidebarBlock title="Hobbies">
-              <div className="flex flex-wrap gap-3">
-                {hobbiesWithIcons.length > 0 ? (
-                  hobbiesWithIcons.map((item) => {
-                    const Icon = item.icon;
-                    const shouldPreview = canPreviewHobbies && item.preview;
-
-                    return (
-                      <button
-                        key={item.label}
-                        type="button"
-                        title={item.label}
-                        aria-label={item.label}
-                        onMouseEnter={
-                          shouldPreview
-                            ? (event) => {
-                                showHobbyPreview(item.preview as HobbyPreview, event.clientX, event.clientY);
-                              }
-                            : undefined
-                        }
-                        onMouseMove={
-                          shouldPreview
-                            ? (event) => {
-                                showHobbyPreview(item.preview as HobbyPreview, event.clientX, event.clientY);
-                              }
-                            : undefined
-                        }
-                        onMouseLeave={shouldPreview ? hideHobbyPreview : undefined}
-                        onFocus={
-                          shouldPreview
-                            ? (event) => {
-                                const rect = event.currentTarget.getBoundingClientRect();
-                                showHobbyPreview(item.preview as HobbyPreview, rect.right, rect.top + rect.height / 2);
-                              }
-                            : undefined
-                        }
-                        onBlur={shouldPreview ? hideHobbyPreview : undefined}
-                        className="flex size-12 items-center justify-center border border-border/60 bg-background/60 transition-colors hover:border-primary/40 hover:bg-accent"
-                      >
-                        <Icon className="size-5 text-foreground" />
-                      </button>
-                    );
-                  })
-                ) : (
-                  <p className="type-body text-muted-foreground">Hobbies can be added from the profile content settings.</p>
-                )}
-              </div>
-            </ProfileSidebarBlock>
-          </motion.aside>
+            <ProfileSkillMeters title="Professional skills" items={professionalSkillMeters} animateOnView />
+            <ProfileSkillMeters title="Technical skills" items={technicalSkillMeters} animateOnView />
+            <ProfileHobbyPreview hobbies={normalizedHobbies} />
+          </aside>
 
           <div className="space-y-10">
             <ProfileTimelineBlock
@@ -695,78 +433,9 @@ export function ProfileEditorialShell({
 
             <section className="px-6 md:px-8 lg:hidden">
               <div className="grid gap-6 md:grid-cols-2">
-                <ProfileSidebarBlock title="Professional skills" className="pt-0 before:hidden">
-                  <div className="space-y-3">
-                    {professionalSkillMeters.map((item, index) => (
-                      <div key={`mobile-professional-${item.label}-${index}`} className="space-y-1.5">
-                        <div className="flex items-center justify-between gap-3">
-                          <span className="type-body">{item.label}</span>
-                          <span className="type-meta text-muted-foreground">{item.placeholder ? "pending" : `${item.level}%`}</span>
-                        </div>
-                        <div className="h-2 border border-border/60 bg-transparent">
-                          <motion.div
-                            className={`h-full origin-left ${item.placeholder ? "scale-x-0" : "bg-foreground"}`}
-                            initial={prefersReducedMotion ? false : { scaleX: 0 }}
-                            animate={
-                              item.placeholder
-                                ? { scaleX: 0 }
-                                : { scaleX: 1 }
-                            }
-                            transition={{ duration: 0.9, delay: prefersReducedMotion ? 0 : index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </ProfileSidebarBlock>
-
-                <ProfileSidebarBlock title="Technical skills" className="pt-0 before:hidden">
-                  <div className="space-y-3">
-                    {technicalSkillMeters.map((item, index) => (
-                      <div key={`mobile-technical-${item.label}-${index}`} className="space-y-1.5">
-                        <div className="flex items-center justify-between gap-3">
-                          <span className="type-body">{item.label}</span>
-                          <span className="type-meta text-muted-foreground">{item.placeholder ? "pending" : `${item.level}%`}</span>
-                        </div>
-                        <div className="h-2 border border-border/60 bg-transparent">
-                          <motion.div
-                            className={`h-full origin-left ${item.placeholder ? "scale-x-0" : "bg-foreground"}`}
-                            initial={prefersReducedMotion ? false : { scaleX: 0 }}
-                            animate={
-                              item.placeholder
-                                ? { scaleX: 0 }
-                                : { scaleX: 1 }
-                            }
-                            transition={{ duration: 0.9, delay: prefersReducedMotion ? 0 : index * 0.08 + 0.2, ease: [0.22, 1, 0.36, 1] }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </ProfileSidebarBlock>
-
-                <ProfileSidebarBlock title="Hobbies" className="pt-0 before:hidden">
-                  <div className="grid gap-2">
-                    {hobbiesWithIcons.length > 0 ? (
-                      hobbiesWithIcons.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                          <div
-                            key={`mobile-hobby-${item.label}`}
-                            className="flex min-w-0 items-center justify-start gap-3 rounded-none border border-border/60 bg-background/60 px-3 py-3"
-                          >
-                            <Icon className="size-4 shrink-0 text-foreground" />
-                            <span className="min-w-0 truncate text-[0.7rem] uppercase tracking-[0.14em] text-foreground">
-                              {item.label}
-                            </span>
-                          </div>
-                        );
-                      })
-                    ) : (
-                      <p className="type-body text-muted-foreground">Hobbies can be added from the profile content settings.</p>
-                    )}
-                  </div>
-                </ProfileSidebarBlock>
+                <ProfileSkillMeters title="Professional skills" items={professionalSkillMeters} className="pt-0 before:hidden" />
+                <ProfileSkillMeters title="Technical skills" items={technicalSkillMeters} className="pt-0 before:hidden" />
+                <ProfileHobbyPreview hobbies={normalizedHobbies} compact className="pt-0 before:hidden" />
 
                 <ProfileSidebarBlock title="Contact" className="pt-0 before:hidden">
                   {renderContactLinks(true)}
@@ -774,34 +443,6 @@ export function ProfileEditorialShell({
               </div>
             </section>
           </div>
-        </div>
-
-        <div
-          aria-hidden={!activeHobbyPreview}
-          data-testid="hobby-hover-preview"
-          className={`pointer-events-none fixed z-50 overflow-visible transition-[opacity,visibility] duration-150 ${
-            activeHobbyPreview ? "visible opacity-100" : "invisible opacity-0"
-          }`}
-          style={{
-            width: activeHobbyPreview ? HOBBY_PREVIEW_FRAME_SIZE : 0,
-            height: activeHobbyPreview ? HOBBY_PREVIEW_FRAME_SIZE : 0,
-            left: previewPosition.left,
-            top: previewPosition.top,
-          }}
-        >
-          {activeHobbyPreview ? (
-            <div className="relative size-[200px] overflow-hidden bg-background/95">
-              <Image
-                data-testid="hobby-hover-image"
-                src={activeHobbyPreview.src}
-                alt=""
-                fill
-                sizes="200px"
-                className="object-contain"
-                unoptimized
-              />
-            </div>
-          ) : null}
         </div>
       </div>
     </PageContent>
@@ -813,14 +454,6 @@ function ExternalIcon(props: React.ComponentProps<"svg">) {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
       <path d="M7 17 17 7" />
       <path d="M7 7h10v10" />
-    </svg>
-  );
-}
-
-function XIcon(props: React.ComponentProps<"svg">) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
-      <path d="M18.244 2H21.5l-7.11 8.128L22.75 22h-6.545l-5.123-6.73L5.2 22H1.94l7.606-8.693L1.5 2h6.71l4.63 6.116L18.244 2Zm-1.142 18h1.804L7.228 3.895H5.292L17.102 20Z" />
     </svg>
   );
 }
