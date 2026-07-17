@@ -11,5 +11,6 @@ export function HeaderAccountBranch({
   login: ReactNode
   account: ReactNode
 }) {
+  if (view.dialog === "pending") return null
   return view.dialog === "login" ? login : account
 }

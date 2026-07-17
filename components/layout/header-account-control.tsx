@@ -37,6 +37,7 @@ function getInitials(label: string) {
 export function HeaderAccountControl() {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
+  const [isAuthResolved, setIsAuthResolved] = useState(false)
   const [loginOpen, setLoginOpen] = useState(false)
   const [accountOpen, setAccountOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
@@ -49,14 +50,23 @@ export function HeaderAccountControl() {
       void supabase.auth
         .getUser()
         .then(({ data }) => {
-          if (isMounted) setUser(data.user)
+          if (isMounted) {
+            setUser(data.user)
+            setIsAuthResolved(true)
+          }
         })
         .catch(() => {
-          if (isMounted) setUser(null)
+          if (isMounted) {
+            setUser(null)
+            setIsAuthResolved(true)
+          }
         })
 
       const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-        if (isMounted) setUser(session?.user ?? null)
+        if (isMounted) {
+          setUser(session?.user ?? null)
+          setIsAuthResolved(true)
+        }
       })
 
       return () => {
@@ -65,13 +75,18 @@ export function HeaderAccountControl() {
       }
     } catch {
       setUser(null)
+      setIsAuthResolved(true)
       return () => {
         isMounted = false
       }
     }
   }, [])
 
-  const view = resolveHeaderAccountView(user?.email ?? null, isAdminEmail(user?.email))
+  const view = resolveHeaderAccountView(
+    user?.email ?? null,
+    isAdminEmail(user?.email),
+    isAuthResolved,
+  )
   const accountLabel = user ? getAccountLabel(user) : "Account"
   const avatarUrl =
     typeof user?.user_metadata.avatar_url === "string"

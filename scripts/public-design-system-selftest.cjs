@@ -277,6 +277,10 @@ if (headerAccountState) {
       const assert = require("node:assert/strict");
       const { resolveHeaderAccountView } = require(${JSON.stringify(helperPath)});
       assert.deepStrictEqual(
+        resolveHeaderAccountView(null, false, false),
+        { dialog: "pending", role: null, actions: [] },
+      );
+      assert.deepStrictEqual(
         resolveHeaderAccountView(null, false),
         { dialog: "login", role: null, actions: [] },
       );
@@ -315,9 +319,11 @@ if (headerAccountState && headerAccountBranch) {
       const render = (view) => renderToStaticMarkup(
         React.createElement(HeaderAccountBranch, { view, login, account }),
       );
+      const pending = render(resolveHeaderAccountView(null, false, false));
       const loggedOut = render(resolveHeaderAccountView(null, false));
       const admin = render(resolveHeaderAccountView("owner@example.com", true));
       const regular = render(resolveHeaderAccountView("reader@example.com", false));
+      assert.equal(pending, "");
       assert.equal(loggedOut, '<span data-sentinel="login">login</span>');
       assert.equal(admin, '<span data-sentinel="account">account</span>');
       assert.equal(regular, '<span data-sentinel="account">account</span>');
@@ -338,13 +344,19 @@ const viewModelAssignment = headerAccountControl.match(
 const viewModelVariable = viewModelAssignment?.[1] ?? "";
 const escapedViewModel = viewModelVariable.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const currentUserViewCall = headerAccountControl.match(
-  /resolveHeaderAccountView\(\s*([A-Za-z_$][\w$]*)\??\.email(?:\s*\?\?\s*null)?\s*,\s*isAdminEmail\(\s*\1\??\.email\s*\)\s*\)/,
+  /resolveHeaderAccountView\(\s*([A-Za-z_$][\w$]*)\??\.email(?:\s*\?\?\s*null)?\s*,\s*isAdminEmail\(\s*\1\??\.email\s*\)\s*,\s*isAuthResolved\s*,?\s*\)/,
 );
 requireBehavior(
   headerAccountControl.includes('from "@/lib/header-account-state"') &&
     viewModelVariable.length > 0 &&
     Boolean(currentUserViewCall),
   "header account UI derives its render model from the current user email and Admin check",
+);
+requireBehavior(
+  headerAccountControl.includes("const [isAuthResolved, setIsAuthResolved] = useState(false)") &&
+    headerAccountControl.includes("setIsAuthResolved(true)") &&
+    Boolean(currentUserViewCall),
+  "header account UI renders neither Login nor Account before initial auth resolution",
 );
 
 const loggedOutBranch = extractMarkedJsxRegion(headerAccountControl, "data-auth-state", "logged-out");

@@ -5,6 +5,7 @@ export type HeaderAccountAction =
   | "logout"
 
 export type HeaderAccountView =
+  | { dialog: "pending"; role: null; actions: HeaderAccountAction[] }
   | { dialog: "login"; role: null; actions: HeaderAccountAction[] }
   | {
       dialog: "account"
@@ -20,7 +21,9 @@ export type HeaderAccountView =
 export function resolveHeaderAccountView(
   email: string | null,
   isAdmin: boolean,
+  isAuthResolved = true,
 ): HeaderAccountView {
+  if (!isAuthResolved) return { dialog: "pending", role: null, actions: [] }
   if (!email) return { dialog: "login", role: null, actions: [] }
 
   return isAdmin
