@@ -23,6 +23,7 @@ const badge = read("components/ui/badge.tsx");
 const input = read("components/ui/input.tsx");
 const textarea = read("components/ui/textarea.tsx");
 const navigation = read("components/ui/navigation-menu.tsx");
+const sheet = read("components/ui/sheet.tsx");
 const glassmorphism = read("components/ui/glassmorphism.tsx");
 const heroSplit = read("components/home/HeroSplit.tsx");
 const professionalHero = read("components/home/ProfessionalHero.tsx");
@@ -156,6 +157,14 @@ assert.equal(
   "Navigation trigger and link must both be square",
 );
 assert.ok(!navigation.includes("rounded-md"), "Navigation controls must not be rounded");
+assert.ok(
+  sheet.includes("rounded-xs [.public-design-scope_&]:rounded-none"),
+  "Sheet close must preserve the Profile baseline and become square under the HTML public scope",
+);
+assert.ok(
+  !sheet.includes('right-4 rounded-none opacity-70'),
+  "Sheet close must not apply square geometry outside the public design scope",
+);
 
 for (const className of [
   "rounded-[var(--radius-layout)]",
@@ -503,14 +512,28 @@ const allowedRoundedContexts = new Map([
   ["components/ui/project-card.tsx", /rounded-t-lg/],
 ]);
 
-const rawPaletteContextFiles = new Set([
-  "components/ui/article-card.tsx",
-  "components/ui/blog-lead-card.tsx",
-  "components/home/featured-projects.tsx",
-]);
-
 const isAllowedRawPaletteContext = (relativePath, line) =>
-  rawPaletteContextFiles.has(relativePath) ||
+  (relativePath === "components/ui/article-card.tsx" &&
+    (line.includes("absolute inset-0 bg-gradient-to-t") ||
+      line.includes("type-meta mb-4 w-fit rounded-none border-white/25") ||
+      line.includes("type-section-title max-w-[12ch]") ||
+      line.includes("type-meta rounded-none border-white/25") ||
+      line.includes("type-meta text-white/") ||
+      line.includes("type-card-title text-[clamp(1.65rem") ||
+      line.includes("article-card-surface") ||
+      line.includes("translate-y-full overflow-hidden bg-black") ||
+      line.includes("type-body invisible max-w-[24ch]"))) ||
+  (relativePath === "components/ui/blog-lead-card.tsx" &&
+    (line.includes("bg-gradient-to-t from-black/60") ||
+      line.includes("type-section-title text-3xl") ||
+      line.includes("type-meta mt-2 text-white/80") ||
+      line.includes("type-body mb-4 line-clamp-3") ||
+      line.includes("type-meta m-0 flex list-none"))) ||
+  (relativePath === "components/home/featured-projects.tsx" &&
+    (line.includes("rounded-none border border-white/16") ||
+      line.includes("type-meta text-white/72") ||
+      line.includes("type-body text-white/90") ||
+      line.includes("border-white/20 bg-black/24"))) ||
   (relativePath === "components/blogs/featured-blog-lead-card.tsx" &&
     (line.includes("aspect-square overflow-hidden") || line.includes("bg-gradient-to-b"))) ||
   (["components/home/ProfessionalHero.tsx", "components/home/TechHero.tsx"].includes(relativePath) &&
@@ -539,16 +562,16 @@ for (const relativePath of publicSourceFiles) {
     }
 
     if (/\bfont-(?:bold|extrabold|black)\b/.test(line)) {
-      const isAvatarFallback =
-        relativePath === "components/blogs/blog-detail-shell.tsx" &&
-        line.includes('className="text-sm font-bold uppercase"');
-      if (!isAvatarFallback) reportViolation(relativePath, lineNumber, "font-weight", line);
+      reportViolation(relativePath, lineNumber, "font-weight", line);
     }
 
     const roundedMatches = line.match(/\brounded-(?!none\b)[^\s"'`}]+/g) || [];
     if (roundedMatches.length > 0) {
       const allowedContext = allowedRoundedContexts.get(relativePath);
-      if (!allowedContext || !allowedContext.test(line)) {
+      const isScopedSheetClose =
+        relativePath === "components/ui/sheet.tsx" &&
+        line.includes("rounded-xs [.public-design-scope_&]:rounded-none");
+      if ((!allowedContext || !allowedContext.test(line)) && !isScopedSheetClose) {
         reportViolation(relativePath, lineNumber, "internal-radius", line);
       }
     }

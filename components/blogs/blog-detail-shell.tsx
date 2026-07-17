@@ -48,7 +48,7 @@ export function BlogDetailShell({
                 {authorAvatar ? (
                   <Image src={authorAvatar} alt={authorName ?? ""} fill className="object-cover" />
                 ) : (
-                  <span className="text-sm font-bold uppercase">
+                  <span className="text-sm font-semibold uppercase">
                     {(authorName ?? "J").charAt(0)}
                   </span>
                 )}
