@@ -47,7 +47,7 @@ export function ArchiveCard({ item, index }: { item: ArchiveItem; index: number 
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-[0.6rem] uppercase tracking-widest text-muted-foreground/50">Preview</span>
+              <span className="type-meta text-muted-foreground">Preview</span>
             </div>
           )}
         </div>

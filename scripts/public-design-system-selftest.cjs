@@ -5,6 +5,15 @@ const path = require("node:path");
 const root = path.resolve(__dirname, "..");
 const read = (relativePath) =>
   fs.readFileSync(path.join(root, relativePath), "utf8");
+const toPosix = (value) => value.split(path.sep).join("/");
+const listSourceFiles = (relativeDirectory) => {
+  const absoluteDirectory = path.join(root, relativeDirectory);
+  return fs.readdirSync(absoluteDirectory, { withFileTypes: true }).flatMap((entry) => {
+    const relativePath = path.join(relativeDirectory, entry.name);
+    if (entry.isDirectory()) return listSourceFiles(relativePath);
+    return /\.(?:ts|tsx)$/.test(entry.name) ? [toPosix(relativePath)] : [];
+  });
+};
 
 const globals = read("app/globals.css");
 const publicLayout = read("app/(public)/layout.tsx");
@@ -465,6 +474,99 @@ assert.equal(
   (blogDetailShell.match(/rounded-full/g) || []).length,
   1,
   "The explicitly excluded article author avatar must retain its image radius",
+);
+
+const publicSourceFiles = [
+  ...listSourceFiles("app/(public)"),
+  ...listSourceFiles("components"),
+].filter(
+  (relativePath) =>
+    !relativePath.startsWith("app/(public)/profile/") &&
+    !relativePath.startsWith("components/profile/") &&
+    !relativePath.startsWith("components/admin/"),
+);
+
+const allowedRoundedContexts = new Map([
+  ["components/blogs/featured-blog-lead-card.tsx", /radius-(?:layout|card)|rounded-full/],
+  ["components/blogs/blogs-editorial-hero.tsx", /radius-layout/],
+  ["components/blogs/blog-detail-shell.tsx", /rounded-full/],
+  ["components/home/HeroSplitSkeleton.tsx", /rounded-\[2\.5rem\]/],
+  ["components/home/HeroSplit.tsx", /radius-layout/],
+  ["components/home/ProfessionalHero.tsx", /rounded-\[2\.5rem\]/],
+  ["components/home/TechHero.tsx", /rounded-\[2\.5rem\]/],
+  ["components/layout/header.tsx", /rounded-sm/],
+  ["components/ui/article-card.tsx", /rounded-(?:xl|\[1\.35rem\])/],
+  ["components/ui/archive-card.tsx", /radius-card/],
+  ["components/ui/blog-lead-card.tsx", /radius-layout/],
+  ["components/ui/card.tsx", /rounded-xl/],
+  ["components/ui/glassmorphism.tsx", /radius-layout/],
+  ["components/ui/project-card.tsx", /rounded-t-lg/],
+]);
+
+const rawPaletteContextFiles = new Set([
+  "components/ui/article-card.tsx",
+  "components/ui/blog-lead-card.tsx",
+  "components/home/featured-projects.tsx",
+]);
+
+const isAllowedRawPaletteContext = (relativePath, line) =>
+  rawPaletteContextFiles.has(relativePath) ||
+  (relativePath === "components/blogs/featured-blog-lead-card.tsx" &&
+    (line.includes("aspect-square overflow-hidden") || line.includes("bg-gradient-to-b"))) ||
+  (["components/home/ProfessionalHero.tsx", "components/home/TechHero.tsx"].includes(relativePath) &&
+    line.includes("absolute inset-0 bg-gradient-to-t")) ||
+  (relativePath === "components/ui/project-card.tsx" && line.includes("bg-gradient-to-r from-black")) ||
+  (["components/ui/badge.tsx", "components/ui/button.tsx"].includes(relativePath) &&
+    line.includes("bg-destructive text-white")) ||
+  (relativePath === "components/ui/sheet.tsx" && line.includes("fixed inset-0 z-50 bg-black/50"));
+
+const publicAuditViolations = [];
+const reportViolation = (relativePath, lineNumber, rule, sourceLine) => {
+  publicAuditViolations.push(
+    `${relativePath}:${lineNumber} [${rule}] ${sourceLine.trim()}`,
+  );
+};
+
+for (const relativePath of publicSourceFiles) {
+  const lines = read(relativePath).split(/\r?\n/);
+  lines.forEach((line, index) => {
+    const lineNumber = index + 1;
+
+    for (const match of line.matchAll(/\btext-\[(\d*\.?\d+)(rem|px)\]/g)) {
+      const value = Number(match[1]);
+      const isUndersized = match[2] === "rem" ? value < 0.75 : value < 12;
+      if (isUndersized) reportViolation(relativePath, lineNumber, "text-size", line);
+    }
+
+    if (/\bfont-(?:bold|extrabold|black)\b/.test(line)) {
+      const isAvatarFallback =
+        relativePath === "components/blogs/blog-detail-shell.tsx" &&
+        line.includes('className="text-sm font-bold uppercase"');
+      if (!isAvatarFallback) reportViolation(relativePath, lineNumber, "font-weight", line);
+    }
+
+    const roundedMatches = line.match(/\brounded-(?!none\b)[^\s"'`}]+/g) || [];
+    if (roundedMatches.length > 0) {
+      const allowedContext = allowedRoundedContexts.get(relativePath);
+      if (!allowedContext || !allowedContext.test(line)) {
+        reportViolation(relativePath, lineNumber, "internal-radius", line);
+      }
+    }
+
+    const hasRawPalette =
+      /#[\da-f]{3,8}\b/i.test(line) ||
+      /\b(?:text|bg|border|from|via|to)-(?:black|white)(?:\/\d+)?\b/.test(line) ||
+      /\b(?:text|bg|border|from|via|to)-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d+\b/.test(line);
+    if (hasRawPalette && !isAllowedRawPaletteContext(relativePath, line)) {
+      reportViolation(relativePath, lineNumber, "raw-palette", line);
+    }
+  });
+}
+
+assert.equal(
+  publicAuditViolations.length,
+  0,
+  `Public source audit found visible design-system violations:\n${publicAuditViolations.join("\n")}`,
 );
 
 console.log("Public design-system self-test passed.");

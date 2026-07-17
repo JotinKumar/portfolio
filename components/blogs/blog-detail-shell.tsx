@@ -53,7 +53,7 @@ export function BlogDetailShell({
                   </span>
                 )}
               </div>
-              <p className="type-body text-foreground font-bold leading-tight">
+              <p className="type-body font-semibold leading-tight text-foreground">
                 {authorName ?? "Jotin Kumar Madugula"}
               </p>
             </div>
