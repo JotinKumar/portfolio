@@ -15,6 +15,12 @@ const input = read("components/ui/input.tsx");
 const textarea = read("components/ui/textarea.tsx");
 const navigation = read("components/ui/navigation-menu.tsx");
 const glassmorphism = read("components/ui/glassmorphism.tsx");
+const heroSplit = read("components/home/HeroSplit.tsx");
+const professionalHero = read("components/home/ProfessionalHero.tsx");
+const techHero = read("components/home/TechHero.tsx");
+const workTimeline = read("components/home/work-timeline.tsx");
+const floatingBlobsBar = read("components/ui/floating-blobs-bar.tsx");
+const scrollCue = read("components/ui/scroll-cue.tsx");
 
 for (const token of [
   "--color-control-border: var(--control-border)",
@@ -156,6 +162,53 @@ assert.ok(
 assert.ok(
   !glassmorphism.includes("rgba(0,0,255"),
   "Glassmorphism must not use a hard-coded blue dark shadow",
+);
+
+assert.ok(
+  heroSplit.includes("rounded-[var(--radius-layout)]"),
+  "The Home hero layout must use the semantic layout radius",
+);
+assert.ok(!heroSplit.includes("rounded-full"), "Home hero controls must be square");
+assert.ok(!heroSplit.includes("rounded-2xl"), "Home hero internal overlays must be square");
+assert.ok(!heroSplit.includes("border-white"), "Home hero borders must use semantic colors");
+assert.ok(!heroSplit.includes("rgba("), "Home hero decoration must not use raw RGBA colors");
+
+for (const [name, source] of Object.entries({ professionalHero, techHero })) {
+  assert.ok(
+    source.includes('className="type-meta border-foreground/18'),
+    `${name} skill badges must use the shared meta typography`,
+  );
+  assert.ok(!source.includes("text-[8px]"), `${name} skill labels must not be tiny`);
+  assert.ok(!source.includes("text-[9px]"), `${name} skill labels must not be tiny`);
+  assert.ok(!source.includes("rounded-full"), `${name} internal controls must be square`);
+}
+
+assert.ok(!workTimeline.includes("font-mono"), "Timeline years must not use monospace typography");
+assert.ok(
+  workTimeline.includes("font-sans tabular-nums"),
+  "Timeline years must use Outfit-compatible sans typography with tabular numbers",
+);
+assert.ok(!workTimeline.includes("rounded-full"), "Timeline bullets and markers must be square");
+
+assert.ok(
+  floatingBlobsBar.includes("getComputedStyle(document.documentElement)"),
+  "Floating blob colors must resolve from the active CSS theme",
+);
+for (const token of ["--decorative-1", "--decorative-2", "--decorative-3"]) {
+  assert.ok(floatingBlobsBar.includes(token), `Floating blobs must consume ${token}`);
+}
+assert.doesNotMatch(
+  floatingBlobsBar,
+  /#[\da-f]{3,8}/i,
+  "Floating blobs must not carry a hard-coded multicolor palette",
+);
+
+assert.ok(scrollCue.includes("rounded-none"), "The scroll cue wrapper must be square");
+assert.ok(!scrollCue.includes("rounded-full"), "The scroll cue wrapper must not be circular");
+assert.doesNotMatch(scrollCue, /#[\da-f]{3,8}/i, "The scroll cue must not use hard-coded colors");
+assert.ok(
+  (scrollCue.match(/(?:stroke|fill)="currentColor"/g) || []).length >= 5,
+  "The scroll cue border and icon must inherit a semantic current color",
 );
 
 console.log("Public design-system self-test passed.");

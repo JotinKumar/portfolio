@@ -238,7 +238,7 @@ export function WorkTimeline({
                   return (
                     <span
                       key={`ellipsis-${index}`}
-                      className={`inline-flex w-full items-center justify-center px-0.5 font-mono text-muted-foreground ${
+                      className={`inline-flex w-full items-center justify-center px-0.5 font-sans tabular-nums text-muted-foreground ${
                         railMode === "compact" ? "text-[0.68rem] md:text-[0.74rem]" : "text-[0.78rem] md:text-[0.86rem]"
                       }`}
                     >
@@ -266,7 +266,7 @@ export function WorkTimeline({
                     onMouseLeave={milestone ? clearTooltip : undefined}
                     onFocus={milestone ? (event) => updateTooltipFromFocus(event, milestone.id) : undefined}
                     onBlur={milestone ? clearTooltip : undefined}
-                    className={`inline-flex w-full items-center justify-center px-2.5 py-1 font-mono text-[0.76rem] font-medium tracking-[0.08em] md:text-[0.9rem] ${
+                    className={`inline-flex w-full items-center justify-center rounded-none px-2.5 py-1 font-sans tabular-nums text-[0.76rem] font-medium tracking-[0.08em] md:text-[0.9rem] ${
                       isMilestone
                         ? "bg-primary/10 text-foreground"
                         : "bg-transparent text-muted-foreground"
@@ -277,7 +277,7 @@ export function WorkTimeline({
                 );
               })}
               <span
-                className={`inline-flex w-full items-center justify-center px-0.5 font-mono text-muted-foreground ${
+                className={`inline-flex w-full items-center justify-center px-0.5 font-sans tabular-nums text-muted-foreground ${
                   railMode === "compact" ? "text-[0.68rem] md:text-[0.74rem]" : "text-[0.78rem] md:text-[0.86rem]"
                 }`}
               >
@@ -356,7 +356,7 @@ export function WorkTimeline({
                     <ul className="space-y-3">
                       {parseAchievements(currentExperience.achievements).slice(0, 3).map((achievement) => (
                         <li key={achievement} className="type-body flex gap-3 text-muted-foreground">
-                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/60" />
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-none bg-primary/60" />
                           <span>{achievement}</span>
                         </li>
                       ))}
@@ -466,7 +466,7 @@ export function WorkTimeline({
                     <ul className="space-y-3">
                       {parseAchievements(selectedExperience.achievements).map((achievement) => (
                         <li key={`${selectedExperience.id}-sheet-achievement-${achievement}`} className="type-body flex gap-3 text-muted-foreground">
-                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/60" />
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-none bg-primary/60" />
                           <span>{achievement}</span>
                         </li>
                       ))}

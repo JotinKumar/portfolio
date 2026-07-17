@@ -84,7 +84,7 @@ export function TechHero({
             </AnimatePresence>
             
             <div className={`space-y-3 flex flex-col ${current ? "items-start" : "items-end"}`}>
-              <h2 className={`${isInitial ? "type-nav text-[0.95rem]" : "type-card-title text-[1.35rem] md:text-[1.7rem]"} whitespace-nowrap`}>
+              <h2 className={`type-card-title ${isInitial ? "text-[0.95rem]" : "text-[1.35rem] md:text-[1.7rem]"} whitespace-nowrap`}>
                 {heroContent.techTitle}
               </h2>
               <p className={`${isInitial ? "type-body max-w-md" : "type-body-lg max-w-2xl"} text-muted-foreground`}>
@@ -126,7 +126,7 @@ export function TechHero({
                   >
                     <Badge
                       variant="outline"
-                      className="border-foreground/18 bg-transparent px-3 py-1 text-[8px] md:text-[9px] text-foreground shadow-none whitespace-nowrap"
+                      className="type-meta border-foreground/18 bg-transparent px-3 py-1 text-foreground shadow-none whitespace-nowrap"
                     >
                       {skill}
                     </Badge>
@@ -135,10 +135,10 @@ export function TechHero({
               </AnimatePresence>
             </motion.div>
             <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 ${isInitial ? "scale-90 origin-right" : ""}`}>
-              <Button variant="outline" asChild className="rounded-full border-2 px-8 py-5 text-base transition-all hover:bg-primary/5 active:scale-95">
+              <Button variant="outline" asChild className="rounded-none border-2 px-8 py-5 text-base transition-all hover:bg-primary/5 active:scale-95">
                 <Link href="/projects">{heroContent.viewProjectsLabel}</Link>
               </Button>
-              <Button asChild className="rounded-full px-8 py-5 text-base shadow-lg transition-all hover:shadow-primary/20 active:scale-95">
+              <Button asChild className="rounded-none px-8 py-5 text-base shadow-lg transition-all hover:shadow-primary/20 active:scale-95">
                 <Link href="/blogs">{heroContent.viewArticlesLabel}</Link>
               </Button>
             </div>
