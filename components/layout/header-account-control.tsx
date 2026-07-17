@@ -47,6 +47,7 @@ export function HeaderAccountControl() {
     isResolved: false,
   })
   const authVersionRef = useRef(0)
+  const trustedUserIdRef = useRef<string | null>(null)
   const [loginOpen, setLoginOpen] = useState(false)
   const [accountOpen, setAccountOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
@@ -72,6 +73,7 @@ export function HeaderAccountControl() {
           return
         }
 
+        trustedUserIdRef.current = result.user?.id ?? null
         setAuthState({ ...result, isResolved: true })
       } catch {
         // Keep the control pending when trusted identity or role cannot be resolved.
@@ -90,14 +92,20 @@ export function HeaderAccountControl() {
         const transition = resolveHeaderAuthEvent(
           authVersionRef.current,
           event,
-          Boolean(session?.user),
+          trustedUserIdRef.current,
+          session?.user.id ?? null,
         )
         if (!transition.resolveIdentity) return
 
         authVersionRef.current = transition.version
-        setAuthState({ user: null, isAdmin: false, isResolved: false })
-        if (transition.closeDialog === "login") setLoginOpen(false)
-        if (transition.closeDialog === "account") setAccountOpen(false)
+        if (transition.clearIdentity) {
+          trustedUserIdRef.current = null
+          setAuthState({ user: null, isAdmin: false, isResolved: false })
+        }
+        if (transition.closeDialog === "all") {
+          setLoginOpen(false)
+          setAccountOpen(false)
+        }
         if (transition.refresh) router.refresh()
         void resolveTrustedIdentity(transition.version)
       })
@@ -125,7 +133,6 @@ export function HeaderAccountControl() {
 
   function handleAuthenticated() {
     setLoginOpen(false)
-    router.refresh()
   }
 
   async function handleLogout() {
@@ -140,6 +147,7 @@ export function HeaderAccountControl() {
       }
 
       authVersionRef.current += 1
+      trustedUserIdRef.current = null
       if (outcome.clearIdentity) {
         setAuthState({ user: null, isAdmin: false, isResolved: true })
       }
@@ -179,7 +187,10 @@ export function HeaderAccountControl() {
                     Sign in or create an account to continue.
                   </DialogDescription>
                 </DialogHeader>
-                <AuthPanel onAuthenticated={handleAuthenticated} />
+                <AuthPanel
+                  onAuthenticated={handleAuthenticated}
+                  refreshOnAuthenticated={false}
+                />
               </DialogContent>
             </div>
           </Dialog>

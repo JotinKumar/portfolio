@@ -352,25 +352,30 @@ if (headerAuthLifecycle) {
         resolveHeaderLogoutOutcome,
       } = require(${JSON.stringify(lifecyclePath)});
 
-      assert.deepStrictEqual(resolveHeaderAuthEvent(0, "INITIAL_SESSION", true), {
-        version: 0, resolveIdentity: false, refresh: false, closeDialog: null,
+      assert.deepStrictEqual(resolveHeaderAuthEvent(0, "INITIAL_SESSION", "owner", "owner"), {
+        version: 0, resolveIdentity: false, clearIdentity: false, refresh: false, closeDialog: null,
       });
-      assert.deepStrictEqual(resolveHeaderAuthEvent(0, "TOKEN_REFRESHED", true), {
-        version: 0, resolveIdentity: false, refresh: false, closeDialog: null,
+      assert.deepStrictEqual(resolveHeaderAuthEvent(0, "TOKEN_REFRESHED", "owner", "owner"), {
+        version: 0, resolveIdentity: false, clearIdentity: false, refresh: false, closeDialog: null,
       });
 
-      const signedIn = resolveHeaderAuthEvent(0, "SIGNED_IN", true);
+      const sameUserSignedIn = resolveHeaderAuthEvent(0, "SIGNED_IN", "owner", "owner");
+      assert.deepStrictEqual(sameUserSignedIn, {
+        version: 0, resolveIdentity: false, clearIdentity: false, refresh: false, closeDialog: null,
+      });
+
+      const signedIn = resolveHeaderAuthEvent(0, "SIGNED_IN", "reader", "owner");
       assert.deepStrictEqual(signedIn, {
-        version: 1, resolveIdentity: true, refresh: true, closeDialog: "login",
+        version: 1, resolveIdentity: true, clearIdentity: true, refresh: true, closeDialog: "all",
       });
       assert.equal(canApplyHeaderAuthResolution(0, signedIn.version), false);
       assert.equal(canApplyHeaderAuthResolution(0, 0), true);
 
-      assert.deepStrictEqual(resolveHeaderAuthEvent(1, "SIGNED_OUT", false), {
-        version: 2, resolveIdentity: true, refresh: true, closeDialog: "account",
+      assert.deepStrictEqual(resolveHeaderAuthEvent(1, "SIGNED_OUT", "owner", null), {
+        version: 2, resolveIdentity: true, clearIdentity: true, refresh: true, closeDialog: "all",
       });
-      assert.deepStrictEqual(resolveHeaderAuthEvent(2, "USER_UPDATED", true), {
-        version: 3, resolveIdentity: true, refresh: true, closeDialog: "login",
+      assert.deepStrictEqual(resolveHeaderAuthEvent(2, "USER_UPDATED", "owner", "owner"), {
+        version: 3, resolveIdentity: true, clearIdentity: false, refresh: true, closeDialog: null,
       });
 
       assert.deepStrictEqual(resolveHeaderLogoutOutcome(true), {
@@ -412,6 +417,7 @@ requireBehavior(
 );
 requireBehavior(
   headerAccountControl.includes("authVersionRef") &&
+    headerAccountControl.includes("trustedUserIdRef") &&
     headerAccountControl.includes("canApplyHeaderAuthResolution") &&
     headerAccountControl.includes("resolveHeaderAuthEvent") &&
     headerAccountControl.includes('event === "INITIAL_SESSION"') &&
@@ -519,6 +525,16 @@ const dialogRegion = (source, purpose) => {
 };
 const loginDialog = dialogRegion(loggedOutBranch, "login");
 const accountDialog = dialogRegion(authenticatedBranch, "account");
+const modalAuthenticationHandler = headerAccountControl.match(
+  /function handleAuthenticated\([^)]*\)\s*\{([\s\S]*?)\n\s*\}/,
+)?.[1] ?? "";
+requireBehavior(
+  loginDialog.includes("refreshOnAuthenticated={false}") &&
+    authPanel.includes("refreshOnAuthenticated") &&
+    authPanel.includes("if (refreshOnAuthenticated) router.refresh()") &&
+    !modalAuthenticationHandler.includes("router.refresh()"),
+  "modal authentication leaves the single server refresh to the identity event",
+);
 requireBehavior(
   loginDialog.includes("<DialogContent") &&
     loginDialog.includes("<DialogTitle") &&

@@ -20,25 +20,42 @@ export function canApplyHeaderAuthResolution(
 export function resolveHeaderAuthEvent(
   currentVersion: number,
   event: string,
-  hasUser: boolean,
+  currentUserId: string | null,
+  eventUserId: string | null,
 ) {
-  const changesIdentity =
-    event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED"
+  const noChange = {
+    version: currentVersion,
+    resolveIdentity: false,
+    clearIdentity: false,
+    refresh: false,
+    closeDialog: null,
+  }
+  const isSameUser =
+    Boolean(currentUserId) && Boolean(eventUserId) && currentUserId === eventUserId
 
-  if (!changesIdentity) {
+  if (event === "SIGNED_IN" && isSameUser) return noChange
+
+  if (event === "USER_UPDATED" && isSameUser) {
     return {
-      version: currentVersion,
-      resolveIdentity: false,
-      refresh: false,
+      version: currentVersion + 1,
+      resolveIdentity: true,
+      clearIdentity: false,
+      refresh: true,
       closeDialog: null,
     }
   }
 
+  const changesIdentity =
+    event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED"
+
+  if (!changesIdentity) return noChange
+
   return {
     version: currentVersion + 1,
     resolveIdentity: true,
+    clearIdentity: true,
     refresh: true,
-    closeDialog: hasUser ? "login" : "account",
+    closeDialog: "all",
   }
 }
 

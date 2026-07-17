@@ -42,9 +42,14 @@ type SignupFormValues = z.infer<typeof signupSchema>
 type AuthPanelProps = {
   onAuthenticated?: (user: User) => void
   redirectTo?: string
+  refreshOnAuthenticated?: boolean
 }
 
-export function AuthPanel({ onAuthenticated, redirectTo }: AuthPanelProps) {
+export function AuthPanel({
+  onAuthenticated,
+  redirectTo,
+  refreshOnAuthenticated = true,
+}: AuthPanelProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [mode, setMode] = useState<"login" | "signup">("login")
   const router = useRouter()
@@ -67,7 +72,7 @@ export function AuthPanel({ onAuthenticated, redirectTo }: AuthPanelProps) {
   function finishAuthentication(user: User) {
     onAuthenticated?.(user)
     if (redirectTo) router.push(redirectTo)
-    router.refresh()
+    if (refreshOnAuthenticated) router.refresh()
   }
 
   function getCallbackUrl() {
