@@ -49,6 +49,8 @@ const header = read("components/layout/header.tsx");
 const navigationState = readIfExists("lib/navigation-state.ts");
 const headerAccountState = readIfExists("lib/header-account-state.ts");
 const headerAuthLifecycle = readIfExists("lib/header-auth-lifecycle.ts");
+const headerLoginQuery = readIfExists("lib/header-login-query.ts");
+const accountProfileState = readIfExists("lib/account-profile-state.ts");
 const headerAccountControl = readIfExists("components/layout/header-account-control.tsx");
 const headerAccountBranch = readIfExists("components/layout/header-account-branch.tsx");
 const headerAccountRoute = readIfExists("app/api/auth/header-account/route.ts");
@@ -397,6 +399,76 @@ requireBehavior(
   headerAuthLifecycleExecutionError === "",
   `header auth lifecycle versions identity events and models logout outcomes (${headerAuthLifecycleExecutionError})`,
 );
+let headerLoginQueryExecutionError = "login query helper is missing";
+if (headerLoginQuery) {
+  try {
+    const queryPath = path.join(root, "lib/header-login-query.ts");
+    const queryScript = `
+      const assert = require("node:assert/strict");
+      const { resolveHeaderLoginRequest } = require(${JSON.stringify(queryPath)});
+      const route = {
+        isResolved: true,
+        hasUser: false,
+        pathname: "/projects",
+        hash: "#featured",
+      };
+      assert.deepStrictEqual(
+        resolveHeaderLoginRequest({ ...route, searchParams: "view=grid" }),
+        { openLogin: false, replacementUrl: null },
+      );
+      assert.deepStrictEqual(
+        resolveHeaderLoginRequest({ ...route, searchParams: "view=grid&login=1&topic=react" }),
+        { openLogin: true, replacementUrl: "/projects?view=grid&topic=react#featured" },
+      );
+      assert.deepStrictEqual(
+        resolveHeaderLoginRequest({
+          ...route,
+          hasUser: true,
+          searchParams: "view=grid&login=1&topic=react",
+        }),
+        { openLogin: false, replacementUrl: "/projects?view=grid&topic=react#featured" },
+      );
+      assert.deepStrictEqual(
+        resolveHeaderLoginRequest({
+          ...route,
+          isResolved: false,
+          searchParams: "view=grid&login=1&topic=react",
+        }),
+        { openLogin: false, replacementUrl: null },
+      );
+    `;
+    runTypeScriptCheck(queryScript);
+    headerLoginQueryExecutionError = "";
+  } catch (error) {
+    headerLoginQueryExecutionError = error instanceof Error ? error.message : String(error);
+  }
+}
+requireBehavior(
+  headerLoginQueryExecutionError === "",
+  `login query route changes open once after trusted resolution while preserving URL state (${headerLoginQueryExecutionError})`,
+);
+let accountProfileStateExecutionError = "profile state helper is missing";
+if (accountProfileState) {
+  try {
+    const profileStatePath = path.join(root, "lib/account-profile-state.ts");
+    const profileStateScript = `
+      const assert = require("node:assert/strict");
+      const { shouldResetAccountProfile } = require(${JSON.stringify(profileStatePath)});
+      assert.equal(shouldResetAccountProfile({ currentUserId: "reader", nextUserId: "reader", isDirty: false, metadataChanged: true }), true);
+      assert.equal(shouldResetAccountProfile({ currentUserId: "reader", nextUserId: "reader", isDirty: true, metadataChanged: true }), false);
+      assert.equal(shouldResetAccountProfile({ currentUserId: "reader", nextUserId: "other", isDirty: true, metadataChanged: false }), true);
+      assert.equal(shouldResetAccountProfile({ currentUserId: "reader", nextUserId: "reader", isDirty: false, metadataChanged: false }), false);
+    `;
+    runTypeScriptCheck(profileStateScript);
+    accountProfileStateExecutionError = "";
+  } catch (error) {
+    accountProfileStateExecutionError = error instanceof Error ? error.message : String(error);
+  }
+}
+requireBehavior(
+  accountProfileStateExecutionError === "",
+  `profile metadata refresh resets pristine or changed-identity forms without clobbering dirty edits (${accountProfileStateExecutionError})`,
+);
 const viewModelAssignment = headerAccountControl.match(
   /const\s+([A-Za-z_$][\w$]*)\s*=\s*resolveHeaderAccountView\([^;]+\)/,
 );
@@ -567,6 +639,8 @@ requireBehavior(
 );
 requireBehavior(
   accountProfilePage.includes("export const metadata") &&
+    accountProfilePage.includes("userId={user.id}") &&
+    accountProfilePage.includes("key={user.id}") &&
     accountProfilePage.includes("display_name") &&
     accountProfilePage.includes("avatar_url") &&
     accountProfilePage.includes("bio") &&
@@ -582,21 +656,25 @@ requireBehavior(
     accountProfileForm.includes("router.refresh()") &&
     accountProfileForm.includes("toast.success") &&
     accountProfileForm.includes("toast.error") &&
-    accountProfileForm.includes("readOnly"),
+    accountProfileForm.includes("readOnly") &&
+    accountProfileForm.includes("useEffect") &&
+    accountProfileForm.includes("shouldResetAccountProfile") &&
+    accountProfileForm.includes("form.formState.isDirty") &&
+    accountProfileForm.includes("form.reset"),
   "profile form validates metadata, keeps email read-only, updates auth, and reports outcomes",
 );
 requireBehavior(
-  headerAccountControl.includes("window.location.href") &&
-    headerAccountControl.includes('searchParams.get("login") === "1"') &&
+  headerAccountControl.includes("useSearchParams") &&
+    headerAccountControl.includes("usePathname") &&
+    headerAccountControl.includes("searchParams.toString()") &&
+    headerAccountControl.includes("resolveHeaderLoginRequest") &&
     headerAccountControl.includes("authState.isResolved") &&
-    headerAccountControl.includes("!authState.user") &&
     headerAccountControl.includes("setLoginOpen(true)") &&
-    headerAccountControl.includes('searchParams.delete("login")') &&
     headerAccountControl.includes("window.history.replaceState") &&
-    headerAccountControl.includes("nextUrl.pathname") &&
-    headerAccountControl.includes("nextUrl.search") &&
-    headerAccountControl.includes("nextUrl.hash"),
-  "login=1 opens only for resolved logged-out users and is removed without losing URL state",
+    /\[[^\]]*authState\.isResolved[^\]]*authState\.user[^\]]*pathname[^\]]*loginQuerySignal[^\]]*\]/.test(headerAccountControl) &&
+    header.includes("<Suspense") &&
+    header.includes("<HeaderAccountControl"),
+  "reactive login=1 route state opens only after trusted resolution inside a Suspense boundary",
 );
 requireBehavior(
   dialog.includes("@radix-ui/react-dialog") &&

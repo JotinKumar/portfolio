@@ -31,6 +31,8 @@ export default async function AccountProfilePage() {
   return (
     <div className="mx-auto w-full max-w-2xl py-12">
       <AccountProfileForm
+        key={user.id}
+        userId={user.id}
         email={user.email ?? ""}
         displayName={getMetadataValue(userMetadata, "display_name")}
         avatarUrl={getMetadataValue(userMetadata, "avatar_url")}

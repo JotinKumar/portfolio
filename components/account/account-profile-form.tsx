@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -25,6 +25,10 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import {
+  getAccountProfileMetadata,
+  shouldResetAccountProfile,
+} from "@/lib/account-profile-state"
 import { createClient } from "@/lib/supabase"
 
 const accountProfileSchema = z.object({
@@ -40,6 +44,7 @@ const accountProfileSchema = z.object({
 type AccountProfileValues = z.infer<typeof accountProfileSchema>
 
 type AccountProfileFormProps = {
+  userId: string
   email: string
   displayName: string
   avatarUrl: string
@@ -47,6 +52,7 @@ type AccountProfileFormProps = {
 }
 
 export function AccountProfileForm({
+  userId,
   email,
   displayName,
   avatarUrl,
@@ -54,14 +60,38 @@ export function AccountProfileForm({
 }: AccountProfileFormProps) {
   const router = useRouter()
   const [feedback, setFeedback] = useState("")
+  const initialMetadata = getAccountProfileMetadata(displayName, avatarUrl, bio)
+  const lastUserIdRef = useRef(userId)
+  const lastMetadataRef = useRef(initialMetadata)
   const form = useForm<AccountProfileValues>({
     resolver: zodResolver(accountProfileSchema),
-    defaultValues: {
-      display_name: displayName,
-      avatar_url: avatarUrl,
-      bio,
-    },
+    defaultValues: initialMetadata,
   })
+
+  useEffect(() => {
+    const nextMetadata = getAccountProfileMetadata(displayName, avatarUrl, bio)
+    const previousMetadata = lastMetadataRef.current
+    const metadataChanged =
+      previousMetadata.display_name !== nextMetadata.display_name ||
+      previousMetadata.avatar_url !== nextMetadata.avatar_url ||
+      previousMetadata.bio !== nextMetadata.bio
+
+    if (
+      !shouldResetAccountProfile({
+        currentUserId: lastUserIdRef.current,
+        nextUserId: userId,
+        isDirty: form.formState.isDirty,
+        metadataChanged,
+      })
+    ) {
+      return
+    }
+
+    form.reset(nextMetadata)
+    lastUserIdRef.current = userId
+    lastMetadataRef.current = nextMetadata
+    setFeedback("")
+  }, [avatarUrl, bio, displayName, form, form.formState.isDirty, userId])
 
   async function onSubmit(values: AccountProfileValues) {
     setFeedback("")

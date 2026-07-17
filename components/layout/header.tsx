@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
+import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Glassmorphism } from "@/components/ui/glassmorphism";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -152,7 +153,9 @@ export function Header({
               <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
               <span className="sr-only">Toggle theme</span>
             </Button>
-            <HeaderAccountControl />
+            <Suspense fallback={null}>
+              <HeaderAccountControl />
+            </Suspense>
           </div>
 
           <Sheet>

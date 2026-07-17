@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { LayoutDashboard, LogOut, Settings, UserRound } from "lucide-react"
 import { toast } from "sonner"
 
@@ -18,6 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { resolveHeaderAccountView } from "@/lib/header-account-state"
+import { resolveHeaderLoginRequest } from "@/lib/header-login-query"
 import {
   canApplyHeaderAuthResolution,
   resolveHeaderAuthEvent,
@@ -41,6 +42,9 @@ function getInitials(label: string) {
 
 export function HeaderAccountControl() {
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const loginQuerySignal = searchParams.toString()
   const [authState, setAuthState] = useState<TrustedHeaderAccountState>({
     user: null,
     isAdmin: false,
@@ -121,23 +125,22 @@ export function HeaderAccountControl() {
   }, [router])
 
   useEffect(() => {
-    if (!authState.isResolved) return
+    const resolution = resolveHeaderLoginRequest({
+      isResolved: authState.isResolved,
+      hasUser: Boolean(authState.user),
+      pathname,
+      searchParams: loginQuerySignal,
+      hash: window.location.hash,
+    })
 
-    const nextUrl = new URL(window.location.href)
-    const shouldOpenLogin = nextUrl.searchParams.get("login") === "1"
-    if (!shouldOpenLogin) return
-
-    if (!authState.user) {
+    if (resolution.openLogin) {
       setLoginOpen(true)
     }
 
-    nextUrl.searchParams.delete("login")
-    window.history.replaceState(
-      window.history.state,
-      "",
-      `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`,
-    )
-  }, [authState.isResolved, authState.user])
+    if (resolution.replacementUrl) {
+      window.history.replaceState(window.history.state, "", resolution.replacementUrl)
+    }
+  }, [authState.isResolved, authState.user, pathname, loginQuerySignal])
 
   const view = resolveHeaderAccountView(
     authState.user?.email ?? null,
