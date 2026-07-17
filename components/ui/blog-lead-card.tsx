@@ -45,7 +45,7 @@ export function BlogLeadCard({ article }: BlogLeadCardProps) {
       initial="initial"
       whileHover="hover"
       variants={cardVariants}
-      className="relative block w-full overflow-hidden rounded-none shadow-lg h-[500px]"
+      className="relative block h-[500px] w-full overflow-hidden rounded-[var(--radius-layout)] shadow-lg"
     >
       <Link href={`/blogs/${article.slug}`} className="absolute inset-0 z-30" aria-label={`Read ${article.title}`} />
       

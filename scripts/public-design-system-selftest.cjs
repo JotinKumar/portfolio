@@ -250,6 +250,18 @@ assert.ok(
   !featuredBlogLeadCard.includes("font-black"),
   "Featured blog metadata must not use an extreme black font weight",
 );
+assert.ok(
+  !featuredBlogLeadCard.includes('items-start font-serif leading-none'),
+  "Featured blog date metadata must use the shared Outfit role",
+);
+assert.ok(
+  featuredBlogLeadCard.includes('text-[4.8rem] font-semibold'),
+  "Featured blog date numerals must use a loaded Outfit weight no heavier than 600",
+);
+assert.ok(
+  featuredBlogLeadCard.includes('className="type-meta text-foreground/40"'),
+  "Featured blog avatar fallback must use the shared Outfit metadata role",
+);
 
 assert.ok(
   blogsEditorialHero.includes('className="type-display'),
@@ -294,6 +306,20 @@ assert.ok(!blogLeadCard.includes("#BDA26B"), "Blog lead accents must not use har
 assert.ok(!blogLeadCard.includes("#8e7c49"), "Blog lead actions must not use hard-coded gold");
 assert.ok(!blogLeadCard.includes("#ddd"), "Blog lead metadata must use semantic colors");
 assert.ok(!blogLeadCard.includes("#444"), "Blog lead actions must use semantic colors");
+assert.ok(
+  blogLeadCard.includes("rounded-[var(--radius-layout)]"),
+  "The blog lead outer card must use the rounded semantic layout geometry",
+);
+
+assert.ok(
+  articleCard.includes("rounded-none bg-background"),
+  "The square article cutout must match the active page background",
+);
+assert.equal(
+  (articleCard.match(/shadow-\[10px_10px_0_10px_var\(--background\)\]/g) || []).length,
+  2,
+  "The article cutout must derive both square continuation shadows from --background",
+);
 
 assert.doesNotMatch(
   articleCard,

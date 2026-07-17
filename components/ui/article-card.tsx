@@ -154,7 +154,10 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
           </div>
         </div>
 
-        <div className="pointer-events-none absolute bottom-0 right-0 z-10 h-[3.2rem] w-[3.2rem] rounded-none bg-card sm:h-[3.35rem] sm:w-[3.35rem]" />
+        <div className="pointer-events-none absolute bottom-0 right-0 z-10 h-[3.2rem] w-[3.2rem] rounded-none bg-background sm:h-[3.35rem] sm:w-[3.35rem]">
+          <span className="absolute -top-[0.72rem] right-0 h-[0.72rem] w-[0.72rem] rounded-none shadow-[10px_10px_0_10px_var(--background)]" />
+          <span className="absolute bottom-0 -left-[0.72rem] h-[0.72rem] w-[0.72rem] rounded-none shadow-[10px_10px_0_10px_var(--background)]" />
+        </div>
 
         <div className="absolute bottom-0 right-0 z-20 flex h-[3.2rem] w-[3.2rem] items-end justify-end sm:h-[3.35rem] sm:w-[3.35rem]">
           <span className="group/button mb-[0.12rem] mr-[0.12rem] flex h-[2.78rem] w-[2.78rem] items-center justify-center rounded-none bg-primary text-primary-foreground shadow-sm transition-[transform,box-shadow,background-color,color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none group-hover:translate-x-[0.04rem] group-hover:translate-y-[-0.04rem] group-hover:shadow-lg group-hover/button:-translate-y-[0.08rem]">

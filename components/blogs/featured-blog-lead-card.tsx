@@ -72,8 +72,8 @@ export function FeaturedBlogLeadCard({
             data-testid="featured-blog-utility-strip"
           >
             <div className="flex items-center gap-14" data-testid="featured-blog-date">
-              <div className="flex flex-col items-start font-serif leading-none">
-                <span className="text-[4.8rem] font-bold text-foreground/[0.08] leading-none">{day}</span>
+              <div className="flex flex-col items-start font-sans leading-none">
+                <span className="text-[4.8rem] font-semibold leading-none text-foreground/[0.08]">{day}</span>
                 <span className="type-meta -mt-1 text-foreground/50">{month}</span>
               </div>
             </div>
@@ -86,7 +86,7 @@ export function FeaturedBlogLeadCard({
                 {article.authorAvatar ? (
                   <Image src={article.authorAvatar} alt={article.authorName} fill className="object-cover" />
                 ) : (
-                  <span className="text-[0.75rem] font-bold uppercase text-foreground/40">{(article.authorName ?? "J").charAt(0)}</span>
+                  <span className="type-meta text-foreground/40">{(article.authorName ?? "J").charAt(0)}</span>
                 )}
               </div>
             </div>
