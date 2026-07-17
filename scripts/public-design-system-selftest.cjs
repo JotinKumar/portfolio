@@ -241,6 +241,70 @@ for (const [name, source] of Object.entries({
   assert.ok(!source.includes("rounded-full"), `${name} internal controls must be square`);
   assert.ok(!source.includes("font-black"), `${name} must not use extreme black font weights`);
 }
+assert.ok(
+  blogsEditorialHero.includes("flex-col items-center") &&
+    blogsEditorialHero.includes("sm:flex-row") &&
+    blogsEditorialHero.includes("gap-y-1"),
+  "The three-word blog masthead must stack with a compact gap on mobile",
+);
+assert.ok(
+  blogsEditorialHero.includes("focus-within:border-ring") &&
+    blogsEditorialHero.includes("focus-within:ring-2"),
+  "The square blog search wrapper must expose a visible focus-within treatment",
+);
+assert.equal(
+  (blogsEditorialHero.match(/aria-label="Search articles"/g) || []).length,
+  2,
+  "The blog search input and icon submit must both have programmatic labels",
+);
+
+assert.ok(
+  blogsEditorialHero.includes("items-center rounded-none border border-control-border"),
+  "The named editorial search control must be explicitly square",
+);
+assert.ok(
+  blogsEditorialHero.includes('className="h-9 w-9 rounded-none"'),
+  "The named editorial submit action must be explicitly square",
+);
+assert.equal(
+  (blogsTaxonomyRail.match(/type-meta rounded-none/g) || []).length,
+  2,
+  "Both taxonomy tag groups must use explicit square geometry",
+);
+assert.equal(
+  (featuredBlogLeadCard.match(/type-meta rounded-none/g) || []).length,
+  2,
+  "Both featured blog metadata tags must use explicit square geometry",
+);
+assert.ok(
+  featuredBlogLeadCard.includes("items-center justify-center rounded-none bg-primary"),
+  "The featured blog arrow action must be explicitly square",
+);
+assert.equal(
+  (archiveCard.match(/type-meta inline-block rounded-none/g) || []).length,
+  2,
+  "Both archive metadata tags must use explicit square geometry",
+);
+assert.ok(
+  archiveCard.includes("type-nav inline-flex items-center gap-1 rounded-none"),
+  "The archive read action must be explicitly square",
+);
+assert.ok(
+  articleCard.includes("type-meta mb-4 w-fit rounded-none"),
+  "The featured article category tag must be explicitly square",
+);
+assert.ok(
+  articleCard.includes("type-meta rounded-none border-white/25"),
+  "The standard article category tag must be explicitly square",
+);
+assert.ok(
+  articleCard.includes("items-center justify-center rounded-none bg-primary"),
+  "The article arrow action must be explicitly square",
+);
+assert.ok(
+  blogLeadCard.includes("type-nav pointer-events-auto inline-block rounded-none"),
+  "The blog lead read action must be explicitly square",
+);
 assert.equal(
   (featuredBlogLeadCard.match(/rounded-full/g) || []).length,
   1,
@@ -329,6 +393,14 @@ assert.doesNotMatch(
 assert.ok(
   !articleCard.includes("transition-[font-size,line-height,letter-spacing]"),
   "Article title hover transitions must not animate font size",
+);
+assert.ok(
+  articleCard.includes("group-hover:shadow-xl"),
+  "Article card hover elevation must use a shared semantic shadow utility",
+);
+assert.ok(
+  !articleCard.includes("group-hover:shadow-[0_28px_60px_rgba"),
+  "Article card hover elevation must not use a raw RGBA shadow",
 );
 
 console.log("Public design-system self-test passed.");

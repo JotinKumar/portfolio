@@ -55,7 +55,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-6 md:p-8">
-              <Badge variant="outline" className="type-meta mb-4 w-fit border-white/25 bg-black/20 tracking-[0.08em] text-white backdrop-blur-sm">
+              <Badge variant="outline" className="type-meta mb-4 w-fit rounded-none border-white/25 bg-black/20 tracking-[0.08em] text-white backdrop-blur-sm">
                 {article.category}
               </Badge>
               <h3 className="type-section-title max-w-[12ch] text-[clamp(2rem,2vw+1rem,3.35rem)] text-white">
@@ -95,7 +95,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
       className="group relative isolate flex aspect-[5/6] w-full overflow-visible rounded-[1.35rem] text-card-foreground motion-reduce:transition-none hover:z-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 [content-visibility:auto]"
     >
       <div
-        className="absolute inset-x-0 top-0 z-10 h-full overflow-hidden rounded-[1.35rem] border border-border/55 bg-card/55 shadow-sm transition-[border-color,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none group-hover:z-40 group-hover:border-border/80 group-hover:shadow-[0_28px_60px_rgba(18,12,10,0.3)]"
+        className="absolute inset-x-0 top-0 z-10 h-full overflow-hidden rounded-[1.35rem] border border-border/55 bg-card/55 shadow-sm transition-[border-color,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none group-hover:z-40 group-hover:border-border/80 group-hover:shadow-xl"
         data-testid="article-card-shell"
       >
         <Image

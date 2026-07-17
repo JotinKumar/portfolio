@@ -88,7 +88,7 @@ export function ArchiveCard({ item, index }: { item: ArchiveItem; index: number 
                  </span>
                )}
              </div>
-             <span className="type-nav inline-flex items-center gap-1 text-foreground transition-colors group-hover:text-primary">
+             <span className="type-nav inline-flex items-center gap-1 rounded-none text-foreground transition-colors group-hover:text-primary">
                 Read
                 <ArrowUpRight className="size-3" />
               </span>

@@ -29,7 +29,7 @@ export function BlogsEditorialHero({
     <header className="animate-in fade-in slide-in-from-bottom-3 duration-500 space-y-6">
       <div className="space-y-5">
         <div className="flex justify-center">
-          <h1 className="type-display flex items-end justify-center gap-x-4 text-center uppercase">
+          <h1 className="type-display flex flex-col items-center justify-center gap-y-1 text-center text-[clamp(2.35rem,12vw,3.1rem)] uppercase sm:flex-row sm:items-end sm:gap-x-2 sm:gap-y-0 sm:text-[clamp(2.6rem,6.2vw,5.4rem)] md:gap-x-4">
             <span className="text-foreground">THINKING</span>
             <span className="text-muted-foreground">
               OUT
@@ -56,17 +56,18 @@ export function BlogsEditorialHero({
               {tag ? <input type="hidden" name="tag" value={tag} /> : null}
 
               <div
-                className="flex h-11 min-w-[18rem] items-center rounded-none border border-control-border bg-background/80 pr-1 shadow-sm"
+                className="flex h-11 min-w-[18rem] items-center rounded-none border border-control-border bg-background/80 pr-1 shadow-sm transition-[border-color,box-shadow] focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/50"
                 data-testid="blogs-editorial-search"
               >
                 <Input
                   id="blogs-search-inline"
                   name="search"
+                  aria-label="Search articles"
                   defaultValue={search ?? ""}
                   placeholder="Search"
                   className="h-full border-0 bg-transparent px-4 shadow-none focus-visible:ring-0"
                 />
-                <Button type="submit" size="icon" className="h-9 w-9 rounded-none">
+                <Button type="submit" size="icon" aria-label="Search articles" className="h-9 w-9 rounded-none">
                   <Search className="size-4" />
                 </Button>
               </div>
