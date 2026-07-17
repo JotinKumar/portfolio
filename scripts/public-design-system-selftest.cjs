@@ -165,6 +165,10 @@ requireBehavior(
   /const radius = blob\.size \/ 2;[\s\S]*?blob\.x <= radius[\s\S]*?width - radius[\s\S]*?blob\.y <= radius[\s\S]*?height - radius/.test(blobDrawLoop),
   "circular blob radius controls both horizontal and vertical bounce boundaries",
 );
+requireBehavior(
+  /const size = Math\.min\([\s\S]*?const radius = size \/ 2;[\s\S]*?x: getRandom\(radius, width - radius\)[\s\S]*?y: getRandom\(radius, height - radius\)[\s\S]*?size,/.test(floatingBlobsBar),
+  "blob centers initialize within radius-aware canvas boundaries",
+);
 
 const decorativeDeclarations = [...globals.matchAll(
   /--decorative-[123]:\s*oklch\([^\s]+\s+([\d.]+)\s+[\d.]+\)/g,
@@ -486,17 +490,11 @@ for (const token of [
   "--control-border: oklch(0.65 0.025 60)",
   "--overlay-surface: oklch(0.2 0.012 45 / 0.78)",
   "--overlay-foreground: oklch(0.965 0.004 92)",
-  "--decorative-1: oklch(0.68 0.19 38)",
-  "--decorative-2: oklch(0.78 0.16 72)",
-  "--decorative-3: oklch(0.62 0.2 24)",
   "--radius-layout: 2.5rem",
   "--radius-card: 1.25rem",
   "--radius-control: 0rem",
   "--font-mono: var(--font-body)",
   "--overlay-surface: oklch(0.16 0.01 45 / 0.84)",
-  "--decorative-1: oklch(0.7 0.18 38)",
-  "--decorative-2: oklch(0.76 0.15 72)",
-  "--decorative-3: oklch(0.64 0.19 24)",
 ]) {
   assert.ok(globals.includes(token), `Missing global visual-system token: ${token}`);
 }

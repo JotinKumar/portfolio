@@ -55,14 +55,19 @@ export const FloatingBlobsBar: React.FC<FloatingBlobsBarProps> = ({
     (width: number, height: number): Blob[] => {
       const colors = resolveColors();
 
-      return Array.from({ length: blobCount }, () => ({
-        x: getRandom(0, width),
-        y: getRandom(0, height),
-        size: getRandom(BLOB_SIZE_MIN, BLOB_SIZE_MAX),
-        color: colors[Math.floor(getRandom(0, colors.length))],
-        dx: getRandom(-HORIZONTAL_VELOCITY_RANGE, HORIZONTAL_VELOCITY_RANGE),
-        dy: getRandom(-VERTICAL_VELOCITY_RANGE, VERTICAL_VELOCITY_RANGE),
-      }));
+      return Array.from({ length: blobCount }, () => {
+        const size = Math.min(getRandom(BLOB_SIZE_MIN, BLOB_SIZE_MAX), width, height);
+        const radius = size / 2;
+
+        return {
+          x: getRandom(radius, width - radius),
+          y: getRandom(radius, height - radius),
+          size,
+          color: colors[Math.floor(getRandom(0, colors.length))],
+          dx: getRandom(-HORIZONTAL_VELOCITY_RANGE, HORIZONTAL_VELOCITY_RANGE),
+          dy: getRandom(-VERTICAL_VELOCITY_RANGE, VERTICAL_VELOCITY_RANGE),
+        };
+      });
     },
     [blobCount, resolveColors]
   );
