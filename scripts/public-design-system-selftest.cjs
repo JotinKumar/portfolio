@@ -30,7 +30,6 @@ for (const token of [
   "--radius-card: 1.25rem",
   "--radius-control: 0rem",
   "--font-mono: var(--font-body)",
-  "--control-border: oklch(0.52 0.02 50)",
   "--overlay-surface: oklch(0.16 0.01 45 / 0.84)",
   "--decorative-1: oklch(0.62 0.1 46)",
   "--decorative-2: oklch(0.68 0.06 72)",
@@ -55,13 +54,45 @@ assert.match(
 );
 assert.match(
   globals,
-  /\.dark \.public-design-scope\s*{[\s\S]*?--primary-foreground:\s*oklch\(0\.222 0\.008 48\);/,
+  /\.dark\.public-design-scope\s*{[\s\S]*?--primary-foreground:\s*oklch\(0\.222 0\.008 48\);/,
+);
+assert.equal(
+  (globals.match(/--control-border:\s*var\(--border\);/g) || []).length,
+  2,
+  "Root and dark themes must retain the legacy control border outside public pages",
+);
+assert.match(
+  globals,
+  /\.public-design-scope\s*{[\s\S]*?--control-border:\s*oklch\(0\.65 0\.025 60\);/,
+);
+assert.match(
+  globals,
+  /\.dark\.public-design-scope\s*{[\s\S]*?--control-border:\s*oklch\(0\.52 0\.02 50\);/,
+);
+assert.ok(
+  !globals.includes("border-color: var(--control-border)"),
+  "Scoped tokens must not override interactive border states with direct CSS",
 );
 
 assert.ok(publicScope.includes('"use client"'));
 assert.ok(publicScope.includes("usePathname"));
-assert.ok(publicScope.includes('pathname === "/profile"'));
-assert.ok(publicScope.includes('className="public-design-scope contents"'));
+assert.ok(publicScope.includes("useLayoutEffect"));
+assert.ok(publicScope.includes("document.documentElement"));
+assert.ok(publicScope.includes('pathname !== "/profile"'));
+assert.ok(
+  publicScope.includes('classList.toggle("public-design-scope", enabled)'),
+  "Route changes must toggle the HTML scope deterministically",
+);
+assert.ok(
+  publicScope.includes('classList.remove("public-design-scope")'),
+  "The HTML scope must be removed when the route scope unmounts",
+);
+assert.ok(
+  publicScope.includes("}, [pathname])"),
+  "The HTML scope effect must update on every route change",
+);
+assert.ok(publicScope.includes("return <>{children}</>"));
+assert.ok(!publicScope.includes('className="public-design-scope'));
 assert.ok(publicLayout.includes("<PublicDesignScope>"));
 assert.ok(publicLayout.includes("</PublicDesignScope>"));
 assert.ok(
@@ -73,25 +104,12 @@ for (const [name, source] of Object.entries({ button, badge, input, textarea }))
   assert.ok(source.includes("rounded-none"), `${name} must use square controls`);
   assert.ok(!source.includes("rounded-full"), `${name} must not use pill controls`);
 }
-assert.ok(button.includes('data-variant={variant ?? "default"}'));
-assert.ok(badge.includes('data-variant={variant ?? "default"}'));
-assert.ok(button.includes("border-border"));
-assert.ok(badge.includes("border-border/80"));
-assert.ok(input.includes("border-input"));
-assert.ok(textarea.includes("border-input"));
-
-for (const selector of [
-  '[data-slot="button"][data-variant="outline"]',
-  '[data-slot="badge"][data-variant="outline"]',
-  '[data-slot="input"]',
-  '[data-slot="textarea"]',
-]) {
+for (const [name, source] of Object.entries({ button, badge, input, textarea })) {
   assert.ok(
-    globals.includes(`.public-design-scope ${selector}`),
-    `Missing public control-border scope for ${selector}`,
+    source.includes("border-control-border"),
+    `${name} must consume the scoped semantic border token`,
   );
 }
-assert.ok(globals.includes("border-color: var(--control-border)"));
 
 assert.equal(
   (navigation.match(/rounded-none/g) || []).length,

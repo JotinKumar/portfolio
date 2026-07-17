@@ -101,7 +101,7 @@
   --border: oklch(0.878 0.017 78);
   --input: oklch(0.878 0.017 78);
   --ring: oklch(0.56 0.126 46);
-  --control-border: oklch(0.65 0.025 60);
+  --control-border: var(--border);
   --overlay-surface: oklch(0.2 0.012 45 / 0.78);
   --overlay-foreground: oklch(0.965 0.004 92);
   --decorative-1: oklch(0.68 0.13 46);
@@ -162,7 +162,7 @@
   --border: oklch(0.358 0.013 49);
   --input: oklch(0.358 0.013 49);
   --ring: oklch(0.72 0.144 46);
-  --control-border: oklch(0.52 0.02 50);
+  --control-border: var(--border);
   --overlay-surface: oklch(0.16 0.01 45 / 0.84);
   --overlay-foreground: oklch(0.965 0.004 92);
   --decorative-1: oklch(0.62 0.1 46);
@@ -201,8 +201,13 @@
   --tracking-normal: 0em;
 }
 
-.dark .public-design-scope {
+.public-design-scope {
+  --control-border: oklch(0.65 0.025 60);
+}
+
+.dark.public-design-scope {
   --primary-foreground: oklch(0.222 0.008 48);
+  --control-border: oklch(0.52 0.02 50);
 }
 
 @layer base {
@@ -305,12 +310,5 @@
   .public-design-scope .type-meta,
   .public-design-scope .kicker {
     font-size: 0.75rem;
-  }
-
-  .public-design-scope [data-slot="button"][data-variant="outline"],
-  .public-design-scope [data-slot="badge"][data-variant="outline"],
-  .public-design-scope [data-slot="input"],
-  .public-design-scope [data-slot="textarea"] {
-    border-color: var(--control-border);
   }
 }

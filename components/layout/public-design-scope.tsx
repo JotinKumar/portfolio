@@ -1,14 +1,21 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useLayoutEffect, type ReactNode } from "react";
 
 export function PublicDesignScope({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
-  if (pathname === "/profile") {
-    return <>{children}</>;
-  }
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    const enabled = pathname !== "/profile";
 
-  return <div className="public-design-scope contents">{children}</div>;
+    root.classList.toggle("public-design-scope", enabled);
+
+    return () => {
+      root.classList.remove("public-design-scope");
+    };
+  }, [pathname]);
+
+  return <>{children}</>;
 }
