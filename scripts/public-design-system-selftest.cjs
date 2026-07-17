@@ -51,6 +51,8 @@ const headerAccountState = readIfExists("lib/header-account-state.ts");
 const headerAccountControl = readIfExists("components/layout/header-account-control.tsx");
 const headerAccountBranch = readIfExists("components/layout/header-account-branch.tsx");
 const dialog = readIfExists("components/ui/dialog.tsx");
+const authPanel = readIfExists("components/auth/auth-panel.tsx");
+const authPage = read("app/(public)/auth/page.tsx");
 
 // Header/auth/hero behavior specification. Keep these checks together so the
 // intentional RED commit reports every missing behavior in one test run.
@@ -459,6 +461,29 @@ requireBehavior(
   dialog.includes("@radix-ui/react-dialog") &&
     dialog.includes("DialogTitle") && dialog.includes("DialogDescription"),
   "shared Dialog primitive exposes accessible title and description",
+);
+requireBehavior(
+  dialog.includes("rounded-[var(--radius-layout)]") &&
+    dialog.includes("rounded-none") &&
+    dialog.includes("DialogContent") &&
+    dialog.includes("DialogClose"),
+  "shared Dialog uses a rounded outer surface with a square close control",
+);
+requireBehavior(
+  authPanel.includes("onAuthenticated") &&
+    authPanel.includes("redirectTo") &&
+    authPanel.includes("signInWithPassword") &&
+    authPanel.includes("signUp") &&
+    authPanel.includes("signInWithOAuth"),
+  "AuthPanel owns reusable email, signup, and Google authentication behavior",
+);
+requireBehavior(
+  authPage.includes("<AuthPanel") &&
+    authPage.includes('redirectTo="/"') &&
+    !authPage.includes("signInWithPassword") &&
+    !authPage.includes("signInWithOAuth") &&
+    !authPage.includes("signUp("),
+  "public auth page composes AuthPanel and delegates authentication behavior",
 );
 requireBehavior(
   (() => {
