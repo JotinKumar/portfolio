@@ -428,7 +428,7 @@ assert.ok(
 // are intentionally outside this audit; these assertions cover visible UI roles.
 for (const className of [
   "border-overlay-foreground/20 bg-overlay-surface text-overlay-foreground",
-  "bg-overlay-foreground text-background",
+  "bg-overlay-foreground text-overlay-surface",
   "border-overlay-foreground/30 bg-overlay-surface text-overlay-foreground",
 ]) {
   assert.ok(
@@ -439,6 +439,10 @@ for (const className of [
 assert.ok(
   !projectCard.includes("bg-white text-black"),
   "Featured project actions must not use fixed black/white UI colors",
+);
+assert.ok(
+  !projectCard.includes("bg-overlay-foreground text-background"),
+  "Featured project primary action must not place a near-white theme background color on its near-white surface",
 );
 assert.ok(!projectCard.includes("rounded-full"), "Project controls and tags must remain square");
 

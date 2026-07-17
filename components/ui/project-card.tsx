@@ -60,7 +60,7 @@ export function ProjectCard({ project, featured = false }: ProjectCardProps) {
               </div>
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 {project.liveUrl ? (
-                  <Button size="sm" className="relative z-20 type-nav bg-overlay-foreground text-background hover:bg-overlay-foreground/90" asChild>
+                  <Button size="sm" className="relative z-20 type-nav bg-overlay-foreground text-overlay-surface hover:bg-overlay-foreground/90" asChild>
                     <Link href={project.liveUrl} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="w-4 h-4 mr-1" />
                       View live
