@@ -1,10 +1,15 @@
 const assert = require("node:assert/strict");
+const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
 const read = (relativePath) =>
   fs.readFileSync(path.join(root, relativePath), "utf8");
+const readIfExists = (relativePath) => {
+  const absolutePath = path.join(root, relativePath);
+  return fs.existsSync(absolutePath) ? fs.readFileSync(absolutePath, "utf8") : "";
+};
 const toPosix = (value) => value.split(path.sep).join("/");
 const listSourceFiles = (relativeDirectory) => {
   const absoluteDirectory = path.join(root, relativeDirectory);
@@ -40,6 +45,434 @@ const blogLeadCard = read("components/ui/blog-lead-card.tsx");
 const projectCard = read("components/ui/project-card.tsx");
 const footer = read("components/layout/footer.tsx");
 const blogsPage = read("app/(public)/blogs/page.tsx");
+const header = read("components/layout/header.tsx");
+const navigationState = readIfExists("lib/navigation-state.ts");
+const headerAccountState = readIfExists("lib/header-account-state.ts");
+const headerAccountControl = readIfExists("components/layout/header-account-control.tsx");
+const headerAccountBranch = readIfExists("components/layout/header-account-branch.tsx");
+const dialog = readIfExists("components/ui/dialog.tsx");
+
+// Header/auth/hero behavior specification. Keep these checks together so the
+// intentional RED commit reports every missing behavior in one test run.
+const requestedBehaviorFailures = [];
+const requireBehavior = (condition, name) => {
+  if (!condition) requestedBehaviorFailures.push(name);
+};
+const runTypeScriptCheck = (script) => {
+  const tsNodeRegister = require.resolve("ts-node/register", { paths: [root] });
+  execFileSync(process.execPath, ["-r", tsNodeRegister, "-e", script], {
+    cwd: root,
+    env: {
+      ...process.env,
+      TS_NODE_COMPILER_OPTIONS: JSON.stringify({
+        jsx: "react-jsx",
+        module: "commonjs",
+        moduleResolution: "node",
+      }),
+    },
+    stdio: "pipe",
+  });
+};
+const extractMarkedJsxRegion = (source, attribute, value) => {
+  const marker = `${attribute}="${value}"`;
+  const markerIndex = source.indexOf(marker);
+  if (markerIndex < 0) return "";
+  const openingStart = source.lastIndexOf("<", markerIndex);
+  const openingEnd = source.indexOf(">", markerIndex);
+  if (openingStart < 0 || openingEnd < 0) return "";
+  const opening = source.slice(openingStart, openingEnd + 1);
+  const tag = opening.match(/^<([A-Za-z][\w.]*)\b/)?.[1];
+  if (!tag || /\/\s*>$/.test(opening)) return opening;
+
+  const tagPattern = new RegExp(`<(/?)${tag.replace(".", "\\.")}\\b[^>]*(/?)>`, "g");
+  tagPattern.lastIndex = openingStart;
+  let depth = 0;
+  for (const match of source.matchAll(tagPattern)) {
+    if (match.index < openingStart) continue;
+    const isClosing = match[1] === "/";
+    const isSelfClosing = match[2] === "/";
+    if (isClosing) depth -= 1;
+    else if (!isSelfClosing) depth += 1;
+    if (depth === 0) return source.slice(openingStart, match.index + match[0].length);
+  }
+  return "";
+};
+const extractNamedJsxRegion = (source, tag) => {
+  const openingStart = source.indexOf(`<${tag}`);
+  if (openingStart < 0) return "";
+  let openingEnd = -1;
+  let braceDepth = 0;
+  let quote = "";
+  for (let index = openingStart; index < source.length; index += 1) {
+    const character = source[index];
+    const previous = source[index - 1];
+    if (quote) {
+      if (character === quote && previous !== "\\") quote = "";
+      continue;
+    }
+    if (character === '"' || character === "'" || character === "`") {
+      quote = character;
+      continue;
+    }
+    if (character === "{") braceDepth += 1;
+    else if (character === "}") braceDepth -= 1;
+    else if (character === ">" && braceDepth === 0) {
+      openingEnd = index;
+      break;
+    }
+  }
+  if (openingEnd < 0) return "";
+  const opening = source.slice(openingStart, openingEnd + 1);
+  if (/\/\s*>$/.test(opening)) return opening;
+
+  const tagPattern = new RegExp(`<(/?)${tag.replace(".", "\\.")}\\b[^>]*(/?)>`, "g");
+  tagPattern.lastIndex = openingStart;
+  let depth = 0;
+  for (const match of source.matchAll(tagPattern)) {
+    if (match.index < openingStart) continue;
+    const isClosing = match[1] === "/";
+    const isSelfClosing = match[2] === "/";
+    if (isClosing) depth -= 1;
+    else if (!isSelfClosing) depth += 1;
+    if (depth === 0) return source.slice(openingStart, match.index + match[0].length);
+  }
+  return "";
+};
+const extractJsxPropExpression = (source, prop) => {
+  const propStart = source.indexOf(`${prop}={`);
+  if (propStart < 0) return "";
+  const expressionStart = source.indexOf("{", propStart);
+  let depth = 0;
+  for (let index = expressionStart; index < source.length; index += 1) {
+    if (source[index] === "{") depth += 1;
+    else if (source[index] === "}") depth -= 1;
+    if (depth === 0) return source.slice(expressionStart + 1, index);
+  }
+  return "";
+};
+
+const blobDrawLoop =
+  floatingBlobsBar.match(/blobsRef\.current\.forEach\(\(blob\) => \{[\s\S]*?\n\s*\}\);/)?.[0] ?? "";
+requireBehavior(
+  /ctx\.beginPath\(\)[\s\S]*?ctx\.arc\([\s\S]*?ctx\.fill\(\)/.test(blobDrawLoop),
+  "circular blob draw loop uses beginPath, arc, and fill",
+);
+requireBehavior(
+  !blobDrawLoop.includes("ctx.fillRect("),
+  "circular blob draw loop does not use fillRect",
+);
+
+const decorativeDeclarations = [...globals.matchAll(
+  /--decorative-[123]:\s*oklch\([^\s]+\s+([\d.]+)\s+[\d.]+\)/g,
+)].map((match) => Number(match[1]));
+requireBehavior(
+  decorativeDeclarations.length === 6 &&
+    decorativeDeclarations.slice(0, 3).every((chroma) => chroma >= 0.14),
+  "light decorative tokens use clearly vibrant OKLCH chroma",
+);
+requireBehavior(
+  decorativeDeclarations.length === 6 &&
+    decorativeDeclarations.slice(3).every((chroma) => chroma >= 0.12),
+  "dark decorative tokens use clearly vibrant OKLCH chroma",
+);
+
+requireBehavior(
+  /export function isNavigationItemActive|export const isNavigationItemActive/.test(navigationState),
+  "centralized isNavigationItemActive helper is exported",
+);
+let navigationHelperExecutionError = "helper file is missing";
+if (navigationState) {
+  try {
+    const helperPath = path.join(root, "lib/navigation-state.ts");
+    const routeTableScript = `
+      const { isNavigationItemActive } = require(${JSON.stringify(helperPath)});
+      const cases = [
+        ["/", "/", true],
+        ["/", "/blogs", false],
+        ["/blogs/post", "/blogs", true],
+        ["/projects", "/projects", true],
+        ["/projects", "/blogs", false],
+        ["/blogs", "https://example.com", false],
+        ["/blogs", "#contact", false],
+      ];
+      for (const [pathname, href, expected] of cases) {
+        const actual = isNavigationItemActive(pathname, href);
+        if (actual !== expected) {
+          throw new Error(pathname + " vs " + href + ": expected " + expected + ", received " + actual);
+        }
+      }
+    `;
+    runTypeScriptCheck(routeTableScript);
+    navigationHelperExecutionError = "";
+  } catch (error) {
+    navigationHelperExecutionError = error instanceof Error ? error.message : String(error);
+  }
+}
+requireBehavior(
+  navigationHelperExecutionError === "",
+  `navigation helper passes executable route table (${navigationHelperExecutionError})`,
+);
+
+const navigationSurface = (surface) => {
+  const marker = `data-navigation-surface="${surface}"`;
+  const markerIndex = header.indexOf(marker);
+  if (markerIndex < 0) return { activeState: "", source: "" };
+  const mappingIndex = header.lastIndexOf("items.map", markerIndex);
+  const end = header.indexOf("</Link>", markerIndex);
+  const source = header.slice(Math.max(0, mappingIndex), end < 0 ? markerIndex : end + 7);
+  const assignments = [...source.matchAll(
+    /const\s+([A-Za-z_$][\w$]*)\s*=\s*isNavigationItemActive\([^)]*\)/g,
+  )];
+  const assignedState = assignments.at(-1)?.[1] ?? "";
+  return {
+    activeState: assignedState || "isNavigationItemActive\\([^)]*\\)",
+    source,
+  };
+};
+for (const surface of ["desktop", "mobile"]) {
+  const { activeState, source } = navigationSurface(surface);
+  const escapedState = activeState.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const statePattern = activeState.startsWith("isNavigationItemActive\\")
+    ? activeState
+    : escapedState;
+  requireBehavior(
+    source.includes("isNavigationItemActive(") &&
+      new RegExp(`aria-current=\\{\\s*${statePattern}\\s*\\?\\s*["']page["']`).test(source) &&
+      new RegExp(`${statePattern}\\s*(?:&&|\\?)`).test(source) &&
+      source.includes("border-primary/35") &&
+      source.includes("bg-primary/12"),
+    `${surface} navigation binds the active-route helper, aria-current, and active shade to its own link`,
+  );
+}
+requireBehavior(
+  header.includes('from "@/lib/navigation-state"'),
+  "header imports the centralized active-route helper",
+);
+
+const headerActions = extractMarkedJsxRegion(header, "data-header-actions", "true");
+requireBehavior(
+  headerActions.includes("Toggle theme") &&
+    headerActions.includes("<HeaderAccountControl") &&
+    headerActions.includes('size="icon"'),
+  "semantic header-actions wrapper contains the theme and same-size account controls",
+);
+
+let headerAccountStateExecutionError = "helper file is missing";
+if (headerAccountState) {
+  try {
+    const helperPath = path.join(root, "lib/header-account-state.ts");
+    const accountStateScript = `
+      const assert = require("node:assert/strict");
+      const { resolveHeaderAccountView } = require(${JSON.stringify(helperPath)});
+      assert.deepStrictEqual(
+        resolveHeaderAccountView(null, false),
+        { dialog: "login", role: null, actions: [] },
+      );
+      assert.deepStrictEqual(
+        resolveHeaderAccountView("owner@example.com", true),
+        { dialog: "account", role: "admin", actions: ["admin-dashboard", "edit-site-profile", "logout"] },
+      );
+      assert.deepStrictEqual(
+        resolveHeaderAccountView("reader@example.com", false),
+        { dialog: "account", role: "regular", actions: ["edit-profile", "logout"] },
+      );
+    `;
+    runTypeScriptCheck(accountStateScript);
+    headerAccountStateExecutionError = "";
+  } catch (error) {
+    headerAccountStateExecutionError = error instanceof Error ? error.message : String(error);
+  }
+}
+requireBehavior(
+  headerAccountStateExecutionError === "",
+  `header account render-model selects exact logged-out/Admin/regular views (${headerAccountStateExecutionError})`,
+);
+let headerAccountBranchExecutionError = "branch component or view helper is missing";
+if (headerAccountState && headerAccountBranch) {
+  try {
+    const helperPath = path.join(root, "lib/header-account-state.ts");
+    const branchPath = path.join(root, "components/layout/header-account-branch.tsx");
+    const branchScript = `
+      const assert = require("node:assert/strict");
+      const React = require("react");
+      const { renderToStaticMarkup } = require("react-dom/server");
+      const { resolveHeaderAccountView } = require(${JSON.stringify(helperPath)});
+      const { HeaderAccountBranch } = require(${JSON.stringify(branchPath)});
+      const login = React.createElement("span", { "data-sentinel": "login" }, "login");
+      const account = React.createElement("span", { "data-sentinel": "account" }, "account");
+      const render = (view) => renderToStaticMarkup(
+        React.createElement(HeaderAccountBranch, { view, login, account }),
+      );
+      const loggedOut = render(resolveHeaderAccountView(null, false));
+      const admin = render(resolveHeaderAccountView("owner@example.com", true));
+      const regular = render(resolveHeaderAccountView("reader@example.com", false));
+      assert.equal(loggedOut, '<span data-sentinel="login">login</span>');
+      assert.equal(admin, '<span data-sentinel="account">account</span>');
+      assert.equal(regular, '<span data-sentinel="account">account</span>');
+    `;
+    runTypeScriptCheck(branchScript);
+    headerAccountBranchExecutionError = "";
+  } catch (error) {
+    headerAccountBranchExecutionError = error instanceof Error ? error.message : String(error);
+  }
+}
+requireBehavior(
+  headerAccountBranchExecutionError === "",
+  `HeaderAccountBranch renders Login/Account sentinels exclusively (${headerAccountBranchExecutionError})`,
+);
+const viewModelAssignment = headerAccountControl.match(
+  /const\s+([A-Za-z_$][\w$]*)\s*=\s*resolveHeaderAccountView\([^;]+\)/,
+);
+const viewModelVariable = viewModelAssignment?.[1] ?? "";
+const escapedViewModel = viewModelVariable.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const currentUserViewCall = headerAccountControl.match(
+  /resolveHeaderAccountView\(\s*([A-Za-z_$][\w$]*)\??\.email(?:\s*\?\?\s*null)?\s*,\s*isAdminEmail\(\s*\1\??\.email\s*\)\s*\)/,
+);
+requireBehavior(
+  headerAccountControl.includes('from "@/lib/header-account-state"') &&
+    viewModelVariable.length > 0 &&
+    Boolean(currentUserViewCall),
+  "header account UI derives its render model from the current user email and Admin check",
+);
+
+const loggedOutBranch = extractMarkedJsxRegion(headerAccountControl, "data-auth-state", "logged-out");
+const authenticatedBranch = extractMarkedJsxRegion(
+  headerAccountControl,
+  "data-auth-state",
+  "authenticated",
+);
+requireBehavior(
+  loggedOutBranch.length > 0 && authenticatedBranch.length > 0,
+  "header account UI exposes semantic logged-out and authenticated regions",
+);
+const accountBranchComposition = extractNamedJsxRegion(
+  headerAccountControl,
+  "HeaderAccountBranch",
+);
+const loginBranchProp = extractJsxPropExpression(accountBranchComposition, "login");
+const accountBranchProp = extractJsxPropExpression(accountBranchComposition, "account");
+requireBehavior(
+  headerAccountControl.includes('from "@/components/layout/header-account-branch"') &&
+    new RegExp(`view=\\{\\s*${escapedViewModel}\\s*\\}`).test(accountBranchComposition) &&
+    loginBranchProp.includes('data-auth-state="logged-out"') &&
+    accountBranchProp.includes('data-auth-state="authenticated"'),
+  "HeaderAccountControl supplies its tested view and semantic Login/Account nodes to HeaderAccountBranch",
+);
+
+const accountTrigger = (source, state) =>
+  source.match(
+    new RegExp(`<Button[^>]*data-account-state="${state}"[^>]*>[\\s\\S]*?</Button>`),
+  )?.[0] ?? "";
+const isThemeSizedControl = (source) =>
+  source.includes('size="icon"') ||
+  (source.includes("h-10") && source.includes("w-10")) ||
+  source.includes("size-10");
+const loggedOutTrigger = accountTrigger(loggedOutBranch, "logged-out");
+const authenticatedTrigger = accountTrigger(authenticatedBranch, "authenticated");
+const triggerOpeningTag = (source) => source.match(/^<Button[^>]*>/)?.[0] ?? "";
+const loggedOutOpeningTag = triggerOpeningTag(loggedOutTrigger);
+const authenticatedOpeningTag = triggerOpeningTag(authenticatedTrigger);
+requireBehavior(
+  loggedOutTrigger.includes('aria-label="Login"') &&
+    />[\s\S]*?\bLogin\b[\s\S]*?<\/Button>/.test(loggedOutTrigger),
+  "logged-out branch renders a named Login trigger",
+);
+requireBehavior(
+  isThemeSizedControl(loggedOutOpeningTag) && loggedOutOpeningTag.includes("rounded-none"),
+  "logged-out Login trigger matches the theme switcher size",
+);
+requireBehavior(
+  authenticatedOpeningTag.includes('size="icon"') &&
+    authenticatedOpeningTag.includes("rounded-none") &&
+    authenticatedOpeningTag.includes('aria-label="Open account menu"'),
+  "authenticated avatar trigger is square and matches the theme switcher size",
+);
+
+const adminActions = extractMarkedJsxRegion(headerAccountControl, "data-account-role", "admin");
+const regularActions = extractMarkedJsxRegion(headerAccountControl, "data-account-role", "regular");
+const actionComesFromViewModel = (source, action) =>
+  Boolean(escapedViewModel) &&
+  new RegExp(
+    `${escapedViewModel}\\.actions\\.includes\\(\\s*["']${action}["']\\s*\\)`,
+  ).test(source);
+const roleComesFromViewModel = (source, role) =>
+  Boolean(escapedViewModel) &&
+  new RegExp(`${escapedViewModel}\\.role\\s*===\\s*["']${role}["']`).test(source);
+requireBehavior(
+  roleComesFromViewModel(adminActions, "admin") &&
+    actionComesFromViewModel(adminActions, "admin-dashboard") &&
+    actionComesFromViewModel(adminActions, "edit-site-profile") &&
+    adminActions.includes('href="/admin/dashboard"') &&
+    adminActions.includes('href="/admin/settings"') &&
+    !adminActions.includes('href="/account/profile"'),
+  "Admin account branch owns only Admin dashboard and site-profile actions",
+);
+requireBehavior(
+  roleComesFromViewModel(regularActions, "regular") &&
+    actionComesFromViewModel(regularActions, "edit-profile") &&
+    regularActions.includes('href="/account/profile"') &&
+    !regularActions.includes('href="/admin/dashboard"') &&
+    !regularActions.includes('href="/admin/settings"'),
+  "regular-user account branch owns only the personal profile action",
+);
+requireBehavior(
+  authenticatedBranch.includes("Log out") &&
+    actionComesFromViewModel(authenticatedBranch, "logout"),
+  "authenticated account Dialog exposes logout",
+);
+
+const dialogRegion = (source, purpose) => {
+  return extractMarkedJsxRegion(source, "data-dialog-purpose", purpose);
+};
+const loginDialog = dialogRegion(loggedOutBranch, "login");
+const accountDialog = dialogRegion(authenticatedBranch, "account");
+requireBehavior(
+  loginDialog.includes("<DialogContent") &&
+    loginDialog.includes("<DialogTitle") &&
+    loginDialog.includes("<DialogDescription") &&
+    loginDialog.includes("<AuthPanel") &&
+    !loggedOutBranch.includes('data-dialog-purpose="account"'),
+  "Login Dialog and authentication content are bounded to the logged-out branch",
+);
+requireBehavior(
+  accountDialog.includes("<DialogContent") &&
+    accountDialog.includes("<DialogTitle") &&
+    accountDialog.includes("<DialogDescription") &&
+    accountDialog.includes("Account") &&
+    accountDialog.includes("Log out") &&
+    accountDialog.includes('data-account-role="admin"') &&
+    accountDialog.includes('data-account-role="regular"') &&
+    !authenticatedBranch.includes('data-dialog-purpose="login"'),
+  "Account Dialog, role actions, and logout are bounded to the authenticated branch",
+);
+requireBehavior(
+  dialog.includes("@radix-ui/react-dialog") &&
+    dialog.includes("DialogTitle") && dialog.includes("DialogDescription"),
+  "shared Dialog primitive exposes accessible title and description",
+);
+requireBehavior(
+  (() => {
+    const avatarImage = authenticatedBranch.match(
+      /<(?:Image|img|span)\b[^>]*data-account-avatar-image="true"[^>]*>/,
+    )?.[0] ?? "";
+    return avatarImage.includes("rounded-full") && !authenticatedOpeningTag.includes("rounded-full");
+  })(),
+  "authenticated avatar is the explicit circular image exception",
+);
+
+for (const [name, source] of Object.entries({ professionalHero, techHero })) {
+  const initialTitle = source.match(/isInitial \? "([^"]+)" : "text-\[1\.35rem\]/)?.[1] ?? "";
+  const initialTitleMinimum = Number(initialTitle.match(/clamp\(([\d.]+)rem/)?.[1] ?? 0);
+  requireBehavior(
+    initialTitle.includes("text-[clamp(") && initialTitleMinimum > 0.95 &&
+      !initialTitle.includes("text-[0.95rem]"),
+    `${name} initial split-screen role title is larger than 0.95rem`,
+  );
+  requireBehavior(
+    /className="[^"]*text-\[0\.7[0-2]rem\][^"]*px-2(?:\.5)?[^"]*py-0\.5/.test(source),
+    `${name} hero badges use smaller explicit typography and compact padding`,
+  );
+}
 
 for (const token of [
   "--color-control-border: var(--control-border)",
@@ -229,8 +662,6 @@ assert.doesNotMatch(
   /#[\da-f]{3,8}/i,
   "Floating blobs must not carry a hard-coded multicolor palette",
 );
-assert.ok(!floatingBlobsBar.includes("ctx.arc("), "Floating decorations must not render circular blobs");
-assert.ok(floatingBlobsBar.includes("ctx.fillRect("), "Floating decorations must render square geometry");
 assert.match(
   floatingBlobsBar,
   /const themeObserver = new MutationObserver\(\(\) => \{[\s\S]*?blobsRef\.current = createBlobs\([\s\S]*?if \(prefersReducedMotionRef\.current\) \{[\s\S]*?draw\(ctx, dimensionsRef\.current\.width, height\);/,
@@ -513,6 +944,7 @@ const allowedRoundedContexts = new Map([
   ["components/ui/blog-lead-card.tsx", /radius-layout/],
   ["components/ui/card.tsx", /rounded-xl/],
   ["components/ui/glassmorphism.tsx", /radius-layout/],
+  ["components/ui/dialog.tsx", /radius-layout/],
   ["components/ui/project-card.tsx", /rounded-t-lg/],
 ]);
 
@@ -561,7 +993,14 @@ for (const relativePath of publicSourceFiles) {
 
     for (const match of line.matchAll(/\btext-\[(\d*\.?\d+)(rem|px)\]/g)) {
       const value = Number(match[1]);
-      const isUndersized = match[2] === "rem" ? value < 0.75 : value < 12;
+      const isCompactHeroBadge =
+        ["components/home/ProfessionalHero.tsx", "components/home/TechHero.tsx"].includes(relativePath) &&
+        line.includes("type-meta") &&
+        /text-\[0\.7[0-2]rem\]/.test(line) &&
+        /px-2(?:\.5)?/.test(line) &&
+        line.includes("py-0.5");
+      const isUndersized =
+        (match[2] === "rem" ? value < 0.75 : value < 12) && !isCompactHeroBadge;
       if (isUndersized) reportViolation(relativePath, lineNumber, "text-size", line);
     }
 
@@ -572,10 +1011,20 @@ for (const relativePath of publicSourceFiles) {
     const roundedMatches = line.match(/\brounded-(?!none\b)[^\s"'`}]+/g) || [];
     if (roundedMatches.length > 0) {
       const allowedContext = allowedRoundedContexts.get(relativePath);
+      const isExplicitAvatarImage =
+        relativePath === "components/layout/header-account-control.tsx" &&
+        !line.includes("<Button") &&
+        /<(?:Image|img|span)\b/.test(line) &&
+        line.includes('data-account-avatar-image="true"') &&
+        line.includes("rounded-full");
       const isScopedSheetClose =
         relativePath === "components/ui/sheet.tsx" &&
         line.includes("rounded-xs [.public-design-scope_&]:rounded-none");
-      if ((!allowedContext || !allowedContext.test(line)) && !isScopedSheetClose) {
+      if (
+        (!allowedContext || !allowedContext.test(line)) &&
+        !isExplicitAvatarImage &&
+        !isScopedSheetClose
+      ) {
         reportViolation(relativePath, lineNumber, "internal-radius", line);
       }
     }
@@ -594,6 +1043,16 @@ assert.equal(
   publicAuditViolations.length,
   0,
   `Public source audit found visible design-system violations:\n${publicAuditViolations.join("\n")}`,
+);
+
+console.log("Established visual-system and recursive public audit assertions passed.");
+
+assert.equal(
+  requestedBehaviorFailures.length,
+  0,
+  `Requested header/auth/hero behaviors are missing:\n${requestedBehaviorFailures
+    .map((failure) => `- ${failure}`)
+    .join("\n")}`,
 );
 
 console.log("Public design-system self-test passed.");
