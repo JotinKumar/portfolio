@@ -64,7 +64,7 @@ export function ProfessionalHero({
             </AnimatePresence>
             
             <div className="space-y-3">
-              <h2 className={`type-card-title ${isInitial ? "text-[0.95rem]" : "text-[1.35rem] md:text-[1.7rem]"} whitespace-nowrap`}>
+              <h2 className={`type-card-title ${isInitial ? "text-[clamp(1.15rem,1.4vw,1.4rem)] leading-tight text-balance" : "text-[1.35rem] md:text-[1.7rem] whitespace-nowrap"}`}>
                 {heroContent.professionalTitle}
               </h2>
               <p className={`${isInitial ? "type-body max-w-md" : "type-body-lg max-w-2xl"} text-muted-foreground`}>
@@ -106,7 +106,7 @@ export function ProfessionalHero({
                   >
                     <Badge
                       variant="outline"
-                      className="type-meta border-foreground/18 bg-transparent px-3 py-1 text-foreground shadow-none whitespace-nowrap"
+                      className="type-meta border-foreground/18 bg-transparent text-[0.72rem] px-2.5 py-0.5 text-foreground shadow-none whitespace-nowrap rounded-none"
                     >
                       {skill}
                     </Badge>
