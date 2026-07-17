@@ -71,7 +71,9 @@ export function AuthPanel({ onAuthenticated, redirectTo }: AuthPanelProps) {
   }
 
   function getCallbackUrl() {
-    const next = redirectTo ?? window.location.pathname
+    const next =
+      redirectTo ??
+      `${window.location.pathname}${window.location.search}${window.location.hash}`
     return `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`
   }
 

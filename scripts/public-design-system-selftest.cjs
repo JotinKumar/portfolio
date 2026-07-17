@@ -465,17 +465,27 @@ requireBehavior(
 requireBehavior(
   dialog.includes("rounded-[var(--radius-layout)]") &&
     dialog.includes("rounded-none") &&
+    dialog.includes("size-8") &&
+    dialog.includes("inline-flex") &&
+    dialog.includes("items-center") &&
+    dialog.includes("justify-center") &&
     dialog.includes("DialogContent") &&
     dialog.includes("DialogClose"),
-  "shared Dialog uses a rounded outer surface with a square close control",
+  "shared Dialog uses a rounded outer surface with a square close hit target",
 );
 requireBehavior(
   authPanel.includes("onAuthenticated") &&
     authPanel.includes("redirectTo") &&
+    authPanel.includes("onAuthenticated?.(user)") &&
+    /if \(redirectTo\) router\.push\(redirectTo\)/.test(authPanel) &&
+    authPanel.includes("window.location.pathname") &&
+    authPanel.includes("window.location.search") &&
+    authPanel.includes("window.location.hash") &&
+    authPanel.includes("encodeURIComponent(next)") &&
     authPanel.includes("signInWithPassword") &&
     authPanel.includes("signUp") &&
     authPanel.includes("signInWithOAuth"),
-  "AuthPanel owns reusable email, signup, and Google authentication behavior",
+  "AuthPanel reports the user, navigates only when requested, and preserves the full OAuth return URL",
 );
 requireBehavior(
   authPage.includes("<AuthPanel") &&
