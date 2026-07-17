@@ -27,6 +27,8 @@ import {
   Home,
 } from "lucide-react";
 import { APP_SHELL_CLASS } from "@/lib/layout";
+import { isNavigationItemActive } from "@/lib/navigation-state";
+import { cn } from "@/lib/utils";
 
 const iconForLabel = (label: string) => {
   const normalized = label.toLowerCase();
@@ -88,6 +90,7 @@ export function Header({
               {items.map((item) => {
                 const label = normalizeNavLabel(item.label);
                 const Icon = iconForLabel(label);
+                const isActive = isNavigationItemActive(pathname, item.href);
                 return (
                   <NavigationMenuItem key={item.id}>
                     <NavigationMenuLink asChild>
@@ -95,7 +98,12 @@ export function Header({
                         href={item.href}
                         target={item.openInNewTab ? "_blank" : undefined}
                         rel={item.openInNewTab ? "noopener noreferrer" : undefined}
-                        className="type-nav group inline-flex h-10 items-center justify-center rounded-none border border-transparent bg-transparent px-3 py-2 tracking-[0.03em] transition-[transform,color,background-color,border-color] duration-[var(--duration-quick)] ease-[var(--ease-out-quart)] hover:-translate-y-px hover:border-primary/20 hover:bg-accent/75 hover:text-accent-foreground focus:border-primary/20 focus:bg-accent/75 focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 md:w-10 md:px-0 lg:w-max lg:px-4"
+                        data-navigation-surface="desktop"
+                        aria-current={isActive ? "page" : undefined}
+                        className={cn(
+                          "type-nav group inline-flex h-10 items-center justify-center rounded-none border border-transparent bg-transparent px-3 py-2 tracking-[0.03em] transition-[transform,color,background-color,border-color] duration-[var(--duration-quick)] ease-[var(--ease-out-quart)] hover:-translate-y-px hover:border-primary/20 hover:bg-accent/75 hover:text-accent-foreground focus:border-primary/20 focus:bg-accent/75 focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 md:w-10 md:px-0 lg:w-max lg:px-4",
+                          isActive && "border-primary/35 bg-primary/12 text-foreground",
+                        )}
                         aria-label={label}
                       >
                         <Icon className="h-4 w-4 lg:mr-2" />
@@ -166,13 +174,19 @@ export function Header({
                 {items.map((item) => {
                   const label = normalizeNavLabel(item.label);
                   const Icon = iconForLabel(label);
+                  const isActive = isNavigationItemActive(pathname, item.href);
                   return (
                     <Link
                       key={`mobile-${item.id}`}
                       href={item.href}
                       target={item.openInNewTab ? "_blank" : undefined}
                       rel={item.openInNewTab ? "noopener noreferrer" : undefined}
-                      className="type-nav flex items-center space-x-2 border-b border-border/60 pb-3 text-foreground transition-colors duration-[var(--duration-quick)] ease-[var(--ease-out-quart)] hover:text-primary"
+                      data-navigation-surface="mobile"
+                      aria-current={isActive ? "page" : undefined}
+                      className={cn(
+                        "type-nav flex w-full items-center space-x-2 border-b border-border/60 px-3 py-3 text-foreground transition-colors duration-[var(--duration-quick)] ease-[var(--ease-out-quart)] hover:text-primary",
+                        isActive && "border-primary/35 bg-primary/12 text-foreground",
+                      )}
                     >
                       <Icon className="h-5 w-5" />
                       <span>{label}</span>

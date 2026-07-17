@@ -197,7 +197,9 @@ if (navigationState) {
       const cases = [
         ["/", "/", true],
         ["/", "/blogs", false],
+        ["/blogs", "/", false],
         ["/blogs/post", "/blogs", true],
+        ["/blogroll", "/blogs", false],
         ["/projects", "/projects", true],
         ["/projects", "/blogs", false],
         ["/blogs", "https://example.com", false],
