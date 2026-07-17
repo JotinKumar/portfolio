@@ -55,7 +55,7 @@ assert.match(
 );
 assert.match(
   globals,
-  /\.dark\.public-design-scope\s*{[\s\S]*?--primary-foreground:\s*oklch\(0\.222 0\.008 48\);/,
+  /\.dark \.public-design-scope,\s*\.dark\.public-design-scope\s*{[\s\S]*?--primary-foreground:\s*oklch\(0\.222 0\.008 48\);/,
 );
 assert.equal(
   (globals.match(/--control-border:\s*var\(--border\);/g) || []).length,
@@ -74,7 +74,7 @@ assert.match(
 );
 assert.match(
   globals,
-  /\.dark\.public-design-scope\s*{[\s\S]*?--control-border:\s*oklch\(0\.52 0\.02 50\);[\s\S]*?--badge-border:\s*oklch\(0\.52 0\.02 50\);/,
+  /\.dark \.public-design-scope,\s*\.dark\.public-design-scope\s*{[\s\S]*?--control-border:\s*oklch\(0\.52 0\.02 50\);[\s\S]*?--badge-border:\s*oklch\(0\.52 0\.02 50\);/,
 );
 assert.ok(
   !globals.includes("border-color: var(--control-border)"),

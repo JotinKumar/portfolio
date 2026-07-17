@@ -209,6 +209,7 @@
   --badge-border: oklch(0.65 0.025 60);
 }
 
+.dark .public-design-scope,
 .dark.public-design-scope {
   --primary-foreground: oklch(0.222 0.008 48);
   --control-border: oklch(0.52 0.02 50);
