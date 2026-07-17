@@ -21,6 +21,12 @@ const techHero = read("components/home/TechHero.tsx");
 const workTimeline = read("components/home/work-timeline.tsx");
 const floatingBlobsBar = read("components/ui/floating-blobs-bar.tsx");
 const scrollCue = read("components/ui/scroll-cue.tsx");
+const blogsEditorialHero = read("components/blogs/blogs-editorial-hero.tsx");
+const featuredBlogLeadCard = read("components/blogs/featured-blog-lead-card.tsx");
+const blogsTaxonomyRail = read("components/blogs/blogs-taxonomy-rail.tsx");
+const archiveCard = read("components/ui/archive-card.tsx");
+const articleCard = read("components/ui/article-card.tsx");
+const blogLeadCard = read("components/ui/blog-lead-card.tsx");
 
 for (const token of [
   "--color-control-border: var(--control-border)",
@@ -223,6 +229,80 @@ assert.ok(!scrollCue.includes('strokeLinejoin="round"'), "The scroll cue must no
 assert.ok(
   (scrollCue.match(/(?:stroke|fill)="currentColor"/g) || []).length >= 5,
   "The scroll cue border and icon must inherit a semantic current color",
+);
+
+for (const [name, source] of Object.entries({
+  blogsEditorialHero,
+  blogsTaxonomyRail,
+  archiveCard,
+  articleCard,
+  blogLeadCard,
+})) {
+  assert.ok(!source.includes("rounded-full"), `${name} internal controls must be square`);
+  assert.ok(!source.includes("font-black"), `${name} must not use extreme black font weights`);
+}
+assert.equal(
+  (featuredBlogLeadCard.match(/rounded-full/g) || []).length,
+  1,
+  "Featured blog card may round only its author avatar; tags and actions must be square",
+);
+assert.ok(
+  !featuredBlogLeadCard.includes("font-black"),
+  "Featured blog metadata must not use an extreme black font weight",
+);
+
+assert.ok(
+  blogsEditorialHero.includes('className="type-display'),
+  "The blog editorial title must use the shared Playfair display role",
+);
+assert.ok(
+  !blogsEditorialHero.includes("[-webkit-text-stroke"),
+  "The blog title treatment must use semantic foreground colors",
+);
+assert.ok(
+  featuredBlogLeadCard.includes('className="type-section-title'),
+  "The featured blog title must use the shared Playfair heading role",
+);
+assert.ok(
+  blogsTaxonomyRail.includes('className="type-meta'),
+  "Taxonomy UI labels must use the shared Outfit metadata role",
+);
+assert.ok(
+  archiveCard.includes('className="type-card-title'),
+  "Archive titles must use the shared Playfair card-title role",
+);
+assert.ok(
+  articleCard.includes('className="type-section-title'),
+  "Featured article titles must use the shared Playfair heading role",
+);
+assert.ok(
+  blogLeadCard.includes('className="type-body'),
+  "Blog lead copy must use the shared Outfit body role",
+);
+
+assert.doesNotMatch(
+  archiveCard,
+  /#[\da-f]{3,8}/i,
+  "Archive cards must not use a hard-coded multicolor palette",
+);
+assert.ok(!archiveCard.includes("CARD_ACCENTS"), "Archive cards must use semantic theme colors");
+assert.ok(
+  !featuredBlogLeadCard.includes("dark:bg-[color:"),
+  "Featured blog surfaces must use semantic light/dark colors",
+);
+assert.ok(!blogLeadCard.includes("#BDA26B"), "Blog lead accents must not use hard-coded gold");
+assert.ok(!blogLeadCard.includes("#8e7c49"), "Blog lead actions must not use hard-coded gold");
+assert.ok(!blogLeadCard.includes("#ddd"), "Blog lead metadata must use semantic colors");
+assert.ok(!blogLeadCard.includes("#444"), "Blog lead actions must use semantic colors");
+
+assert.doesNotMatch(
+  articleCard,
+  /group-hover:text-\[[^\]]+\]/,
+  "Article titles and metadata must not shrink on hover",
+);
+assert.ok(
+  !articleCard.includes("transition-[font-size,line-height,letter-spacing]"),
+  "Article title hover transitions must not animate font size",
 );
 
 console.log("Public design-system self-test passed.");

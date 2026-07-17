@@ -26,8 +26,8 @@ export function FeaturedBlogLeadCard({
       className="group relative block h-full"
       data-testid="featured-blog-card"
     >
-      <div className="rounded-[2.4rem] bg-muted/40 dark:bg-[color:oklch(0.23_0.02_45)] px-0 py-8 transition-shadow duration-500 group-hover:shadow-[0_40px_100px_rgba(0,0,0,0.12)] dark:group-hover:shadow-[0_40px_100px_rgba(0,0,0,0.18)] sm:px-0 lg:px-0 h-full flex flex-col">
-        <article className="relative mx-auto flex w-full max-w-[64rem] flex-col overflow-visible rounded-[0.25rem] border border-white/10 bg-card text-foreground shadow-[0_32px_80px_rgba(0,0,0,0.12)] lg:flex-row flex-1">
+      <div className="flex h-full flex-col rounded-[var(--radius-layout)] bg-muted/40 px-0 py-8 transition-shadow duration-500 group-hover:shadow-xl sm:px-0 lg:px-0">
+        <article className="relative mx-auto flex w-full max-w-[64rem] flex-1 flex-col overflow-visible rounded-[var(--radius-card)] border border-border/70 bg-card text-foreground shadow-xl lg:flex-row">
           <div
             className="relative mx-4 -mt-12 aspect-square overflow-hidden rounded-none border-[6px] border-white/10 shadow-[0_28px_56px_rgba(0,0,0,0.28)] transition-transform duration-500 group-hover:-translate-y-1 sm:mx-6 lg:ml-10 lg:mr-0 lg:mt-[-2.5rem] lg:h-[24rem] lg:w-[24rem] lg:flex-shrink-0"
             data-testid="featured-blog-media"
@@ -45,23 +45,23 @@ export function FeaturedBlogLeadCard({
           <div className="flex flex-1 flex-col px-6 pb-36 pt-10 sm:px-8 lg:pl-14 lg:pr-16 lg:pt-14">
             <div className="space-y-8">
               <div className="flex flex-wrap gap-2">
-                <span className="rounded-full bg-primary/10 border border-primary/20 px-3 py-1 text-[0.62rem] font-bold uppercase tracking-[0.1em] text-primary font-sans">
+                <span className="type-meta rounded-none border border-primary/20 bg-primary/10 px-3 py-1 text-primary">
                   {article.category}
                 </span>
-                <span className="rounded-full bg-muted/60 border border-border/40 px-3 py-1 text-[0.62rem] font-bold uppercase tracking-[0.1em] text-muted-foreground font-sans">
+                <span className="type-meta rounded-none border border-border/60 bg-muted/60 px-3 py-1 text-muted-foreground">
                   {article.readTime} min read
                 </span>
               </div>
 
               <div className="space-y-5">
-                <h2 className="max-w-[22ch] font-serif text-[clamp(1.95rem,3.2vw+0.8rem,3.6rem)] font-bold leading-[0.92] tracking-[-0.045em] text-foreground transition-transform duration-500 ease-[var(--ease-out-quart)] group-hover:-translate-y-0.5">
+                <h2 className="type-section-title max-w-[22ch] text-foreground transition-transform duration-500 ease-[var(--ease-out-quart)] group-hover:-translate-y-0.5">
                   {article.title}
                 </h2>
               </div>
 
               <div className="w-full border-t border-border/50" />
 
-              <p className="type-body line-clamp-6 max-w-[46ch] text-[1.08rem] leading-relaxed text-muted-foreground/90 font-sans">
+              <p className="type-body line-clamp-6 max-w-[46ch] text-muted-foreground/90">
                 {article.excerpt}
               </p>
             </div>
@@ -72,15 +72,15 @@ export function FeaturedBlogLeadCard({
             data-testid="featured-blog-utility-strip"
           >
             <div className="flex items-center gap-14" data-testid="featured-blog-date">
-              <div className="flex flex-col items-start leading-none font-serif">
+              <div className="flex flex-col items-start font-serif leading-none">
                 <span className="text-[4.8rem] font-bold text-foreground/[0.08] leading-none">{day}</span>
-                <span className="type-meta -mt-1 text-[0.8rem] font-black uppercase tracking-[0.35em] text-foreground/50 font-sans">{month}</span>
+                <span className="type-meta -mt-1 text-foreground/50">{month}</span>
               </div>
             </div>
 
             <div className="ml-auto hidden lg:flex items-end gap-3 pb-1">
               <div className="flex flex-col items-end pb-1.5">
-                <span className="type-meta text-[0.72rem] font-bold tracking-[0.1em] text-foreground/90 font-sans">{article.authorName}</span>
+                <span className="type-meta text-foreground/90">{article.authorName}</span>
               </div>
               <div className="relative h-9 w-9 overflow-hidden rounded-full border border-border/60 shadow-sm bg-muted flex items-center justify-center">
                 {article.authorAvatar ? (
@@ -94,7 +94,7 @@ export function FeaturedBlogLeadCard({
         </article>
 
         <span
-          className="absolute left-1/2 -translate-x-1/2 bottom-10 z-30 flex h-[2.78rem] w-[2.78rem] items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_10px_20px_rgba(0,0,0,0.18)] transition-all duration-500 ease-[var(--ease-out-quart)] group-hover:scale-[1.04] group-hover:shadow-[0_12px_22px_rgba(0,0,0,0.22)] lg:bottom-[3.25rem]"
+          className="absolute bottom-10 left-1/2 z-30 flex h-[2.78rem] w-[2.78rem] -translate-x-1/2 items-center justify-center rounded-none bg-primary text-primary-foreground shadow-lg transition-[transform,box-shadow] duration-500 ease-[var(--ease-out-quart)] group-hover:-translate-y-0.5 group-hover:shadow-xl lg:bottom-[3.25rem]"
           data-testid="featured-blog-fab"
         >
           <ArrowUpRight className="size-[1.02rem] transition-transform duration-500 group-hover:translate-x-[0.06rem] group-hover:-translate-y-[0.06rem] group-hover:rotate-[-4deg]" />

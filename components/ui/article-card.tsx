@@ -58,7 +58,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
               <Badge variant="outline" className="type-meta mb-4 w-fit border-white/25 bg-black/20 tracking-[0.08em] text-white backdrop-blur-sm">
                 {article.category}
               </Badge>
-              <h3 className="max-w-[12ch] font-serif text-[clamp(2rem,2vw+1rem,3.35rem)] leading-[0.95] tracking-[-0.04em] text-white">
+              <h3 className="type-section-title max-w-[12ch] text-[clamp(2rem,2vw+1rem,3.35rem)] text-white">
                 {article.title}
               </h3>
             </div>
@@ -110,7 +110,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
         <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 p-3.5 sm:p-4">
           <Badge
             variant="outline"
-            className="rounded-full border-white/25 bg-white/14 px-3 py-1 text-[0.62rem] font-medium uppercase tracking-[0.16em] text-white backdrop-blur-sm"
+            className="type-meta rounded-none border-white/25 bg-white/14 px-3 py-1 text-white backdrop-blur-sm"
           >
             {article.category}
           </Badge>
@@ -122,13 +122,13 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
         >
           <div className="max-w-[calc(100%-4.55rem)] space-y-1.5">
             <p
-              className="type-meta text-white/50 transition-[font-size,line-height,transform,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:text-[0.58rem] group-hover:leading-[1.2]"
+              className="type-meta text-white/50 transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
               data-testid="article-card-readtime"
             >
               {readTimeLabel}
             </p>
             <h3
-              className="font-serif text-[clamp(1.65rem,2vw,2.05rem)] leading-[0.95] tracking-[-0.04em] text-white transition-[font-size,line-height,letter-spacing] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:text-[0.94rem] group-hover:leading-[1.06] group-hover:tracking-[-0.018em]"
+              className="type-card-title text-[clamp(1.65rem,2vw,2.05rem)] leading-[0.95] tracking-[-0.04em] text-white"
               data-testid="article-card-title"
             >
               {article.title}
@@ -154,13 +154,10 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
           </div>
         </div>
 
-        <div className="pointer-events-none absolute bottom-0 right-0 z-10 h-[3.2rem] w-[3.2rem] bg-[oklch(0.97_0.01_80)] [border-top-left-radius:1.72rem] sm:h-[3.35rem] sm:w-[3.35rem]">
-          <span className="absolute -top-[0.72rem] right-0 h-[0.72rem] w-[0.72rem] rounded-br-[0.72rem] shadow-[10px_10px_0_10px_oklch(0.97_0.01_80)]" />
-          <span className="absolute bottom-0 -left-[0.72rem] h-[0.72rem] w-[0.72rem] rounded-br-[0.72rem] shadow-[10px_10px_0_10px_oklch(0.97_0.01_80)]" />
-        </div>
+        <div className="pointer-events-none absolute bottom-0 right-0 z-10 h-[3.2rem] w-[3.2rem] rounded-none bg-card sm:h-[3.35rem] sm:w-[3.35rem]" />
 
         <div className="absolute bottom-0 right-0 z-20 flex h-[3.2rem] w-[3.2rem] items-end justify-end sm:h-[3.35rem] sm:w-[3.35rem]">
-          <span className="group/button mb-[0.12rem] mr-[0.12rem] flex h-[2.78rem] w-[2.78rem] items-center justify-center rounded-full bg-[oklch(0.23_0.015_45)] text-white shadow-[0_0_0_0_rgba(36,27,22,0)] transition-[transform,box-shadow,background-color,color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none group-hover:translate-x-[0.04rem] group-hover:translate-y-[-0.04rem] group-hover:bg-primary group-hover:text-primary-foreground group-hover:shadow-[0_10px_20px_rgba(18,12,10,0.18)] group-hover/button:scale-[1.04] group-hover/button:-translate-y-[0.08rem] group-hover/button:shadow-[0_12px_22px_rgba(18,12,10,0.22)]">
+          <span className="group/button mb-[0.12rem] mr-[0.12rem] flex h-[2.78rem] w-[2.78rem] items-center justify-center rounded-none bg-primary text-primary-foreground shadow-sm transition-[transform,box-shadow,background-color,color] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none group-hover:translate-x-[0.04rem] group-hover:translate-y-[-0.04rem] group-hover:shadow-lg group-hover/button:-translate-y-[0.08rem]">
             <ArrowUpRight className="size-[1.02rem] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none group-hover/button:translate-x-[0.06rem] group-hover/button:-translate-y-[0.06rem] group-hover/button:rotate-[-4deg]" />
           </span>
         </div>
