@@ -120,6 +120,25 @@ export function HeaderAccountControl() {
     }
   }, [router])
 
+  useEffect(() => {
+    if (!authState.isResolved) return
+
+    const nextUrl = new URL(window.location.href)
+    const shouldOpenLogin = nextUrl.searchParams.get("login") === "1"
+    if (!shouldOpenLogin) return
+
+    if (!authState.user) {
+      setLoginOpen(true)
+    }
+
+    nextUrl.searchParams.delete("login")
+    window.history.replaceState(
+      window.history.state,
+      "",
+      `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`,
+    )
+  }, [authState.isResolved, authState.user])
+
   const view = resolveHeaderAccountView(
     authState.user?.email ?? null,
     authState.isAdmin,

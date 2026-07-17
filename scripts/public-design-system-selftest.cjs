@@ -55,6 +55,8 @@ const headerAccountRoute = readIfExists("app/api/auth/header-account/route.ts");
 const dialog = readIfExists("components/ui/dialog.tsx");
 const authPanel = readIfExists("components/auth/auth-panel.tsx");
 const authPage = read("app/(public)/auth/page.tsx");
+const accountProfilePage = readIfExists("app/(public)/account/profile/page.tsx");
+const accountProfileForm = readIfExists("components/account/account-profile-form.tsx");
 
 // Header/auth/hero behavior specification. Keep these checks together so the
 // intentional RED commit reports every missing behavior in one test run.
@@ -553,6 +555,48 @@ requireBehavior(
     accountDialog.includes('data-account-role="regular"') &&
     !authenticatedBranch.includes('data-dialog-purpose="login"'),
   "Account Dialog, role actions, and logout are bounded to the authenticated branch",
+);
+requireBehavior(
+  accountProfilePage.includes('from "@/lib/supabase-server"') &&
+    accountProfilePage.includes("await getUser()") &&
+    accountProfilePage.includes('redirect("/?login=1")') &&
+    accountProfilePage.includes('from "@/lib/admin-auth"') &&
+    accountProfilePage.includes("isAdminEmail(user.email)") &&
+    accountProfilePage.includes('redirect("/admin/settings")'),
+  "regular-user profile page is protected by trusted server auth and redirects Admins",
+);
+requireBehavior(
+  accountProfilePage.includes("export const metadata") &&
+    accountProfilePage.includes("display_name") &&
+    accountProfilePage.includes("avatar_url") &&
+    accountProfilePage.includes("bio") &&
+    accountProfilePage.includes("<AccountProfileForm"),
+  "regular-user profile page exposes metadata-backed editable profile fields",
+);
+requireBehavior(
+  accountProfileForm.includes("zodResolver") &&
+    accountProfileForm.includes("display_name") &&
+    accountProfileForm.includes("avatar_url") &&
+    accountProfileForm.includes("bio") &&
+    accountProfileForm.includes("supabase.auth.updateUser") &&
+    accountProfileForm.includes("router.refresh()") &&
+    accountProfileForm.includes("toast.success") &&
+    accountProfileForm.includes("toast.error") &&
+    accountProfileForm.includes("readOnly"),
+  "profile form validates metadata, keeps email read-only, updates auth, and reports outcomes",
+);
+requireBehavior(
+  headerAccountControl.includes("window.location.href") &&
+    headerAccountControl.includes('searchParams.get("login") === "1"') &&
+    headerAccountControl.includes("authState.isResolved") &&
+    headerAccountControl.includes("!authState.user") &&
+    headerAccountControl.includes("setLoginOpen(true)") &&
+    headerAccountControl.includes('searchParams.delete("login")') &&
+    headerAccountControl.includes("window.history.replaceState") &&
+    headerAccountControl.includes("nextUrl.pathname") &&
+    headerAccountControl.includes("nextUrl.search") &&
+    headerAccountControl.includes("nextUrl.hash"),
+  "login=1 opens only for resolved logged-out users and is removed without losing URL state",
 );
 requireBehavior(
   dialog.includes("@radix-ui/react-dialog") &&
