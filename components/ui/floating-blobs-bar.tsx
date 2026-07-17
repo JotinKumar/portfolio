@@ -78,21 +78,23 @@ export const FloatingBlobsBar: React.FC<FloatingBlobsBarProps> = ({
 
       blobsRef.current.forEach((blob) => {
         ctx.fillStyle = blob.color;
-        const halfSize = blob.size / 2;
-        ctx.fillRect(blob.x - halfSize, blob.y - halfSize, blob.size, blob.size);
+        const radius = blob.size / 2;
+        ctx.beginPath();
+        ctx.arc(blob.x, blob.y, radius, 0, Math.PI * 2);
+        ctx.fill();
 
         // Update position
         blob.x += blob.dx;
         blob.y += blob.dy;
 
         // Bounce off edges with size consideration
-        if (blob.x <= halfSize || blob.x >= width - halfSize) {
+        if (blob.x <= radius || blob.x >= width - radius) {
           blob.dx *= -1;
-          blob.x = Math.max(halfSize, Math.min(width - halfSize, blob.x));
+          blob.x = Math.max(radius, Math.min(width - radius, blob.x));
         }
-        if (blob.y <= halfSize || blob.y >= height - halfSize) {
+        if (blob.y <= radius || blob.y >= height - radius) {
           blob.dy *= -1;
-          blob.y = Math.max(halfSize, Math.min(height - halfSize, blob.y));
+          blob.y = Math.max(radius, Math.min(height - radius, blob.y));
         }
       });
 
