@@ -1,9 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import type { User } from "@supabase/supabase-js"
 import { LayoutDashboard, LogOut, Settings, UserRound } from "lucide-react"
 import { toast } from "sonner"
 
@@ -18,11 +17,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { isAdminEmail } from "@/lib/admin-auth"
 import { resolveHeaderAccountView } from "@/lib/header-account-state"
+import {
+  canApplyHeaderAuthResolution,
+  resolveHeaderAuthEvent,
+  resolveHeaderLogoutOutcome,
+  type TrustedHeaderAccountState,
+  type TrustedHeaderAccountUser,
+} from "@/lib/header-auth-lifecycle"
 import { createClient } from "@/lib/supabase"
 
-function getAccountLabel(user: User) {
+function getAccountLabel(user: TrustedHeaderAccountUser) {
   const metadata = user.user_metadata
   const label = metadata.display_name || metadata.full_name || user.email
   return typeof label === "string" && label.trim() ? label : "Account"
@@ -36,8 +41,12 @@ function getInitials(label: string) {
 
 export function HeaderAccountControl() {
   const router = useRouter()
-  const [user, setUser] = useState<User | null>(null)
-  const [isAuthResolved, setIsAuthResolved] = useState(false)
+  const [authState, setAuthState] = useState<TrustedHeaderAccountState>({
+    user: null,
+    isAdmin: false,
+    isResolved: false,
+  })
+  const authVersionRef = useRef(0)
   const [loginOpen, setLoginOpen] = useState(false)
   const [accountOpen, setAccountOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
@@ -45,56 +54,76 @@ export function HeaderAccountControl() {
   useEffect(() => {
     let isMounted = true
 
-    try {
-      const supabase = createClient()
-      void supabase.auth
-        .getUser()
-        .then(({ data }) => {
-          if (isMounted) {
-            setUser(data.user)
-            setIsAuthResolved(true)
-          }
+    async function resolveTrustedIdentity(requestVersion: number) {
+      try {
+        const response = await fetch("/api/auth/header-account", {
+          cache: "no-store",
         })
-        .catch(() => {
-          if (isMounted) {
-            setUser(null)
-            setIsAuthResolved(true)
-          }
-        })
+        if (!response.ok) throw new Error("Unable to resolve account")
 
-      const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-        if (isMounted) {
-          setUser(session?.user ?? null)
-          setIsAuthResolved(true)
+        const result = (await response.json()) as Omit<
+          TrustedHeaderAccountState,
+          "isResolved"
+        >
+        if (
+          !isMounted ||
+          !canApplyHeaderAuthResolution(requestVersion, authVersionRef.current)
+        ) {
+          return
         }
-      })
 
-      return () => {
-        isMounted = false
-        data.subscription.unsubscribe()
-      }
-    } catch {
-      setUser(null)
-      setIsAuthResolved(true)
-      return () => {
-        isMounted = false
+        setAuthState({ ...result, isResolved: true })
+      } catch {
+        // Keep the control pending when trusted identity or role cannot be resolved.
       }
     }
-  }, [])
+
+    void resolveTrustedIdentity(authVersionRef.current)
+
+    let unsubscribe: (() => void) | undefined
+    try {
+      const supabase = createClient()
+      const { data } = supabase.auth.onAuthStateChange((event, session) => {
+        if (!isMounted) return
+        if (event === "INITIAL_SESSION" || event === "TOKEN_REFRESHED") return
+
+        const transition = resolveHeaderAuthEvent(
+          authVersionRef.current,
+          event,
+          Boolean(session?.user),
+        )
+        if (!transition.resolveIdentity) return
+
+        authVersionRef.current = transition.version
+        setAuthState({ user: null, isAdmin: false, isResolved: false })
+        if (transition.closeDialog === "login") setLoginOpen(false)
+        if (transition.closeDialog === "account") setAccountOpen(false)
+        if (transition.refresh) router.refresh()
+        void resolveTrustedIdentity(transition.version)
+      })
+      unsubscribe = () => data.subscription.unsubscribe()
+    } catch {
+      // The trusted endpoint can still resolve logged-out state without a browser client.
+    }
+
+    return () => {
+      isMounted = false
+      unsubscribe?.()
+    }
+  }, [router])
 
   const view = resolveHeaderAccountView(
-    user?.email ?? null,
-    isAdminEmail(user?.email),
-    isAuthResolved,
+    authState.user?.email ?? null,
+    authState.isAdmin,
+    authState.isResolved,
   )
-  const accountLabel = user ? getAccountLabel(user) : "Account"
+  const accountLabel = authState.user ? getAccountLabel(authState.user) : "Account"
   const avatarUrl =
-    typeof user?.user_metadata.avatar_url === "string"
-      ? user.user_metadata.avatar_url
+    typeof authState.user?.user_metadata.avatar_url === "string"
+      ? authState.user.user_metadata.avatar_url
       : undefined
 
-  function handleAuthenticated(authenticatedUser: User) {
-    setUser(authenticatedUser)
+  function handleAuthenticated() {
     setLoginOpen(false)
     router.refresh()
   }
@@ -103,11 +132,19 @@ export function HeaderAccountControl() {
     setIsLoggingOut(true)
     try {
       const response = await fetch("/api/auth/logout", { method: "POST" })
-      if (!response.ok) throw new Error("Logout failed")
+      const outcome = resolveHeaderLogoutOutcome(response.ok)
 
-      setUser(null)
-      setAccountOpen(false)
-      router.refresh()
+      if (!outcome.clearIdentity) {
+        toast.error("Unable to log out. Please try again.")
+        return
+      }
+
+      authVersionRef.current += 1
+      if (outcome.clearIdentity) {
+        setAuthState({ user: null, isAdmin: false, isResolved: true })
+      }
+      if (outcome.closeAccount) setAccountOpen(false)
+      if (outcome.refresh) router.refresh()
       toast.success("Logged out successfully")
     } catch {
       toast.error("Unable to log out. Please try again.")

@@ -48,8 +48,10 @@ const blogsPage = read("app/(public)/blogs/page.tsx");
 const header = read("components/layout/header.tsx");
 const navigationState = readIfExists("lib/navigation-state.ts");
 const headerAccountState = readIfExists("lib/header-account-state.ts");
+const headerAuthLifecycle = readIfExists("lib/header-auth-lifecycle.ts");
 const headerAccountControl = readIfExists("components/layout/header-account-control.tsx");
 const headerAccountBranch = readIfExists("components/layout/header-account-branch.tsx");
+const headerAccountRoute = readIfExists("app/api/auth/header-account/route.ts");
 const dialog = readIfExists("components/ui/dialog.tsx");
 const authPanel = readIfExists("components/auth/auth-panel.tsx");
 const authPage = read("app/(public)/auth/page.tsx");
@@ -338,25 +340,92 @@ requireBehavior(
   headerAccountBranchExecutionError === "",
   `HeaderAccountBranch renders Login/Account sentinels exclusively (${headerAccountBranchExecutionError})`,
 );
+let headerAuthLifecycleExecutionError = "lifecycle helper is missing";
+if (headerAuthLifecycle) {
+  try {
+    const lifecyclePath = path.join(root, "lib/header-auth-lifecycle.ts");
+    const lifecycleScript = `
+      const assert = require("node:assert/strict");
+      const {
+        canApplyHeaderAuthResolution,
+        resolveHeaderAuthEvent,
+        resolveHeaderLogoutOutcome,
+      } = require(${JSON.stringify(lifecyclePath)});
+
+      assert.deepStrictEqual(resolveHeaderAuthEvent(0, "INITIAL_SESSION", true), {
+        version: 0, resolveIdentity: false, refresh: false, closeDialog: null,
+      });
+      assert.deepStrictEqual(resolveHeaderAuthEvent(0, "TOKEN_REFRESHED", true), {
+        version: 0, resolveIdentity: false, refresh: false, closeDialog: null,
+      });
+
+      const signedIn = resolveHeaderAuthEvent(0, "SIGNED_IN", true);
+      assert.deepStrictEqual(signedIn, {
+        version: 1, resolveIdentity: true, refresh: true, closeDialog: "login",
+      });
+      assert.equal(canApplyHeaderAuthResolution(0, signedIn.version), false);
+      assert.equal(canApplyHeaderAuthResolution(0, 0), true);
+
+      assert.deepStrictEqual(resolveHeaderAuthEvent(1, "SIGNED_OUT", false), {
+        version: 2, resolveIdentity: true, refresh: true, closeDialog: "account",
+      });
+      assert.deepStrictEqual(resolveHeaderAuthEvent(2, "USER_UPDATED", true), {
+        version: 3, resolveIdentity: true, refresh: true, closeDialog: "login",
+      });
+
+      assert.deepStrictEqual(resolveHeaderLogoutOutcome(true), {
+        clearIdentity: true, closeAccount: true, refresh: true, toast: "success",
+      });
+      assert.deepStrictEqual(resolveHeaderLogoutOutcome(false), {
+        clearIdentity: false, closeAccount: false, refresh: false, toast: "error",
+      });
+    `;
+    runTypeScriptCheck(lifecycleScript);
+    headerAuthLifecycleExecutionError = "";
+  } catch (error) {
+    headerAuthLifecycleExecutionError = error instanceof Error ? error.message : String(error);
+  }
+}
+requireBehavior(
+  headerAuthLifecycleExecutionError === "",
+  `header auth lifecycle versions identity events and models logout outcomes (${headerAuthLifecycleExecutionError})`,
+);
 const viewModelAssignment = headerAccountControl.match(
   /const\s+([A-Za-z_$][\w$]*)\s*=\s*resolveHeaderAccountView\([^;]+\)/,
 );
 const viewModelVariable = viewModelAssignment?.[1] ?? "";
 const escapedViewModel = viewModelVariable.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-const currentUserViewCall = headerAccountControl.match(
-  /resolveHeaderAccountView\(\s*([A-Za-z_$][\w$]*)\??\.email(?:\s*\?\?\s*null)?\s*,\s*isAdminEmail\(\s*\1\??\.email\s*\)\s*,\s*isAuthResolved\s*,?\s*\)/,
-);
 requireBehavior(
   headerAccountControl.includes('from "@/lib/header-account-state"') &&
     viewModelVariable.length > 0 &&
-    Boolean(currentUserViewCall),
-  "header account UI derives its render model from the current user email and Admin check",
+    /resolveHeaderAccountView\(\s*authState\.user\??\.email(?:\s*\?\?\s*null)?\s*,\s*authState\.isAdmin\s*,\s*authState\.isResolved\s*,?\s*\)/.test(headerAccountControl),
+  "header account UI derives its render model from trusted user, role, and resolution state",
 );
 requireBehavior(
-  headerAccountControl.includes("const [isAuthResolved, setIsAuthResolved] = useState(false)") &&
-    headerAccountControl.includes("setIsAuthResolved(true)") &&
-    Boolean(currentUserViewCall),
-  "header account UI renders neither Login nor Account before initial auth resolution",
+  headerAccountRoute.includes('from "@/lib/supabase-server"') &&
+    headerAccountRoute.includes('from "@/lib/admin-auth"') &&
+    headerAccountRoute.includes("supabase.auth.getUser()") &&
+    headerAccountRoute.includes("isAdminEmail(user.email)") &&
+    headerAccountControl.includes('fetch("/api/auth/header-account"') &&
+    !headerAccountControl.includes('from "@/lib/admin-auth"'),
+  "header account role comes from the trusted server getUser boundary",
+);
+requireBehavior(
+  headerAccountControl.includes("authVersionRef") &&
+    headerAccountControl.includes("canApplyHeaderAuthResolution") &&
+    headerAccountControl.includes("resolveHeaderAuthEvent") &&
+    headerAccountControl.includes('event === "INITIAL_SESSION"') &&
+    headerAccountControl.includes('event === "TOKEN_REFRESHED"'),
+  "header account UI protects trusted resolution from auth-event ordering races",
+);
+requireBehavior(
+  headerAccountControl.includes("resolveHeaderLogoutOutcome(response.ok)") &&
+    headerAccountControl.includes("if (!outcome.clearIdentity)") &&
+    headerAccountControl.includes("if (outcome.closeAccount)") &&
+    headerAccountControl.includes("if (outcome.refresh)") &&
+    headerAccountControl.includes('toast.success("Logged out successfully")') &&
+    headerAccountControl.includes('toast.error("Unable to log out. Please try again.")'),
+  "header account logout applies success effects only after a successful response",
 );
 
 const loggedOutBranch = extractMarkedJsxRegion(headerAccountControl, "data-auth-state", "logged-out");
