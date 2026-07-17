@@ -12,6 +12,7 @@ const badge = read("components/ui/badge.tsx");
 const input = read("components/ui/input.tsx");
 const textarea = read("components/ui/textarea.tsx");
 const navigation = read("components/ui/navigation-menu.tsx");
+const glassmorphism = read("components/ui/glassmorphism.tsx");
 
 for (const token of [
   "--color-control-border: var(--control-border)",
@@ -55,5 +56,25 @@ assert.equal(
   "Navigation trigger and link must both be square",
 );
 assert.ok(!navigation.includes("rounded-md"), "Navigation controls must not be rounded");
+
+for (const className of [
+  "rounded-2xl",
+  "border-border/70",
+  "bg-card/80",
+  "dark:bg-card/85",
+]) {
+  assert.ok(
+    glassmorphism.includes(className),
+    `Glassmorphism must use the semantic class: ${className}`,
+  );
+}
+assert.ok(
+  !glassmorphism.includes("[background:rgba"),
+  "Glassmorphism must not override its semantic surface with raw RGBA",
+);
+assert.ok(
+  !glassmorphism.includes("[border-color:rgba"),
+  "Glassmorphism must not override its semantic border with raw RGBA",
+);
 
 console.log("Public design-system self-test passed.");
