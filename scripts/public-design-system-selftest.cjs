@@ -27,6 +27,9 @@ const blogsTaxonomyRail = read("components/blogs/blogs-taxonomy-rail.tsx");
 const archiveCard = read("components/ui/archive-card.tsx");
 const articleCard = read("components/ui/article-card.tsx");
 const blogLeadCard = read("components/ui/blog-lead-card.tsx");
+const projectCard = read("components/ui/project-card.tsx");
+const footer = read("components/layout/footer.tsx");
+const blogsPage = read("app/(public)/blogs/page.tsx");
 
 for (const token of [
   "--color-control-border: var(--control-border)",
@@ -401,6 +404,67 @@ assert.ok(
 assert.ok(
   !articleCard.includes("group-hover:shadow-[0_28px_60px_rgba"),
   "Article card hover elevation must not use a raw RGBA shadow",
+);
+
+// Final named public-surface audit. Profile, Admin, and image/avatar presentation
+// are intentionally outside this audit; these assertions cover visible UI roles.
+for (const className of [
+  "border-overlay-foreground/20 bg-overlay-surface text-overlay-foreground",
+  "bg-overlay-foreground text-background",
+  "border-overlay-foreground/30 bg-overlay-surface text-overlay-foreground",
+]) {
+  assert.ok(
+    projectCard.includes(className),
+    `Featured project overlay must use semantic UI colors: ${className}`,
+  );
+}
+assert.ok(
+  !projectCard.includes("bg-white text-black"),
+  "Featured project actions must not use fixed black/white UI colors",
+);
+assert.ok(!projectCard.includes("rounded-full"), "Project controls and tags must remain square");
+
+assert.ok(
+  footer.includes('className="font-serif text-xl font-medium"'),
+  "Footer brand text must use the shared Playfair heading role",
+);
+assert.ok(
+  footer.includes('className="type-body text-muted-foreground"'),
+  "Footer descriptive copy must use the shared Outfit body role",
+);
+assert.ok(
+  footer.includes('className="type-nav text-muted-foreground'),
+  "Footer navigation must use the shared Outfit UI role",
+);
+assert.ok(
+  footer.includes('className="type-meta flex items-center'),
+  "Footer utility rows must use the shared Outfit metadata role",
+);
+assert.ok(!footer.includes("text-red-500"), "Footer accents must use semantic theme colors");
+
+assert.ok(
+  blogsPage.includes('<p className="type-meta text-muted-foreground">Journal</p>'),
+  "The Blogs Journal kicker must use the shared 0.75rem Outfit metadata role",
+);
+assert.ok(!blogsPage.includes("text-[0.65rem]"), "Blogs UI text must not fall below 0.75rem");
+
+for (const undersized of ["text-[0.66rem]", "text-[0.68rem]", "text-[0.7rem]", "text-[0.72rem]", "text-[0.74rem]"]) {
+  assert.ok(
+    !workTimeline.includes(undersized),
+    `Public timeline labels must not fall below 0.75rem: ${undersized}`,
+  );
+}
+
+assert.equal(
+  (featuredBlogLeadCard.match(/rounded-full/g) || []).length,
+  1,
+  "The explicitly excluded featured author avatar must retain its image radius",
+);
+const blogDetailShell = read("components/blogs/blog-detail-shell.tsx");
+assert.equal(
+  (blogDetailShell.match(/rounded-full/g) || []).length,
+  1,
+  "The explicitly excluded article author avatar must retain its image radius",
 );
 
 console.log("Public design-system self-test passed.");

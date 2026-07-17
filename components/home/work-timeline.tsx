@@ -239,7 +239,7 @@ export function WorkTimeline({
                     <span
                       key={`ellipsis-${index}`}
                       className={`inline-flex w-full items-center justify-center px-0.5 font-sans tabular-nums text-muted-foreground ${
-                        railMode === "compact" ? "text-[0.68rem] md:text-[0.74rem]" : "text-[0.78rem] md:text-[0.86rem]"
+                        railMode === "compact" ? "text-[0.75rem]" : "text-[0.78rem] md:text-[0.86rem]"
                       }`}
                     >
                       ...
@@ -270,7 +270,7 @@ export function WorkTimeline({
                       isMilestone
                         ? "bg-primary/10 text-foreground"
                         : "bg-transparent text-muted-foreground"
-                    } ${railMode === "compact" ? "px-1.5 py-0.5 text-[0.66rem] md:text-[0.74rem]" : railMode === "tight" ? "px-2 py-0.5 text-[0.7rem] md:text-[0.8rem]" : ""}`}
+                    } ${railMode === "compact" ? "px-1.5 py-0.5 text-[0.75rem]" : railMode === "tight" ? "px-2 py-0.5 text-[0.75rem] md:text-[0.8rem]" : ""}`}
                   >
                     {label}
                   </button>
@@ -278,7 +278,7 @@ export function WorkTimeline({
               })}
               <span
                 className={`inline-flex w-full items-center justify-center px-0.5 font-sans tabular-nums text-muted-foreground ${
-                  railMode === "compact" ? "text-[0.68rem] md:text-[0.74rem]" : "text-[0.78rem] md:text-[0.86rem]"
+                  railMode === "compact" ? "text-[0.75rem]" : "text-[0.78rem] md:text-[0.86rem]"
                 }`}
               >
                 ...
@@ -286,7 +286,7 @@ export function WorkTimeline({
           </div>
           <div
             data-testid="home-milestone-hover-role"
-            className={`pointer-events-none absolute z-10 whitespace-nowrap bg-background/95 px-2 py-1 text-[0.72rem] uppercase tracking-[0.16em] text-muted-foreground transition-opacity duration-150 ${
+            className={`type-meta pointer-events-none absolute z-10 whitespace-nowrap bg-background/95 px-2 py-1 text-muted-foreground transition-opacity duration-150 ${
               hoveredMilestone && tooltipPosition ? "opacity-100" : "opacity-0"
             }`}
             style={

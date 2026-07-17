@@ -40,27 +40,27 @@ export function ProjectCard({ project, featured = false }: ProjectCardProps) {
           <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-7">
             <div className="max-w-[36rem] space-y-3">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="outline" className="type-meta border-white/20 bg-black/20 tracking-[0.08em] text-white backdrop-blur-sm">
+                <Badge variant="outline" className="type-meta border-overlay-foreground/20 bg-overlay-surface text-overlay-foreground tracking-[0.08em] backdrop-blur-sm">
                   {project.category}
                 </Badge>
-                <span className="type-meta text-white/76">{project.status}</span>
+                <span className="type-meta text-overlay-foreground/76">{project.status}</span>
               </div>
-              <h3 className="font-serif text-[clamp(1.65rem,1.4vw+1rem,2.55rem)] leading-[0.98] tracking-[-0.03em] text-white">
-                <Link href={`/projects/${project.slug}`} className="relative z-20 transition-colors hover:text-white/88">
+              <h3 className="type-card-title text-[clamp(1.65rem,1.4vw+1rem,2.55rem)] text-overlay-foreground">
+                <Link href={`/projects/${project.slug}`} className="relative z-20 transition-colors hover:text-overlay-foreground/88">
                   {project.title}
                 </Link>
               </h3>
-              <p className="type-body max-w-[46ch] text-white/82">{project.shortDesc}</p>
+              <p className="type-body max-w-[46ch] text-overlay-foreground/82">{project.shortDesc}</p>
               <div className="flex flex-wrap gap-2 pt-1">
                 {techStack.slice(0, 4).map((tech) => (
-                  <Badge key={tech} variant="secondary" className="type-meta border-white/14 bg-white/10 tracking-[0.06em] text-white/84">
+                  <Badge key={tech} variant="secondary" className="type-meta border-overlay-foreground/20 bg-overlay-surface text-overlay-foreground tracking-[0.06em]">
                     {tech}
                   </Badge>
                 ))}
               </div>
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 {project.liveUrl ? (
-                  <Button size="sm" className="relative z-20 type-nav bg-white text-black hover:bg-white/90" asChild>
+                  <Button size="sm" className="relative z-20 type-nav bg-overlay-foreground text-background hover:bg-overlay-foreground/90" asChild>
                     <Link href={project.liveUrl} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="w-4 h-4 mr-1" />
                       View live
@@ -68,7 +68,7 @@ export function ProjectCard({ project, featured = false }: ProjectCardProps) {
                   </Button>
                 ) : null}
                 {project.githubUrl ? (
-                  <Button size="sm" variant="outline" className="relative z-20 type-nav border-white/30 bg-black/10 text-white hover:bg-white/10 hover:text-white" asChild>
+                  <Button size="sm" variant="outline" className="relative z-20 type-nav border-overlay-foreground/30 bg-overlay-surface text-overlay-foreground hover:bg-overlay-foreground/10 hover:text-overlay-foreground" asChild>
                     <Link href={project.githubUrl} target="_blank" rel="noopener noreferrer">
                       <Github className="w-4 h-4 mr-1" />
                       Source

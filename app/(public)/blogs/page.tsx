@@ -72,7 +72,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
                 {visualRowArticles.length > 0 || archiveArticles.length > 0 ? (
                   <section className="space-y-4">
                     <div className="space-y-2 border-b border-border/60 pb-4">
-                      <p className="kicker text-muted-foreground uppercase tracking-widest text-[0.65rem] font-bold">Journal</p>
+                      <p className="type-meta text-muted-foreground">Journal</p>
                       <h2 className="type-section-title text-[2.1rem] md:text-[2.8rem]">More writing from the journal.</h2>
                     </div>
                     <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3 pt-4">
