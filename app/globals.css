@@ -151,7 +151,7 @@
   --popover: oklch(0.266 0.01 44);
   --popover-foreground: oklch(0.965 0.004 92);
   --primary: oklch(0.72 0.144 46);
-  --primary-foreground: oklch(0.222 0.008 48);
+  --primary-foreground: oklch(1.0000 0 0);
   --secondary: oklch(0.39 0.018 50);
   --secondary-foreground: oklch(0.94 0.004 90);
   --muted: oklch(0.252 0.009 48);
@@ -199,6 +199,10 @@
   --shadow-xl: 0px 2px 3px 0px hsl(0 0% 6% / 0.16), 0px 8px 10px -1px hsl(0 0% 6% / 0.16);
   --shadow-2xl: 0px 2px 3px 0px hsl(0 0% 6% / 0.4);
   --tracking-normal: 0em;
+}
+
+.dark .public-design-scope {
+  --primary-foreground: oklch(0.222 0.008 48);
 }
 
 @layer base {
@@ -269,7 +273,7 @@
 
   .type-body {
     font-family: var(--font-sans);
-    font-size: 1rem;
+    font-size: 0.97rem;
     line-height: 1.62;
     letter-spacing: 0.003em;
     font-weight: 400;
@@ -287,10 +291,26 @@
   .type-meta,
   .kicker {
     font-family: var(--font-sans);
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     line-height: 1.2;
     letter-spacing: 0.1em;
     font-weight: 500;
     text-transform: uppercase;
+  }
+
+  .public-design-scope .type-body {
+    font-size: 1rem;
+  }
+
+  .public-design-scope .type-meta,
+  .public-design-scope .kicker {
+    font-size: 0.75rem;
+  }
+
+  .public-design-scope [data-slot="button"][data-variant="outline"],
+  .public-design-scope [data-slot="badge"][data-variant="outline"],
+  .public-design-scope [data-slot="input"],
+  .public-design-scope [data-slot="textarea"] {
+    border-color: var(--control-border);
   }
 }
