@@ -204,6 +204,11 @@ assert.doesNotMatch(
 );
 assert.ok(!floatingBlobsBar.includes("ctx.arc("), "Floating decorations must not render circular blobs");
 assert.ok(floatingBlobsBar.includes("ctx.fillRect("), "Floating decorations must render square geometry");
+assert.match(
+  floatingBlobsBar,
+  /const themeObserver = new MutationObserver\(\(\) => \{[\s\S]*?blobsRef\.current = createBlobs\([\s\S]*?if \(prefersReducedMotionRef\.current\) \{[\s\S]*?draw\(ctx, dimensionsRef\.current\.width, height\);/,
+  "Theme changes must repaint the static canvas when reduced motion disables animation frames",
+);
 
 assert.ok(scrollCue.includes("rounded-none"), "The scroll cue wrapper must be square");
 assert.ok(!scrollCue.includes("rounded-full"), "The scroll cue wrapper must not be circular");

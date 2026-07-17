@@ -201,6 +201,9 @@ export const FloatingBlobsBar: React.FC<FloatingBlobsBarProps> = ({
 
     const themeObserver = new MutationObserver(() => {
       blobsRef.current = createBlobs(dimensionsRef.current.width, height);
+      if (prefersReducedMotionRef.current) {
+        draw(ctx, dimensionsRef.current.width, height);
+      }
     });
     themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 
@@ -211,7 +214,7 @@ export const FloatingBlobsBar: React.FC<FloatingBlobsBarProps> = ({
       motionQuery.removeEventListener("change", handleReducedMotionChange);
       themeObserver.disconnect();
     };
-  }, [height, blobCount, createBlobs, handleResize, startAnimation, stopAnimation]);
+  }, [height, blobCount, createBlobs, draw, handleResize, startAnimation, stopAnimation]);
 
   return (
     <div
