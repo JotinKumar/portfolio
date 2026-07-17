@@ -106,7 +106,7 @@ function ScrollHintSvg() {
           100% { transform: translateY(0px); }
         }
         .scrollWrap {
-          --len: 164;
+          --len: 192;
           --clen: 18.4;
           --anim-duration: 6s;
           --start-delay: -0.24s;
@@ -177,25 +177,25 @@ function ScrollHintSvg() {
             id="gm"
             stroke="currentColor"
             strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M36,6 C25.16,6 18,13.16 18,22 L18,50 C18,58.84 25.16,66 36,66 C46.84,66 54,58.84 54,50 L54,22 C54,13.16 46.84,6 36,6 Z"
+            strokeLinecap="square"
+            strokeLinejoin="miter"
+            d="M18 6 H54 V66 H18 Z"
           />
           <path
             id="bm"
             stroke="currentColor"
             strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M36,6 C25.16,6 18,13.16 18,22 L18,50 C18,58.84 25.16,66 36,66 C46.84,66 54,58.84 54,50 L54,22 C54,13.16 46.84,6 36,6 Z"
+            strokeLinecap="square"
+            strokeLinejoin="miter"
+            d="M18 6 H54 V66 H18 Z"
           />
           <rect id="dot" x="33" y="23" width="6" height="6" fill="currentColor" opacity="0" />
           <path
             id="chev1"
             stroke="currentColor"
             strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            strokeLinecap="square"
+            strokeLinejoin="miter"
             d="M29.5,40 L36,46.5 L42.5,40"
             opacity="0"
           />
@@ -203,8 +203,8 @@ function ScrollHintSvg() {
             id="chev2"
             stroke="currentColor"
             strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            strokeLinecap="square"
+            strokeLinejoin="miter"
             d="M29.5,47 L36,53.5 L42.5,47"
             opacity="0"
           />

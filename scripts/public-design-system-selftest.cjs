@@ -202,10 +202,19 @@ assert.doesNotMatch(
   /#[\da-f]{3,8}/i,
   "Floating blobs must not carry a hard-coded multicolor palette",
 );
+assert.ok(!floatingBlobsBar.includes("ctx.arc("), "Floating decorations must not render circular blobs");
+assert.ok(floatingBlobsBar.includes("ctx.fillRect("), "Floating decorations must render square geometry");
 
 assert.ok(scrollCue.includes("rounded-none"), "The scroll cue wrapper must be square");
 assert.ok(!scrollCue.includes("rounded-full"), "The scroll cue wrapper must not be circular");
 assert.doesNotMatch(scrollCue, /#[\da-f]{3,8}/i, "The scroll cue must not use hard-coded colors");
+assert.ok(
+  scrollCue.includes('d="M18 6 H54 V66 H18 Z"'),
+  "The scroll cue must use a rectangular outline rather than a curved mouse capsule",
+);
+assert.ok(!scrollCue.includes(" C"), "The scroll cue must not contain curved path geometry");
+assert.ok(!scrollCue.includes('strokeLinecap="round"'), "The scroll cue must not use round line caps");
+assert.ok(!scrollCue.includes('strokeLinejoin="round"'), "The scroll cue must not use round joins");
 assert.ok(
   (scrollCue.match(/(?:stroke|fill)="currentColor"/g) || []).length >= 5,
   "The scroll cue border and icon must inherit a semantic current color",
