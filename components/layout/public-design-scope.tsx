@@ -5,6 +5,7 @@ import { useLayoutEffect, type ReactNode } from "react";
 
 export function PublicDesignScope({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const className = pathname === "/profile" ? "contents" : "public-design-scope contents";
 
   useLayoutEffect(() => {
     const root = document.documentElement;
@@ -17,5 +18,5 @@ export function PublicDesignScope({ children }: { children: ReactNode }) {
     };
   }, [pathname]);
 
-  return <>{children}</>;
+  return <div className={className}>{children}</div>;
 }

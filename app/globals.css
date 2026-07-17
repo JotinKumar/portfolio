@@ -26,6 +26,7 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-control-border: var(--control-border);
+  --color-badge-border: var(--badge-border);
   --color-overlay-surface: var(--overlay-surface);
   --color-overlay-foreground: var(--overlay-foreground);
   --color-destructive: var(--destructive);
@@ -102,6 +103,7 @@
   --input: oklch(0.878 0.017 78);
   --ring: oklch(0.56 0.126 46);
   --control-border: var(--border);
+  --badge-border: color-mix(in oklab, var(--border) 80%, transparent);
   --overlay-surface: oklch(0.2 0.012 45 / 0.78);
   --overlay-foreground: oklch(0.965 0.004 92);
   --decorative-1: oklch(0.68 0.13 46);
@@ -163,6 +165,7 @@
   --input: oklch(0.358 0.013 49);
   --ring: oklch(0.72 0.144 46);
   --control-border: var(--border);
+  --badge-border: color-mix(in oklab, var(--border) 80%, transparent);
   --overlay-surface: oklch(0.16 0.01 45 / 0.84);
   --overlay-foreground: oklch(0.965 0.004 92);
   --decorative-1: oklch(0.62 0.1 46);
@@ -203,11 +206,13 @@
 
 .public-design-scope {
   --control-border: oklch(0.65 0.025 60);
+  --badge-border: oklch(0.65 0.025 60);
 }
 
 .dark.public-design-scope {
   --primary-foreground: oklch(0.222 0.008 48);
   --control-border: oklch(0.52 0.02 50);
+  --badge-border: oklch(0.52 0.02 50);
 }
 
 @layer base {

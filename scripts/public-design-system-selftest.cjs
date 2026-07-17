@@ -18,6 +18,7 @@ const glassmorphism = read("components/ui/glassmorphism.tsx");
 
 for (const token of [
   "--color-control-border: var(--control-border)",
+  "--color-badge-border: var(--badge-border)",
   "--color-overlay-surface: var(--overlay-surface)",
   "--color-overlay-foreground: var(--overlay-foreground)",
   "--control-border: oklch(0.65 0.025 60)",
@@ -61,13 +62,19 @@ assert.equal(
   2,
   "Root and dark themes must retain the legacy control border outside public pages",
 );
-assert.match(
-  globals,
-  /\.public-design-scope\s*{[\s\S]*?--control-border:\s*oklch\(0\.65 0\.025 60\);/,
+assert.equal(
+  (globals.match(/--badge-border:\s*color-mix\(in oklab, var\(--border\) 80%, transparent\);/g) || [])
+    .length,
+  2,
+  "Root and dark themes must preserve the legacy 80% badge border",
 );
 assert.match(
   globals,
-  /\.dark\.public-design-scope\s*{[\s\S]*?--control-border:\s*oklch\(0\.52 0\.02 50\);/,
+  /\.public-design-scope\s*{[\s\S]*?--control-border:\s*oklch\(0\.65 0\.025 60\);[\s\S]*?--badge-border:\s*oklch\(0\.65 0\.025 60\);/,
+);
+assert.match(
+  globals,
+  /\.dark\.public-design-scope\s*{[\s\S]*?--control-border:\s*oklch\(0\.52 0\.02 50\);[\s\S]*?--badge-border:\s*oklch\(0\.52 0\.02 50\);/,
 );
 assert.ok(
   !globals.includes("border-color: var(--control-border)"),
@@ -91,8 +98,12 @@ assert.ok(
   publicScope.includes("}, [pathname])"),
   "The HTML scope effect must update on every route change",
 );
-assert.ok(publicScope.includes("return <>{children}</>"));
-assert.ok(!publicScope.includes('className="public-design-scope'));
+assert.ok(
+  publicScope.includes('pathname === "/profile" ? "contents" : "public-design-scope contents"'),
+  "The stable SSR wrapper must exclude Profile without changing element type",
+);
+assert.ok(publicScope.includes("return <div className={className}>{children}</div>"));
+assert.ok(!publicScope.includes("return <>{children}</>"));
 assert.ok(publicLayout.includes("<PublicDesignScope>"));
 assert.ok(publicLayout.includes("</PublicDesignScope>"));
 assert.ok(
@@ -104,12 +115,16 @@ for (const [name, source] of Object.entries({ button, badge, input, textarea }))
   assert.ok(source.includes("rounded-none"), `${name} must use square controls`);
   assert.ok(!source.includes("rounded-full"), `${name} must not use pill controls`);
 }
-for (const [name, source] of Object.entries({ button, badge, input, textarea })) {
+for (const [name, source] of Object.entries({ button, input, textarea })) {
   assert.ok(
     source.includes("border-control-border"),
     `${name} must consume the scoped semantic border token`,
   );
 }
+assert.ok(
+  badge.includes("border-badge-border"),
+  "Badge must consume its semantic border while preserving the legacy Profile alpha",
+);
 
 assert.equal(
   (navigation.match(/rounded-none/g) || []).length,
