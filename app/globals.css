@@ -82,6 +82,43 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes gradient-border-rotate {
+  to {
+    --gradient-angle: 360deg;
+  }
+}
+
+.gradient-border-component {
+  box-sizing: border-box;
+}
+
+.gradient-border-auto,
+.gradient-border-stop-hover {
+  animation: gradient-border-rotate var(--animation-duration) linear infinite;
+}
+
+.gradient-border-hover:hover {
+  animation: gradient-border-rotate var(--animation-duration) linear infinite;
+}
+
+.gradient-border-stop-hover:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gradient-border-auto,
+  .gradient-border-hover:hover,
+  .gradient-border-stop-hover {
+    animation: none;
+  }
+}
+
 :root {
   --radius: 0rem;
   --background: oklch(0.984 0.006 82);
