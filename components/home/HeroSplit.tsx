@@ -5,6 +5,7 @@ import { TechHero } from "@/components/home/TechHero";
 import { ScrollCue } from "@/components/ui/scroll-cue";
 import { Briefcase, Code, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BorderRotate } from "@/components/ui/border-rotate";
 import { Glassmorphism } from "@/components/ui/glassmorphism";
 import type { HeroContent, SiteConfig } from "@/lib/db-types";
 import {
@@ -67,10 +68,17 @@ export default function HeroSplit({
 
   return (
     <section className="relative w-full flex flex-col items-center overflow-hidden px-0 py-2">
-      <Glassmorphism
-        noShadow
-        className="relative w-full max-w-7xl h-[600px] md:h-[80vh] min-h-[600px] max-h-[600px] overflow-hidden md:rounded-[var(--radius-layout)]"
+      <BorderRotate
+        animationMode="auto-rotate"
+        animationSpeed={8}
+        borderWidth={2}
+        backgroundColor="var(--background)"
+        className="relative h-[600px] min-h-[600px] max-h-[600px] w-full max-w-7xl overflow-hidden [--border-radius:0px] md:h-[80vh] md:[--border-radius:var(--radius-layout)]"
       >
+        <Glassmorphism
+          noShadow
+          className="relative h-full w-full overflow-hidden rounded-none md:rounded-[calc(var(--radius-layout)-2px)]"
+        >
         {/* Navigation Buttons Layer */}
         <div className="absolute top-6 left-8 right-8 z-40 flex justify-between pointer-events-none">
           <div className="pointer-events-auto">
@@ -189,7 +197,8 @@ export default function HeroSplit({
           initial={false}
           style={{ left: splitPercent }}
         />
-      </Glassmorphism>
+        </Glassmorphism>
+      </BorderRotate>
       <ScrollCue
         testId="home-scroll-cue"
         label="Scroll to work experience"

@@ -21,3 +21,18 @@ test("BorderRotate exposes configurable modes and reduced-motion styles", async 
   assert.match(globals, /@keyframes gradient-border-rotate/);
   assert.match(globals, /prefers-reduced-motion: reduce/);
 });
+
+test("HeroSplit wraps the glass panel but excludes the scroll cue", async () => {
+  const hero = await readSource("components/home/HeroSplit.tsx");
+  const borderStart = hero.indexOf("<BorderRotate");
+  const glassStart = hero.indexOf("<Glassmorphism", borderStart);
+  const borderEnd = hero.indexOf("</BorderRotate>", glassStart);
+  const scrollCue = hero.indexOf("<ScrollCue", borderEnd);
+
+  assert.ok(borderStart >= 0, "BorderRotate wrapper is missing");
+  assert.ok(glassStart > borderStart, "Glassmorphism must be inside BorderRotate");
+  assert.ok(borderEnd > glassStart, "BorderRotate must close after Glassmorphism");
+  assert.ok(scrollCue > borderEnd, "ScrollCue must remain outside BorderRotate");
+  assert.match(hero, /animationMode="auto-rotate"/);
+  assert.match(hero, /animationSpeed=\{8\}/);
+});
