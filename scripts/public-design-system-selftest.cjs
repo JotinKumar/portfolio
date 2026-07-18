@@ -727,14 +727,34 @@ requireBehavior(
 for (const [name, source] of Object.entries({ professionalHero, techHero })) {
   const initialTitle = source.match(/isInitial \? "([^"]+)" : "text-\[1\.35rem\]/)?.[1] ?? "";
   const initialTitleMinimum = Number(initialTitle.match(/clamp\(([\d.]+)rem/)?.[1] ?? 0);
+  const centerTrack = source.match(
+    /\[--hero-center-track:clamp\(([\d.]+)rem,([\d.]+)vw,([\d.]+)rem\)\]/,
+  );
+  const mobileTracksRemainViable = [320, 375, 390].every((viewportWidth) => {
+    if (!centerTrack) return false;
+    const minimum = Number(centerTrack[1]) * 16;
+    const fluid = viewportWidth * Number(centerTrack[2]) / 100;
+    const maximum = Number(centerTrack[3]) * 16;
+    const centerWidth = Math.min(maximum, Math.max(minimum, fluid));
+    return (viewportWidth - centerWidth) / 2 >= 90;
+  });
   requireBehavior(
     initialTitle.includes("text-[clamp(") && initialTitleMinimum > 0.95 &&
       !initialTitle.includes("text-[0.95rem]"),
     `${name} initial split-screen role title is larger than 0.95rem`,
   );
   requireBehavior(
-    /className="[^"]*text-\[0\.7[0-2]rem\][^"]*px-2(?:\.5)?[^"]*py-0\.5/.test(source),
-    `${name} hero badges use smaller explicit typography and compact padding`,
+    /className="[^"]*type-meta[^"]*!text-\[0\.7[0-2]rem\][^"]*px-2(?:\.5)?[^"]*py-0\.5[^"]*rounded-none/.test(source),
+    `${name} hero badges override scoped meta typography and retain compact square styling`,
+  );
+  requireBehavior(
+    mobileTracksRemainViable && Number(centerTrack?.[3]) === 21 &&
+      source.includes('minmax(0, var(--hero-center-track))'),
+    `${name} initial split grid retains viable side tracks at 320px, 375px, and 390px`,
+  );
+  requireBehavior(
+    initialTitle.includes("break-words") && !initialTitle.includes("whitespace-nowrap"),
+    `${name} initial split-screen role title can wrap long words without overflow`,
   );
 }
 

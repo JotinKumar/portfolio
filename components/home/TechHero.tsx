@@ -22,12 +22,12 @@ export function TechHero({
 
   return (
     <motion.div 
-      className="w-full h-full grid items-center overflow-hidden bg-background/50"
+      className="w-full h-full grid items-center overflow-hidden bg-background/50 [--hero-center-track:clamp(8rem,42vw,21rem)]"
       initial={false}
       animate={{
         gridTemplateColumns: current 
           ? "minmax(0px, 0.1fr) 400px minmax(0, 1.2fr)" 
-          : "minmax(0, 1fr) 336px minmax(0, 1fr)"
+          : "minmax(0, 1fr) minmax(0, var(--hero-center-track)) minmax(0, 1fr)"
       }}
       transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
     >
@@ -83,8 +83,8 @@ export function TechHero({
               )}
             </AnimatePresence>
             
-            <div className={`space-y-3 flex flex-col ${current ? "items-start" : "items-end"}`}>
-              <h2 className={`type-card-title ${isInitial ? "text-[clamp(1.15rem,1.4vw,1.4rem)] leading-tight text-balance" : "text-[1.35rem] md:text-[1.7rem] whitespace-nowrap"}`}>
+            <div className={`min-w-0 w-full space-y-3 flex flex-col ${current ? "items-start" : "items-end"}`}>
+              <h2 className={`type-card-title ${isInitial ? "max-w-full break-words text-[clamp(1.15rem,1.4vw,1.4rem)] leading-tight text-balance" : "text-[1.35rem] md:text-[1.7rem] whitespace-nowrap"}`}>
                 {heroContent.techTitle}
               </h2>
               <p className={`${isInitial ? "type-body max-w-md" : "type-body-lg max-w-2xl"} text-muted-foreground`}>
@@ -126,7 +126,7 @@ export function TechHero({
                   >
                     <Badge
                       variant="outline"
-                      className="type-meta border-foreground/18 bg-transparent text-[0.72rem] px-2.5 py-0.5 text-foreground shadow-none whitespace-nowrap rounded-none"
+                      className="type-meta border-foreground/18 bg-transparent !text-[0.72rem] px-2.5 py-0.5 text-foreground shadow-none whitespace-nowrap rounded-none"
                     >
                       {skill}
                     </Badge>
