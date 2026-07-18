@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "analyze": "next experimental-analyze --output",
-    "test": "node -r ts-node/register scripts/security-selftest.cjs",
+    "test": "node scripts/public-design-system-selftest.cjs",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "postinstall": "prisma generate",

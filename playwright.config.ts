@@ -30,7 +30,9 @@ export default defineConfig({
       use: {
         browserName: "chromium",
         ...(localChannel ? { channel: localChannel } : {}),
-        chromiumSandbox,
+        launchOptions: {
+          chromiumSandbox,
+        },
       },
     },
   ],
