@@ -1,7 +1,7 @@
 import { WorkTimeline } from "@/components/home/work-timeline";
 import { FeaturedArticles } from "@/components/home/featured-articles";
 import { FeaturedProjects } from "@/components/home/featured-projects";
-import HeroSplit from "@/components/home/HeroSplit";
+import { ResponsiveHero } from "@/components/home/responsive-hero";
 import {
   getFeaturedArticles,
   getFeaturedProjects,
@@ -93,7 +93,7 @@ export default async function Home() {
 
   return (
     <div>
-      <HeroSplit heroContent={heroContent} siteConfig={shellData.siteConfig} />
+      <ResponsiveHero heroContent={heroContent} siteConfig={shellData.siteConfig} />
       <WorkTimeline experiences={formattedExperiences} milestones={milestones.length > 0 ? milestones : FALLBACK_HOME_MILESTONES} title={heroContent.homeWorkSectionTitle} />
       <FeaturedArticles
         articles={featuredArticles}
