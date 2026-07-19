@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { LayoutDashboard, LogOut, Settings, UserRound } from "lucide-react"
+import { Gear as Settings, SignOut as LogOut, SquaresFour as LayoutDashboard, UserCircle as UserRound } from "@phosphor-icons/react"
 import { toast } from "sonner"
 
 import { AuthPanel } from "@/components/auth/auth-panel"

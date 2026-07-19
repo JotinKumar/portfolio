@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import type { Project } from "@/lib/db-types";
-import { Edit, Plus, Trash } from "lucide-react";
+import { PencilSimple as Edit, Plus, Trash } from "@phosphor-icons/react/ssr";
 import { isAdminEmail } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowUpRight, Calendar, Clock } from 'lucide-react';
+import { ArrowUpRight, Calendar, Clock } from '@phosphor-icons/react/ssr';
 import type { ArticleCardData } from '@/lib/server/queries';
 
 interface ArticleCardProps {

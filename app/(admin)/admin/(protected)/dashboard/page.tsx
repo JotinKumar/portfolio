@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, FileText, FolderOpen, Mail, User } from "lucide-react";
+import { ArrowRight, EnvelopeSimple as Mail, FileText, FolderOpen, User } from "@phosphor-icons/react/ssr";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";

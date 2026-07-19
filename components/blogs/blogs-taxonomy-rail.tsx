@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Tag as TagIcon, LayoutGrid } from "lucide-react";
+import { Tag as TagIcon, SquaresFour as LayoutGrid } from "@phosphor-icons/react/ssr";
 
 export function BlogsTaxonomyRail({
   categories,

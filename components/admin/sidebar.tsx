@@ -3,16 +3,16 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { 
-  LayoutDashboard, 
-  FileText, 
-  FolderOpen, 
-  Settings, 
-  LogOut,
+import {
+  SquaresFour as LayoutDashboard,
+  FileText,
+  FolderOpen,
+  Gear as Settings,
+  SignOut as LogOut,
   User,
-  Mail,
-  Rows3
-} from 'lucide-react';
+  EnvelopeSimple as Mail,
+  Rows as Rows3
+} from '@phosphor-icons/react';
 import { toast } from 'sonner';
 
 const sidebarItems = [

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Calendar, Tag } from "lucide-react";
+import { Calendar, Tag } from "@phosphor-icons/react";
 import type { ArticleCardData } from "@/lib/server/queries";
 
 interface BlogLeadCardProps {

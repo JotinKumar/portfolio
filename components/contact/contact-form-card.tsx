@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Send } from "lucide-react";
+import { PaperPlaneTilt as Send } from "@phosphor-icons/react";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),

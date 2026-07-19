@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, Blocks, Layers3, Tag } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Cube as Blocks, Stack as Layers3, Tag } from "@phosphor-icons/react/ssr";
 import { PageContent } from "@/components/layout/page-primitives";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

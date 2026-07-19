@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, FileImage, Github } from 'lucide-react';
+import { ArrowSquareOut as ExternalLink, GithubLogo as Github, ImageSquare as FileImage } from '@phosphor-icons/react/ssr';
 import type { ProjectCardData } from '@/lib/server/queries';
 
 interface ProjectCardProps {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { ArrowUpRight, Edit, Eye, Plus, Trash } from "lucide-react";
+import { ArrowUpRight, Eye, PencilSimple as Edit, Plus, Trash } from "@phosphor-icons/react/ssr";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

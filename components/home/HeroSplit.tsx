@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { ProfessionalHero } from "@/components/home/ProfessionalHero";
 import { TechHero } from "@/components/home/TechHero";
 import { ScrollCue } from "@/components/ui/scroll-cue";
-import { Briefcase, Code, RotateCcw } from "lucide-react";
+import { ArrowCounterClockwise as RotateCcw, Briefcase, Code } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { BorderRotate } from "@/components/ui/border-rotate";
 import { Glassmorphism } from "@/components/ui/glassmorphism";

@@ -20,14 +20,14 @@ import {
 import {
   Moon,
   Sun,
-  Menu,
-  Mail,
-  Download,
+  List as Menu,
+  EnvelopeSimple as Mail,
+  DownloadSimple as Download,
   User,
   FileText,
   Briefcase,
-  Home,
-} from "lucide-react";
+  House as Home,
+} from "@phosphor-icons/react";
 import { APP_SHELL_CLASS } from "@/lib/layout";
 import { isNavigationItemActive } from "@/lib/navigation-state";
 import { cn } from "@/lib/utils";

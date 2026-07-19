@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollCue } from "@/components/ui/scroll-cue";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { ArrowUpRight, Building, Calendar, MapPin } from "lucide-react";
+import { ArrowUpRight, BuildingOffice as Building, Calendar, MapPin } from "@phosphor-icons/react";
 import type { ProfileMilestone } from "@/lib/db-types";
 
 interface Experience {

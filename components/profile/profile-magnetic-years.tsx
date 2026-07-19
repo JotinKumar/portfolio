@@ -2,15 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useInView, useReducedMotion } from "framer-motion";
-
-function MagnetIcon(props: React.ComponentProps<"svg">) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
-      <path d="M7 7v4a5 5 0 0 0 10 0V7" />
-      <path d="M7 7V4H4v7a8 8 0 0 0 16 0V4h-3v3" />
-    </svg>
-  );
-}
+import { Magnet as MagnetIcon } from "@phosphor-icons/react";
 
 const CURRENT_YEAR = new Date().getFullYear();
 const BASE_YEARS = Array.from({ length: CURRENT_YEAR - 2004 + 1 }, (_, i) => 2004 + i);
