@@ -17,6 +17,7 @@ import { Glassmorphism } from "@/components/ui/glassmorphism";
 import type { HeroContent, SiteConfig } from "@/lib/db-types";
 
 type HeroView = "choice" | "professional" | "tech";
+type DetailViewKind = Exclude<HeroView, "choice">;
 
 type TabletHeroProps = {
   heroContent: HeroContent;
@@ -25,8 +26,14 @@ type TabletHeroProps = {
 
 export function TabletHero({ heroContent, siteConfig }: TabletHeroProps) {
   const [view, setView] = useState<HeroView>("choice");
+  const [returnFocus, setReturnFocus] = useState<DetailViewKind | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const isProfessional = view === "professional";
+
+  const showDetail = (nextView: DetailViewKind) => {
+    setReturnFocus(nextView);
+    setView(nextView);
+  };
 
   return (
     <section className="relative flex w-full justify-center overflow-x-hidden px-4 py-2">
@@ -34,6 +41,13 @@ export function TabletHero({ heroContent, siteConfig }: TabletHeroProps) {
         noShadow
         className="w-full max-w-5xl overflow-hidden px-8 py-7 sm:px-10 sm:py-8"
       >
+        <p role="status" aria-atomic="true" className="sr-only">
+          {view === "choice"
+            ? heroContent.displayName
+            : isProfessional
+              ? heroContent.professionalTitle
+              : heroContent.techTitle}
+        </p>
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={view}
@@ -66,7 +80,6 @@ export function TabletHero({ heroContent, siteConfig }: TabletHeroProps) {
                     fill
                     sizes="240px"
                     className="object-cover [clip-path:inset(0_50%_0_0)]"
-                    priority
                   />
                   <Image
                     src={heroContent.techImageUrl}
@@ -74,7 +87,6 @@ export function TabletHero({ heroContent, siteConfig }: TabletHeroProps) {
                     fill
                     sizes="240px"
                     className="object-cover [clip-path:inset(0_0_0_50%)]"
-                    priority
                   />
                   <div
                     aria-hidden="true"
@@ -87,13 +99,15 @@ export function TabletHero({ heroContent, siteConfig }: TabletHeroProps) {
                     icon={<Briefcase aria-hidden="true" size={28} weight="light" />}
                     label={heroContent.exploreProfessionalLabel}
                     description="Pricing, Strategy, Operations"
-                    onClick={() => setView("professional")}
+                    autoFocus={returnFocus === "professional"}
+                    onClick={() => showDetail("professional")}
                   />
                   <ChoiceCard
                     icon={<Code aria-hidden="true" size={28} weight="light" />}
                     label={heroContent.exploreTechLabel}
                     description="Projects, Blogs, Tech Stack"
-                    onClick={() => setView("tech")}
+                    autoFocus={returnFocus === "tech"}
+                    onClick={() => showDetail("tech")}
                   />
                 </div>
               </div>
@@ -155,17 +169,20 @@ function ChoiceCard({
   icon,
   label,
   description,
+  autoFocus,
   onClick,
 }: {
   icon: React.ReactNode;
   label: string;
   description: string;
+  autoFocus: boolean;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      autoFocus={autoFocus}
       className="group flex min-h-20 w-full items-center gap-5 border border-control-border bg-background/55 px-5 py-4 text-left shadow-sm transition-[transform,background-color,border-color,box-shadow] duration-[var(--duration-quick)] ease-[var(--ease-out-quart)] hover:-translate-y-px hover:border-primary/50 hover:bg-accent/70 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:translate-y-0"
     >
       <span className="grid size-12 shrink-0 place-items-center border border-primary/25 bg-primary/10 text-primary">
@@ -212,10 +229,11 @@ function DetailView({
           type="button"
           onClick={onBack}
           aria-label={resetViewLabel}
+          autoFocus
           className="type-nav inline-flex min-h-11 items-center gap-2 px-1 text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           <ArrowLeft aria-hidden="true" size={19} />
-          <span>Back</span>
+          <span>{resetViewLabel}</span>
         </button>
         <p className="type-card-title min-w-0 truncate text-right text-[1.2rem] sm:text-[1.45rem]">
           {displayName}
@@ -233,7 +251,7 @@ function DetailView({
           </p>
         </div>
 
-        <div className="mt-8 flex max-h-32 max-w-full flex-wrap gap-2 overflow-y-auto pr-2">
+        <div className="mt-8 flex max-w-full flex-wrap gap-2">
           {skills.map((skill) => (
             <Badge
               key={skill}
@@ -246,14 +264,14 @@ function DetailView({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 border-t border-border/70 pt-6">
+      <div className="grid gap-3 border-t border-border/70 pt-6">
         {actions.map((action) => (
           <Button
             key={`${action.href}-${action.label}`}
             asChild
             variant={action.primary ? "default" : "outline"}
             size="lg"
-            className="min-h-12 whitespace-normal px-4 text-center"
+            className="min-h-12 w-full whitespace-normal px-4 text-center"
           >
             <Link href={action.href}>{action.label}</Link>
           </Button>
