@@ -106,7 +106,11 @@ async function exerciseDetailFlows(
   });
   await expectVisibleFocusRing(professionalBack);
   await expect(page).toHaveURL(initialUrl);
-  await expect(page.getByRole("link", { name: heroContent.downloadResumeLabel })).toHaveAttribute(
+  const resumeAction = page.getByRole("link", {
+    name: heroContent.downloadResumeLabel,
+    exact: true,
+  });
+  await expect(resumeAction).toHaveAttribute(
     "href",
     "/resume.pdf"
   );
@@ -131,7 +135,8 @@ async function exerciseDetailFlows(
     await expectBreakable(
       page.getByText(heroContent.professionalSkills[0], { exact: true })
     );
-    await expectActionInsideHero(contactAction);
+    await expectActionContentFits(resumeAction);
+    await expectActionContentFits(contactAction);
   }
   await expectOneMountedVariant(page, expectedVariant);
   await expectNoHorizontalOverflow(page);
@@ -149,11 +154,19 @@ async function exerciseDetailFlows(
   });
   await expectVisibleFocusRing(techBack);
   await expect(page).toHaveURL(initialUrl);
-  await expect(page.getByRole("link", { name: heroContent.viewProjectsLabel })).toHaveAttribute(
+  const projectsAction = page.getByRole("link", {
+    name: heroContent.viewProjectsLabel,
+    exact: true,
+  });
+  await expect(projectsAction).toHaveAttribute(
     "href",
     "/projects"
   );
-  await expect(page.getByRole("link", { name: heroContent.viewArticlesLabel })).toHaveAttribute(
+  const articlesAction = page.getByRole("link", {
+    name: heroContent.viewArticlesLabel,
+    exact: true,
+  });
+  await expect(articlesAction).toHaveAttribute(
     "href",
     "/blogs"
   );
@@ -167,6 +180,8 @@ async function exerciseDetailFlows(
       4
     );
     await expectBreakable(page.getByText(heroContent.techSkills[0], { exact: true }));
+    await expectActionContentFits(projectsAction);
+    await expectActionContentFits(articlesAction);
   }
   await expectOneMountedVariant(page, expectedVariant);
   await expectNoHorizontalOverflow(page);
@@ -281,22 +296,17 @@ async function expectBreakable(locator: Locator) {
   expect(metrics.horizontalOverflow).toBeLessThanOrEqual(0);
 }
 
-async function expectActionInsideHero(action: Locator) {
-  const isInsideHero = await action.evaluate((element) => {
-    const hero = element.closest("[data-responsive-hero-variant]");
-    if (!hero) return false;
-
-    const actionBounds = element.getBoundingClientRect();
-    const heroBounds = hero.getBoundingClientRect();
-    return (
-      actionBounds.left >= heroBounds.left &&
-      actionBounds.right <= heroBounds.right &&
-      actionBounds.top >= heroBounds.top &&
-      actionBounds.bottom <= heroBounds.bottom
-    );
+async function expectActionContentFits(action: Locator) {
+  await expect(action).toBeVisible();
+  const overflow = await action.evaluate((element) => {
+    return {
+      horizontal: element.scrollWidth - element.clientWidth,
+      vertical: element.scrollHeight - element.clientHeight,
+    };
   });
 
-  expect(isInsideHero).toBe(true);
+  expect(overflow.horizontal).toBeLessThanOrEqual(0);
+  expect(overflow.vertical).toBeLessThanOrEqual(0);
 }
 
 async function expectVisibleFocusRing(locator: Locator) {
