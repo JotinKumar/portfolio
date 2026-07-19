@@ -8,7 +8,7 @@ import { ProfileSkillMeters } from "@/components/profile/profile-skill-meters.cl
 import { ProfileHobbyPreview } from "@/components/profile/profile-hobby-preview.client";
 import type { SocialLink } from "@/lib/db-types";
 import type { LucideIcon } from "lucide-react";
-import { BriefcaseBusiness, Headphones, Linkedin, Mail, MapPin, Phone, Plane, Podcast, Popcorn } from "lucide-react";
+import { Linkedin, Mail, MapPin, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type SkillMeterEntry = {
