@@ -45,10 +45,10 @@ export function TabletHero({ heroContent, siteConfig }: TabletHeroProps) {
   };
 
   return (
-    <section className="relative flex w-full justify-center overflow-x-hidden px-4 py-2">
+    <section className="relative flex min-w-0 w-full justify-center overflow-x-hidden px-4 py-2">
       <Glassmorphism
         noShadow
-        className="w-full max-w-5xl overflow-hidden px-8 py-7 sm:px-10 sm:py-8"
+        className="min-w-0 w-full max-w-5xl overflow-hidden px-8 py-7 sm:px-10 sm:py-8"
       >
         <p role="status" aria-atomic="true" className="sr-only">
           {view === "choice"
@@ -70,9 +70,9 @@ export function TabletHero({ heroContent, siteConfig }: TabletHeroProps) {
             className="mx-auto flex min-h-[620px] w-full max-w-3xl flex-col"
           >
             {view === "choice" ? (
-              <div className="flex flex-1 flex-col items-center justify-center">
-                <header className="w-full max-w-3xl text-center">
-                  <h1 className="type-card-title text-balance text-[clamp(1.65rem,3.8vw,2.35rem)]">
+              <div className="flex min-w-0 w-full flex-1 flex-col items-center justify-center">
+                <header className="min-w-0 w-full max-w-3xl text-center">
+                  <h1 className="type-card-title line-clamp-2 text-balance text-[clamp(1.65rem,3.8vw,2.35rem)] [overflow-wrap:anywhere]">
                     {heroContent.displayName}
                   </h1>
                   <div className="mx-auto mt-3 h-px w-12 bg-primary" />
@@ -105,7 +105,7 @@ export function TabletHero({ heroContent, siteConfig }: TabletHeroProps) {
                   />
                 </div>
 
-                <div className="mt-7 grid w-full gap-3">
+                <div className="mt-7 grid min-w-0 w-full gap-3">
                   <ChoiceCard
                     icon={<Briefcase aria-hidden="true" size={28} weight="light" />}
                     label={heroContent.exploreProfessionalLabel}
@@ -184,16 +184,16 @@ function ChoiceCard({
       type="button"
       onClick={onClick}
       autoFocus={autoFocus}
-      className="group flex min-h-20 w-full items-center gap-5 border border-control-border bg-background/55 px-5 py-4 text-left shadow-sm transition-[transform,background-color,border-color,box-shadow] duration-[var(--duration-quick)] ease-[var(--ease-out-quart)] hover:-translate-y-px hover:border-primary/50 hover:bg-accent/70 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background active:translate-y-0"
+      className="group flex min-h-20 min-w-0 w-full items-center gap-5 border border-control-border bg-background/55 px-5 py-4 text-left shadow-sm transition-[transform,background-color,border-color,box-shadow] duration-[var(--duration-quick)] ease-[var(--ease-out-quart)] hover:-translate-y-px hover:border-primary/50 hover:bg-accent/70 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background active:translate-y-0"
     >
       <span className="grid size-12 shrink-0 place-items-center border border-primary/25 bg-primary/10 text-primary">
         {icon}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="type-body block font-medium text-foreground">
+        <span className="type-body line-clamp-2 font-medium text-foreground [overflow-wrap:anywhere]">
           {label}
         </span>
-        <span className="type-body mt-0.5 block text-sm text-muted-foreground">
+        <span className="type-body mt-0.5 line-clamp-2 text-sm text-muted-foreground [overflow-wrap:anywhere]">
           {description}
         </span>
       </span>
@@ -225,39 +225,41 @@ function DetailView({
 }) {
   return (
     <div className="flex min-w-0 flex-1 flex-col">
-      <header className="flex items-center justify-between gap-4 border-b border-border/70 pb-5">
+      <header className="flex min-w-0 items-center justify-between gap-4 border-b border-border/70 pb-5">
         <button
           type="button"
           onClick={onBack}
           aria-label={resetViewLabel}
           autoFocus
-          className="type-nav inline-flex min-h-11 items-center gap-2 px-1 text-foreground transition-colors hover:text-primary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
+          className="type-nav inline-flex min-h-11 min-w-0 max-w-[55%] items-center gap-2 px-1 text-foreground transition-colors hover:text-primary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
         >
-          <ArrowLeft aria-hidden="true" size={19} />
-          <span>{resetViewLabel}</span>
+          <ArrowLeft aria-hidden="true" size={19} className="shrink-0" />
+          <span className="line-clamp-2 text-left [overflow-wrap:anywhere]">
+            {resetViewLabel}
+          </span>
         </button>
-        <p className="type-card-title min-w-0 truncate text-right text-[1.2rem] sm:text-[1.45rem]">
+        <p className="type-card-title min-w-0 max-w-[45%] line-clamp-2 text-right text-[1.2rem] [overflow-wrap:anywhere] sm:text-[1.45rem]">
           {displayName}
         </p>
       </header>
 
       <div className="flex flex-1 flex-col justify-center py-9">
-        <div className="max-w-2xl">
-          <h1 className="type-section-title text-balance text-[clamp(2.1rem,5vw,3.35rem)]">
+        <div className="min-w-0 max-w-2xl">
+          <h1 className="type-section-title line-clamp-3 max-w-[22ch] text-balance text-[clamp(2.1rem,5vw,3.35rem)] [overflow-wrap:anywhere]">
             {title}
           </h1>
           <div className="mt-4 h-px w-16 bg-primary" />
-          <p className="type-body-lg mt-6 line-clamp-4 text-muted-foreground">
+          <p className="type-body-lg mt-6 line-clamp-4 text-muted-foreground [overflow-wrap:anywhere]">
             {subtitle}
           </p>
         </div>
 
-        <div className="mt-8 flex max-w-full flex-wrap gap-2">
+        <div className="mt-8 flex min-w-0 max-w-full flex-wrap gap-2">
           {skills.map((skill) => (
             <Badge
               key={skill}
               variant="outline"
-              className="max-w-full shrink whitespace-normal break-words bg-background/45 px-3 py-1.5 text-left"
+              className="min-w-0 max-w-full shrink whitespace-normal bg-background/45 px-3 py-1.5 text-left [overflow-wrap:anywhere]"
             >
               {skill}
             </Badge>
@@ -265,14 +267,14 @@ function DetailView({
         </div>
       </div>
 
-      <div className="grid gap-3 border-t border-border/70 pt-6">
+      <div className="grid min-w-0 gap-3 border-t border-border/70 pt-6">
         {actions.map((action) => (
           <Button
             key={`${action.href}-${action.label}`}
             asChild
             variant={action.primary ? "default" : "outline"}
             size="lg"
-            className="min-h-12 w-full whitespace-normal px-4 text-center"
+            className="min-h-12 min-w-0 w-full whitespace-normal px-4 text-center [overflow-wrap:anywhere]"
           >
             <Link href={action.href}>{action.label}</Link>
           </Button>
