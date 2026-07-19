@@ -222,7 +222,7 @@ function ChoiceCard({
       type="button"
       onClick={onClick}
       autoFocus={autoFocus}
-      className="group flex min-h-16 w-full items-center gap-3 border border-control-border bg-background/55 px-3 py-3 text-left shadow-sm transition-[transform,background-color,border-color,box-shadow] duration-[var(--duration-quick)] ease-[var(--ease-out-quart)] hover:-translate-y-px hover:border-primary/50 hover:bg-accent/70 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:translate-y-0"
+      className="group flex min-h-16 w-full items-center gap-3 border border-control-border bg-background/55 px-3 py-3 text-left shadow-sm transition-[transform,background-color,border-color,box-shadow] duration-[var(--duration-quick)] ease-[var(--ease-out-quart)] hover:-translate-y-px hover:border-primary/50 hover:bg-accent/70 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background active:translate-y-0"
     >
       <span className="grid size-10 shrink-0 place-items-center text-primary">
         {icon}
@@ -290,7 +290,7 @@ function DetailView({
           onClick={onBack}
           aria-label={resetViewLabel}
           autoFocus
-          className="type-nav inline-flex min-h-11 shrink-0 items-center gap-2 px-1 text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="type-nav inline-flex min-h-11 shrink-0 items-center gap-2 px-1 text-foreground transition-colors hover:text-primary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
         >
           <ArrowLeft aria-hidden="true" size={18} />
           <span>{resetViewLabel}</span>

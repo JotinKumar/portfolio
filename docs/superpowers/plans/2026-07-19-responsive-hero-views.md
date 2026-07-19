@@ -28,17 +28,15 @@
 - Modify `app/(public)/page.tsx`: replace the direct desktop hero render with the responsive wrapper.
 - Modify `package.json` and `package-lock.json`: add `@phosphor-icons/react`, required by repository icon policy.
 
-### Task 1: Responsive Wrapper and Icon Foundation
+### Task 1: Phosphor Icon Foundation
 
 **Files:**
-- Create: `components/home/responsive-hero.tsx`
-- Modify: `app/(public)/page.tsx`
 - Modify: `package.json`
 - Modify: `package-lock.json`
 
 **Interfaces:**
 - Consumes: `HeroContent`, `SiteConfig | null`.
-- Produces: `ResponsiveHero({ heroContent, siteConfig }): JSX.Element`.
+- Produces: the `@phosphor-icons/react` dependency used by Tasks 2 and 3.
 
 - [ ] **Step 1: Record the current desktop contract**
 
@@ -58,49 +56,7 @@ Run: `cmd /c npm install @phosphor-icons/react`
 
 Expected: `package.json` and `package-lock.json` add `@phosphor-icons/react`; no unrelated dependency upgrades.
 
-- [ ] **Step 3: Add the responsive wrapper**
-
-Create a wrapper with server-safe CSS visibility:
-
-```tsx
-import HeroSplit from "@/components/home/HeroSplit";
-import { MobileHero } from "@/components/home/mobile-hero";
-import { TabletHero } from "@/components/home/tablet-hero";
-import type { HeroContent, SiteConfig } from "@/lib/db-types";
-
-type ResponsiveHeroProps = {
-  heroContent: HeroContent;
-  siteConfig: SiteConfig | null;
-};
-
-export function ResponsiveHero({ heroContent, siteConfig }: ResponsiveHeroProps) {
-  return (
-    <>
-      <div className="md:hidden">
-        <MobileHero heroContent={heroContent} siteConfig={siteConfig} />
-      </div>
-      <div className="hidden md:block lg:hidden">
-        <TabletHero heroContent={heroContent} siteConfig={siteConfig} />
-      </div>
-      <div className="hidden lg:block">
-        <HeroSplit heroContent={heroContent} siteConfig={siteConfig} />
-      </div>
-    </>
-  );
-}
-```
-
-- [ ] **Step 4: Connect the homepage**
-
-Replace only the hero import and render in `app/(public)/page.tsx`:
-
-```tsx
-import { ResponsiveHero } from "@/components/home/responsive-hero";
-
-<ResponsiveHero heroContent={heroContent} siteConfig={shellData.siteConfig} />
-```
-
-- [ ] **Step 5: Type-check and commit**
+- [ ] **Step 3: Type-check and commit**
 
 Run: `cmd /c npx tsc --noEmit --pretty false --incremental false`
 
@@ -174,10 +130,13 @@ feat: add tablet-specific hero flow
 
 **Files:**
 - Create: `components/home/mobile-hero.tsx`
+- Create: `components/home/responsive-hero.tsx`
+- Modify: `app/(public)/page.tsx`
 
 **Interfaces:**
 - Consumes: `{ heroContent: HeroContent; siteConfig: SiteConfig | null }`.
 - Produces: `MobileHero`, with local `"choice" | "professional" | "tech"` state.
+- Produces: `ResponsiveHero`, which selects mobile, tablet, and the unchanged desktop hero through CSS breakpoints.
 
 - [ ] **Step 1: Add the mobile state and compact shell**
 
@@ -195,7 +154,11 @@ Use Phosphor icons only. Include meaningful actions supported by existing data: 
 
 Use the same `AnimatePresence` keyed-view pattern as tablet, with smaller vertical travel appropriate to the compact viewport.
 
-- [ ] **Step 5: Type-check and commit**
+- [ ] **Step 5: Add the responsive wrapper and connect the homepage**
+
+Create `ResponsiveHero` with `md:hidden` for mobile, `hidden md:block lg:hidden` for tablet, and `hidden lg:block` for the existing `HeroSplit`. Replace only the direct `HeroSplit` import and render in `app/(public)/page.tsx` with `ResponsiveHero`.
+
+- [ ] **Step 6: Type-check and commit**
 
 Run: `cmd /c npx tsc --noEmit --pretty false --incremental false`
 
