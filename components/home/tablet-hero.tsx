@@ -14,6 +14,10 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Glassmorphism } from "@/components/ui/glassmorphism";
+import {
+  getProfessionalActions,
+  type DetailAction,
+} from "@/components/home/responsive-hero-model";
 import type { HeroContent, SiteConfig } from "@/lib/db-types";
 
 type HeroView = "choice" | "professional" | "tech";
@@ -29,6 +33,11 @@ export function TabletHero({ heroContent, siteConfig }: TabletHeroProps) {
   const [returnFocus, setReturnFocus] = useState<DetailViewKind | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const isProfessional = view === "professional";
+  const professionalActions = getProfessionalActions({
+    resumeUrl: siteConfig?.resumeUrl,
+    downloadResumeLabel: heroContent.downloadResumeLabel,
+    getInTouchLabel: heroContent.getInTouchLabel,
+  });
 
   const showDetail = (nextView: DetailViewKind) => {
     setReturnFocus(nextView);
@@ -78,6 +87,7 @@ export function TabletHero({ heroContent, siteConfig }: TabletHeroProps) {
                     src={heroContent.professionalImageUrl}
                     alt=""
                     fill
+                    priority
                     sizes="240px"
                     className="object-cover [clip-path:inset(0_50%_0_0)]"
                   />
@@ -85,6 +95,7 @@ export function TabletHero({ heroContent, siteConfig }: TabletHeroProps) {
                     src={heroContent.techImageUrl}
                     alt=""
                     fill
+                    priority
                     sizes="240px"
                     className="object-cover [clip-path:inset(0_0_0_50%)]"
                   />
@@ -133,17 +144,7 @@ export function TabletHero({ heroContent, siteConfig }: TabletHeroProps) {
                 onBack={() => setView("choice")}
                 actions={
                   isProfessional
-                    ? [
-                        {
-                          href: siteConfig?.resumeUrl ?? "#",
-                          label: heroContent.downloadResumeLabel,
-                          primary: true,
-                        },
-                        {
-                          href: "/contact",
-                          label: heroContent.getInTouchLabel,
-                        },
-                      ]
+                    ? professionalActions
                     : [
                         {
                           href: "/projects",
@@ -220,7 +221,7 @@ function DetailView({
   skills: string[];
   resetViewLabel: string;
   onBack: () => void;
-  actions: Array<{ href: string; label: string; primary?: boolean }>;
+  actions: DetailAction[];
 }) {
   return (
     <div className="flex min-w-0 flex-1 flex-col">

@@ -17,6 +17,10 @@ import { type ReactNode, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Glassmorphism } from "@/components/ui/glassmorphism";
+import {
+  getProfessionalActions,
+  type DetailAction,
+} from "@/components/home/responsive-hero-model";
 import type { HeroContent, SiteConfig } from "@/lib/db-types";
 
 type HeroView = "choice" | "professional" | "tech";
@@ -27,17 +31,16 @@ type MobileHeroProps = {
   siteConfig: SiteConfig | null;
 };
 
-type DetailAction = {
-  href: string;
-  label: string;
-  primary?: boolean;
-};
-
 export function MobileHero({ heroContent, siteConfig }: MobileHeroProps) {
   const [view, setView] = useState<HeroView>("choice");
   const [returnFocus, setReturnFocus] = useState<DetailViewKind | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const isProfessional = view === "professional";
+  const professionalActions = getProfessionalActions({
+    resumeUrl: siteConfig?.resumeUrl,
+    downloadResumeLabel: heroContent.downloadResumeLabel,
+    getInTouchLabel: heroContent.getInTouchLabel,
+  });
 
   const showDetail = (nextView: DetailViewKind) => {
     setReturnFocus(nextView);
@@ -102,17 +105,7 @@ export function MobileHero({ heroContent, siteConfig }: MobileHeroProps) {
                 onBack={() => setView("choice")}
                 actions={
                   isProfessional
-                    ? [
-                        {
-                          href: siteConfig?.resumeUrl ?? "#",
-                          label: heroContent.downloadResumeLabel,
-                          primary: true,
-                        },
-                        {
-                          href: "/contact",
-                          label: heroContent.getInTouchLabel,
-                        },
-                      ]
+                    ? professionalActions
                     : [
                         {
                           href: "/projects",
@@ -158,7 +151,7 @@ function ChoiceView({
             src={heroContent.techImageUrl}
             alt={`${heroContent.displayName} portrait`}
             fill
-            loading="lazy"
+            priority
             sizes="(max-width: 767px) 144px, 1px"
             className="object-cover"
           />
