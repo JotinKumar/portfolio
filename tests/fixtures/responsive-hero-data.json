@@ -1,0 +1,49 @@
+{
+  "heroContent": {
+    "id": "default",
+    "displayName": "Jotin Kumar Madugula",
+    "professionalTitle": "EnterprisePricingTransformationAndHealthcareOperationsLeadershipAcrossGlobalMarkets",
+    "professionalSubtitle": "I lead pricing, operations, and healthcare solution design across complex global programs while translating ambiguous commercial requirements into durable delivery systems that teams can operate with confidence.",
+    "techTitle": "FullStackAppliedArtificialIntelligencePlatformEngineeringAndDeveloperExperience",
+    "techSubtitle": "I build full-stack products, automation, and applied AI experiments with an emphasis on maintainable interfaces, thoughtful delivery tradeoffs, and systems that remain understandable as they grow.",
+    "professionalSkills": [
+      "RevenueStrategyScenarioModelingAndCommercialTransformationWithoutNaturalBreakpoints",
+      "Healthcare Operations"
+    ],
+    "professionalInitialSkills": [],
+    "techSkills": [
+      "TypeScriptReactNextJsPostgresAutomationAndAppliedArtificialIntelligence",
+      "Product Engineering"
+    ],
+    "techInitialSkills": [],
+    "professionalImageUrl": "/images/professional-portrait.jpg",
+    "techImageUrl": "/images/tech-portrait.jpg",
+    "exploreProfessionalLabel": "Explore Professional Strategy, Operations, and Pricing Experience",
+    "exploreTechLabel": "Explore Technology Projects, Writing, and Engineering Practice",
+    "resetViewLabel": "Back to choices",
+    "downloadResumeLabel": "Download Resume",
+    "getInTouchLabel": "Contact Me",
+    "viewProjectsLabel": "View Projects",
+    "viewArticlesLabel": "View Blogs",
+    "homeWorkSectionTitle": "Work Experience",
+    "homeFeaturedArticlesTitle": "Featured Blogs",
+    "homeFeaturedProjectsTitle": "Featured Projects",
+    "homeViewAllArticlesLabel": "View All Blogs",
+    "homeViewAllProjectsLabel": "View All Projects",
+    "updatedAt": "2026-07-19T00:00:00.000Z"
+  },
+  "siteConfig": {
+    "id": "default",
+    "siteName": "Portfolio",
+    "siteTagline": "Professional and technology portfolio",
+    "logoUrl": "/images/logo.png",
+    "logoAlt": "Portfolio logo",
+    "resumeUrl": "/resume.pdf",
+    "primaryEmail": "hello@example.test",
+    "phone": "",
+    "locationLabel": "",
+    "defaultTitle": "Responsive Hero Test",
+    "defaultDescription": "Deterministic responsive hero browser fixture",
+    "updatedAt": "2026-07-19T00:00:00.000Z"
+  }
+}
