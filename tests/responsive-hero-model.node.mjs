@@ -48,6 +48,7 @@ test("omits the resume action when its URL is missing or blank", () => {
       {
         href: "/contact",
         label: "Get in Touch",
+        primary: true,
       },
     ]);
     assert.equal(actions.some((action) => action.href === "#"), false);

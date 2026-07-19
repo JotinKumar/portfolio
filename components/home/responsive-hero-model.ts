@@ -36,7 +36,7 @@ export function getProfessionalActions({
   };
 
   if (!normalizedResumeUrl) {
-    return [contactAction];
+    return [{ ...contactAction, primary: true }];
   }
 
   return [
