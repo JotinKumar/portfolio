@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Tag as TagIcon, LayoutGrid } from "lucide-react";
+import { Tag as TagIcon, SquaresFour as LayoutGrid } from "@phosphor-icons/react/ssr";
 
 export function BlogsTaxonomyRail({
   categories,
@@ -17,13 +17,13 @@ export function BlogsTaxonomyRail({
     <section className="space-y-8 border-l border-border/60 pl-0 md:pl-6">
       <div className="space-y-6">
         <div className="space-y-2">
-          <p className="kicker text-muted-foreground uppercase tracking-widest text-[0.65rem] font-bold">Discovery</p>
-          <h2 className="type-card-title text-[1.85rem] font-serif leading-none">Browse by topics / tags</h2>
+          <p className="kicker text-muted-foreground">Discovery</p>
+          <h2 className="type-card-title text-[1.85rem] leading-none">Browse by topics / tags</h2>
         </div>
 
         <div className="space-y-6">
           <div className="space-y-3">
-            <h3 className="flex items-center gap-2 text-[0.7rem] font-black uppercase tracking-[0.2em] text-foreground/40 font-sans">
+            <h3 className="type-meta flex items-center gap-2 text-muted-foreground">
               <LayoutGrid className="size-3" />
               Topics
             </h3>
@@ -32,7 +32,7 @@ export function BlogsTaxonomyRail({
                 <Link key={cat} href={`/blogs?category=${encodeURIComponent(cat)}`}>
                   <Badge 
                     variant={activeCategory === cat ? "default" : "outline"}
-                    className="px-3 py-1 text-[0.7rem] font-bold tracking-tight transition-all hover:bg-primary/10 hover:border-primary/30 active:scale-95"
+                    className="type-meta rounded-none px-3 py-1 transition-colors hover:border-primary/30 hover:bg-primary/10"
                   >
                     {cat}
                   </Badge>
@@ -42,7 +42,7 @@ export function BlogsTaxonomyRail({
           </div>
 
           <div className="space-y-3">
-            <h3 className="flex items-center gap-2 text-[0.7rem] font-black uppercase tracking-[0.2em] text-foreground/40 font-sans">
+            <h3 className="type-meta flex items-center gap-2 text-muted-foreground">
               <TagIcon className="size-3" />
               Tags
             </h3>
@@ -51,7 +51,7 @@ export function BlogsTaxonomyRail({
                 <Link key={tag} href={`/blogs?tag=${encodeURIComponent(tag)}`}>
                   <Badge 
                     variant={activeTag === tag ? "default" : "secondary"}
-                    className="px-3 py-1 text-[0.65rem] font-bold transition-all hover:bg-primary/5 hover:text-primary active:scale-95"
+                    className="type-meta rounded-none px-3 py-1 transition-colors hover:bg-primary/5 hover:text-primary"
                   >
                     #{tag}
                   </Badge>

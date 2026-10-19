@@ -16,8 +16,8 @@ export function Glassmorphism({
   return (
     <div
       className={cn(
-        "rounded-2xl border backdrop-blur-[12.5px] [background:rgba(0,0,0,0.05)] dark:[background:rgba(255,255,255,0.10)] [border-color:rgba(0,0,0,0.15)] dark:[border-color:rgba(255,255,255,0.15)]",
-        noShadow ? "shadow-none" : "shadow-[0_4px_30px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_30px_rgba(0,0,255,0.10)]",
+        "rounded-[var(--radius-layout)] border border-border/70 bg-card/80 backdrop-blur-[12.5px] dark:bg-card/85",
+        noShadow ? "shadow-none" : "shadow-lg",
         className
       )}
       style={{

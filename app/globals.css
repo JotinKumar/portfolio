@@ -8,7 +8,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-body);
   --font-serif: var(--font-display);
-  --font-mono: var(--font-code);
+  --font-mono: var(--font-body);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -25,6 +25,10 @@
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
+  --color-control-border: var(--control-border);
+  --color-badge-border: var(--badge-border);
+  --color-overlay-surface: var(--overlay-surface);
+  --color-overlay-foreground: var(--overlay-foreground);
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
@@ -78,6 +82,43 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes gradient-border-rotate {
+  to {
+    --gradient-angle: 360deg;
+  }
+}
+
+.gradient-border-component {
+  box-sizing: border-box;
+}
+
+.gradient-border-auto,
+.gradient-border-stop-hover {
+  animation: gradient-border-rotate var(--animation-duration) linear infinite;
+}
+
+.gradient-border-hover:hover {
+  animation: gradient-border-rotate var(--animation-duration) linear infinite;
+}
+
+.gradient-border-stop-hover:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gradient-border-auto,
+  .gradient-border-hover:hover,
+  .gradient-border-stop-hover {
+    animation: none;
+  }
+}
+
 :root {
   --radius: 0rem;
   --background: oklch(0.984 0.006 82);
@@ -98,6 +139,16 @@
   --border: oklch(0.878 0.017 78);
   --input: oklch(0.878 0.017 78);
   --ring: oklch(0.56 0.126 46);
+  --control-border: var(--border);
+  --badge-border: color-mix(in oklab, var(--border) 80%, transparent);
+  --overlay-surface: oklch(0.2 0.012 45 / 0.78);
+  --overlay-foreground: oklch(0.965 0.004 92);
+  --decorative-1: oklch(0.68 0.19 38);
+  --decorative-2: oklch(0.78 0.16 72);
+  --decorative-3: oklch(0.62 0.2 24);
+  --radius-layout: 2.5rem;
+  --radius-card: 1.25rem;
+  --radius-control: 0rem;
   --chart-1: oklch(0.56 0.126 46);
   --chart-2: oklch(0.66 0.05 72);
   --chart-3: oklch(0.52 0.04 57);
@@ -150,6 +201,13 @@
   --border: oklch(0.358 0.013 49);
   --input: oklch(0.358 0.013 49);
   --ring: oklch(0.72 0.144 46);
+  --control-border: var(--border);
+  --badge-border: color-mix(in oklab, var(--border) 80%, transparent);
+  --overlay-surface: oklch(0.16 0.01 45 / 0.84);
+  --overlay-foreground: oklch(0.965 0.004 92);
+  --decorative-1: oklch(0.7 0.18 38);
+  --decorative-2: oklch(0.76 0.15 72);
+  --decorative-3: oklch(0.64 0.19 24);
   --chart-1: oklch(0.72 0.144 46);
   --chart-2: oklch(0.66 0.07 70);
   --chart-3: oklch(0.82 0.07 86);
@@ -181,6 +239,18 @@
   --shadow-xl: 0px 2px 3px 0px hsl(0 0% 6% / 0.16), 0px 8px 10px -1px hsl(0 0% 6% / 0.16);
   --shadow-2xl: 0px 2px 3px 0px hsl(0 0% 6% / 0.4);
   --tracking-normal: 0em;
+}
+
+.public-design-scope {
+  --control-border: oklch(0.65 0.025 60);
+  --badge-border: oklch(0.65 0.025 60);
+}
+
+.dark .public-design-scope,
+.dark.public-design-scope {
+  --primary-foreground: oklch(0.222 0.008 48);
+  --control-border: oklch(0.52 0.02 50);
+  --badge-border: oklch(0.52 0.02 50);
 }
 
 @layer base {
@@ -274,5 +344,14 @@
     letter-spacing: 0.1em;
     font-weight: 500;
     text-transform: uppercase;
+  }
+
+  .public-design-scope .type-body {
+    font-size: 1rem;
+  }
+
+  .public-design-scope .type-meta,
+  .public-design-scope .kicker {
+    font-size: 0.75rem;
   }
 }

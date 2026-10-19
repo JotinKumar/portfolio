@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { ArrowLeft, Clock3, FileImage, Layers3, Tag } from "lucide-react";
+import { ArrowLeft, Clock as Clock3, ImageSquare as FileImage, Stack as Layers3, Tag } from "@phosphor-icons/react/ssr";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { MagnifyingGlass as Search } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -29,12 +29,12 @@ export function BlogsEditorialHero({
     <header className="animate-in fade-in slide-in-from-bottom-3 duration-500 space-y-6">
       <div className="space-y-5">
         <div className="flex justify-center">
-          <h1 className="flex items-end justify-center gap-x-4 text-center text-[clamp(2.6rem,6.2vw,5.4rem)] font-black uppercase leading-[0.9] tracking-[-0.045em]">
-            <span className="text-[color:oklch(0.18_0.015_40)] dark:text-[color:oklch(0.94_0.008_70)]">THINKING</span>
-            <span className="text-transparent opacity-90 [-webkit-text-stroke:1.4px_oklch(0.38_0.01_40)] dark:opacity-100 dark:[-webkit-text-stroke:1.4px_oklch(0.82_0.01_70)]">
+          <h1 className="type-display flex flex-col items-center justify-center gap-y-1 text-center text-[clamp(2.35rem,12vw,3.1rem)] uppercase sm:flex-row sm:items-end sm:gap-x-2 sm:gap-y-0 sm:text-[clamp(2.6rem,6.2vw,5.4rem)] md:gap-x-4">
+            <span className="text-foreground">THINKING</span>
+            <span className="text-muted-foreground">
               OUT
             </span>
-            <span className="text-[color:oklch(0.18_0.015_40)] dark:text-[color:oklch(0.94_0.008_70)]">LOUD</span>
+            <span className="text-foreground">LOUD</span>
           </h1>
         </div>
 
@@ -56,17 +56,18 @@ export function BlogsEditorialHero({
               {tag ? <input type="hidden" name="tag" value={tag} /> : null}
 
               <div
-                className="flex h-11 min-w-[18rem] items-center rounded-full border border-border/70 bg-background/80 pr-1 shadow-[0_8px_20px_rgba(43,28,22,0.04)]"
+                className="flex h-11 min-w-[18rem] items-center rounded-none border border-control-border bg-background/80 pr-1 shadow-sm transition-[border-color,box-shadow] focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/50"
                 data-testid="blogs-editorial-search"
               >
                 <Input
                   id="blogs-search-inline"
                   name="search"
+                  aria-label="Search articles"
                   defaultValue={search ?? ""}
                   placeholder="Search"
                   className="h-full border-0 bg-transparent px-4 shadow-none focus-visible:ring-0"
                 />
-                <Button type="submit" size="icon" className="h-9 w-9 rounded-full">
+                <Button type="submit" size="icon" aria-label="Search articles" className="h-9 w-9 rounded-none">
                   <Search className="size-4" />
                 </Button>
               </div>
@@ -88,7 +89,7 @@ export function BlogsEditorialHero({
           {leadArticle ? (
             <FeaturedBlogLeadCard article={leadArticle} />
           ) : (
-            <div className="flex min-h-[32rem] items-end rounded-[2.2rem] border border-border/60 bg-card/70 p-6 sm:rounded-[2.8rem]">
+            <div className="flex min-h-[32rem] items-end rounded-[var(--radius-layout)] border border-border/60 bg-card/70 p-6">
               <div className="max-w-[32rem] space-y-3">
                 <p className="kicker text-muted-foreground">Journal</p>
                 <h1 className="type-display max-w-[10ch] text-[clamp(3rem,4vw+1rem,5.6rem)]">{title}</h1>

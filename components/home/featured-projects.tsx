@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CaretLeft as ChevronLeft, CaretRight as ChevronRight } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { ProjectCard } from "@/components/ui/project-card";
 import { FeaturePlaceholderCard } from "@/components/ui/feature-placeholder-card";

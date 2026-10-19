@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ContactFormCard } from "@/components/contact/contact-form-card";
 import { PAGE_SECTION_Y_CLASS } from "@/lib/layout";
 import { getPageContent, getSiteShellData, getSocialLinksByPosition } from "@/lib/server/queries";
-import { Mail, MapPin, Clock, Phone } from "lucide-react";
+import { Clock, EnvelopeSimple as Mail, MapPin, Phone } from "@phosphor-icons/react/ssr";
 import { isExternalSocialLink, normalizeSocialPlatform, resolveSocialLinkDisplayValue, resolveSocialLinkTarget } from "@/lib/social-links";
 
 export const dynamic = "force-dynamic";

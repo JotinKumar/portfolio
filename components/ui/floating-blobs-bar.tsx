@@ -11,23 +11,7 @@ interface Blob {
   dy: number;
 }
 
-const COLORS = [
-  "#ff6b6b", // Vibrant Red
-  "#f7b731", // Vibrant Yellow
-  "#45aaf2", // Vibrant Blue
-  "#26de81", // Vibrant Green
-  "#a55eea", // Vibrant Purple
-  "#fd9644", // Vibrant Orange
-  "#2bcbba", // Vibrant Teal
-  "#ff00cc", // Neon Pink
-  "#00ffea", // Neon Aqua
-  "#fffb00", // Neon Yellow
-  "#ff007f", // Hot Pink
-  "#00ff00", // Bright Green
-  "#00bfff", // Deep Sky Blue
-  "#ff4500", // Orange Red
-  "#9400d3", // Dark Violet
-];
+const COLOR_TOKENS = ["--decorative-1", "--decorative-2", "--decorative-3"];
 
 // Constants
 const DEFAULT_HEIGHT = 76;
@@ -60,19 +44,32 @@ export const FloatingBlobsBar: React.FC<FloatingBlobsBarProps> = ({
   const dimensionsRef = useRef({ width: 0, height });
   const prefersReducedMotionRef = useRef(false);
 
+  const resolveColors = useCallback(() => {
+    const styles = getComputedStyle(document.documentElement);
+    const colors = COLOR_TOKENS.map((token) => styles.getPropertyValue(token).trim()).filter(Boolean);
+    return colors.length > 0 ? colors : [styles.color];
+  }, []);
+
   // Memoize blob creation function
   const createBlobs = useCallback(
     (width: number, height: number): Blob[] => {
-      return Array.from({ length: blobCount }, () => ({
-        x: getRandom(0, width),
-        y: getRandom(0, height),
-        size: getRandom(BLOB_SIZE_MIN, BLOB_SIZE_MAX),
-        color: COLORS[Math.floor(getRandom(0, COLORS.length))],
-        dx: getRandom(-HORIZONTAL_VELOCITY_RANGE, HORIZONTAL_VELOCITY_RANGE),
-        dy: getRandom(-VERTICAL_VELOCITY_RANGE, VERTICAL_VELOCITY_RANGE),
-      }));
+      const colors = resolveColors();
+
+      return Array.from({ length: blobCount }, () => {
+        const size = Math.min(getRandom(BLOB_SIZE_MIN, BLOB_SIZE_MAX), width, height);
+        const radius = size / 2;
+
+        return {
+          x: getRandom(radius, width - radius),
+          y: getRandom(radius, height - radius),
+          size,
+          color: colors[Math.floor(getRandom(0, colors.length))],
+          dx: getRandom(-HORIZONTAL_VELOCITY_RANGE, HORIZONTAL_VELOCITY_RANGE),
+          dy: getRandom(-VERTICAL_VELOCITY_RANGE, VERTICAL_VELOCITY_RANGE),
+        };
+      });
     },
-    [blobCount]
+    [blobCount, resolveColors]
   );
 
   // Optimized draw function using filter instead of temporary canvas
@@ -86,8 +83,9 @@ export const FloatingBlobsBar: React.FC<FloatingBlobsBarProps> = ({
 
       blobsRef.current.forEach((blob) => {
         ctx.fillStyle = blob.color;
+        const radius = blob.size / 2;
         ctx.beginPath();
-        ctx.arc(blob.x, blob.y, blob.size / 2, 0, Math.PI * 2);
+        ctx.arc(blob.x, blob.y, radius, 0, Math.PI * 2);
         ctx.fill();
 
         // Update position
@@ -95,7 +93,6 @@ export const FloatingBlobsBar: React.FC<FloatingBlobsBarProps> = ({
         blob.y += blob.dy;
 
         // Bounce off edges with size consideration
-        const radius = blob.size / 2;
         if (blob.x <= radius || blob.x >= width - radius) {
           blob.dx *= -1;
           blob.x = Math.max(radius, Math.min(width - radius, blob.x));
@@ -209,13 +206,22 @@ export const FloatingBlobsBar: React.FC<FloatingBlobsBarProps> = ({
     document.addEventListener("visibilitychange", handleVisibilityChange);
     motionQuery.addEventListener("change", handleReducedMotionChange);
 
+    const themeObserver = new MutationObserver(() => {
+      blobsRef.current = createBlobs(dimensionsRef.current.width, height);
+      if (prefersReducedMotionRef.current) {
+        draw(ctx, dimensionsRef.current.width, height);
+      }
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+
     return () => {
       stopAnimation();
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       motionQuery.removeEventListener("change", handleReducedMotionChange);
+      themeObserver.disconnect();
     };
-  }, [height, blobCount, createBlobs, handleResize, startAnimation, stopAnimation]);
+  }, [height, blobCount, createBlobs, draw, handleResize, startAnimation, stopAnimation]);
 
   return (
     <div

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "@phosphor-icons/react/ssr";
 import { Badge } from "@/components/ui/badge";
 import { FilterTabs } from "@/components/ui/filter-tabs";
 import { PageContent } from "@/components/layout/page-primitives";

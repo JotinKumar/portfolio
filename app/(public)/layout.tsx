@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { PublicDesignScope } from "@/components/layout/public-design-scope";
 import { Background } from "@/components/ui/background";
 import { FloatingBlobsBar } from "@/components/ui/floating-blobs-bar";
 import { APP_SHELL_CLASS } from "@/lib/layout";
@@ -41,21 +42,23 @@ export default async function PublicLayout({
   }
 
   return (
-    <Background>
-      <div className="fixed top-[10px] left-0 right-0 z-40 pointer-events-none">
-        <FloatingBlobsBar height={68} />
-      </div>
-      <Header siteConfig={shellData.siteConfig} navigationItems={shellData.headerNav} />
-      <main className="min-h-screen pt-20">
-        <div className={APP_SHELL_CLASS}>{children}</div>
-      </main>
-      <Footer
-        siteConfig={shellData.siteConfig}
-        socialLinks={shellData.footerSocialLinks}
-        quickLinks={shellData.footerQuickLinks}
-        resourceLinks={shellData.footerResourceLinks}
-        legalLinks={shellData.footerLegalLinks}
-      />
-    </Background>
+    <PublicDesignScope>
+      <Background>
+        <div className="fixed top-[10px] left-0 right-0 z-40 pointer-events-none">
+          <FloatingBlobsBar height={68} />
+        </div>
+        <Header siteConfig={shellData.siteConfig} navigationItems={shellData.headerNav} />
+        <main className="min-h-screen pt-20">
+          <div className={APP_SHELL_CLASS}>{children}</div>
+        </main>
+        <Footer
+          siteConfig={shellData.siteConfig}
+          socialLinks={shellData.footerSocialLinks}
+          quickLinks={shellData.footerQuickLinks}
+          resourceLinks={shellData.footerResourceLinks}
+          legalLinks={shellData.footerLegalLinks}
+        />
+      </Background>
+    </PublicDesignScope>
   );
 }

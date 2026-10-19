@@ -62,7 +62,7 @@ export const getFeaturedArticles = cache(async (limit = 3): Promise<ArticleCardD
   const supabase = createServerSupabasePublicClient();
   const { data, error } = await supabase
     .from("Blog")
-    .select("id,title,slug,excerpt,coverImage,category,authorName,authorAvatar,readTime,createdAt,publishedAt,featured")
+    .select("id,title,slug,excerpt,coverImage,category,authorName,authorAvatar,readTime,createdAt,publishedAt")
     .eq("published", true)
     .order("featured", { ascending: false })
     .order("publishedAt", { ascending: false, nullsFirst: false })
@@ -70,7 +70,7 @@ export const getFeaturedArticles = cache(async (limit = 3): Promise<ArticleCardD
 
   if (error) throw error;
 
-  return ((data ?? []) as (ArticleCardData & { featured: boolean })[]).map(({ featured: _featured, ...article }) => article);
+  return (data ?? []) as ArticleCardData[];
 });
 
 export const getFeaturedProjects = cache(async (limit = 3): Promise<ProjectCardData[]> => {

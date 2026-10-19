@@ -2,7 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { BriefcaseBusiness, Gamepad2, Headphones, Plane, Podcast, Popcorn } from "lucide-react";
+import {
+  AirplaneTilt as Plane,
+  Briefcase as BriefcaseBusiness,
+  Broadcast as Podcast,
+  GameController as Gamepad2,
+  Headphones,
+  Popcorn,
+} from "@phosphor-icons/react";
 import { ProfileSidebarBlock } from "@/components/profile/profile-sidebar-block";
 
 const HOBBY_PREVIEWS: Record<string, { src: string }> = {

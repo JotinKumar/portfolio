@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Tag } from "@phosphor-icons/react/ssr";
 import { PageContent } from "@/components/layout/page-primitives";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -48,12 +48,12 @@ export function BlogDetailShell({
                 {authorAvatar ? (
                   <Image src={authorAvatar} alt={authorName ?? ""} fill className="object-cover" />
                 ) : (
-                  <span className="text-sm font-bold uppercase">
+                  <span className="text-sm font-semibold uppercase">
                     {(authorName ?? "J").charAt(0)}
                   </span>
                 )}
               </div>
-              <p className="type-body text-foreground font-bold leading-tight">
+              <p className="type-body font-semibold leading-tight text-foreground">
                 {authorName ?? "Jotin Kumar Madugula"}
               </p>
             </div>

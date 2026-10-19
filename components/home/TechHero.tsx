@@ -22,12 +22,12 @@ export function TechHero({
 
   return (
     <motion.div 
-      className="w-full h-full grid items-center overflow-hidden bg-background/50"
+      className="w-full h-full grid items-center overflow-hidden bg-background/50 [--hero-center-track:clamp(8rem,42vw,21rem)]"
       initial={false}
       animate={{
         gridTemplateColumns: current 
           ? "minmax(0px, 0.1fr) 400px minmax(0, 1.2fr)" 
-          : "minmax(0, 1fr) 336px minmax(0, 1fr)"
+          : "minmax(0, 1fr) minmax(0, var(--hero-center-track)) minmax(0, 1fr)"
       }}
       transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
     >
@@ -83,8 +83,8 @@ export function TechHero({
               )}
             </AnimatePresence>
             
-            <div className={`space-y-3 flex flex-col ${current ? "items-start" : "items-end"}`}>
-              <h2 className={`${isInitial ? "type-nav text-[0.95rem]" : "type-card-title text-[1.35rem] md:text-[1.7rem]"} whitespace-nowrap`}>
+            <div className={`min-w-0 w-full space-y-3 flex flex-col ${current ? "items-start" : "items-end"}`}>
+              <h2 className={`type-card-title ${isInitial ? "max-w-full break-words text-[clamp(1.15rem,1.4vw,1.4rem)] leading-tight text-balance" : "text-[1.35rem] md:text-[1.7rem] whitespace-nowrap"}`}>
                 {heroContent.techTitle}
               </h2>
               <p className={`${isInitial ? "type-body max-w-md" : "type-body-lg max-w-2xl"} text-muted-foreground`}>
@@ -126,7 +126,7 @@ export function TechHero({
                   >
                     <Badge
                       variant="outline"
-                      className="border-foreground/18 bg-transparent px-3 py-1 text-[8px] md:text-[9px] text-foreground shadow-none whitespace-nowrap"
+                      className="type-meta border-foreground/18 bg-transparent !text-[0.72rem] px-2.5 py-0.5 text-foreground shadow-none whitespace-nowrap rounded-none"
                     >
                       {skill}
                     </Badge>
@@ -135,10 +135,10 @@ export function TechHero({
               </AnimatePresence>
             </motion.div>
             <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-700 ${isInitial ? "scale-90 origin-right" : ""}`}>
-              <Button variant="outline" asChild className="rounded-full border-2 px-8 py-5 text-base transition-all hover:bg-primary/5 active:scale-95">
+              <Button variant="outline" asChild className="rounded-none border-2 px-8 py-5 text-base transition-all hover:bg-primary/5 active:scale-95">
                 <Link href="/projects">{heroContent.viewProjectsLabel}</Link>
               </Button>
-              <Button asChild className="rounded-full px-8 py-5 text-base shadow-lg transition-all hover:shadow-primary/20 active:scale-95">
+              <Button asChild className="rounded-none px-8 py-5 text-base shadow-lg transition-all hover:shadow-primary/20 active:scale-95">
                 <Link href="/blogs">{heroContent.viewArticlesLabel}</Link>
               </Button>
             </div>

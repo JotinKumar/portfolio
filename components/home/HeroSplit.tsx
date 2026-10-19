@@ -3,8 +3,9 @@ import { useState, useEffect, useRef } from "react";
 import { ProfessionalHero } from "@/components/home/ProfessionalHero";
 import { TechHero } from "@/components/home/TechHero";
 import { ScrollCue } from "@/components/ui/scroll-cue";
-import { Briefcase, Code, RotateCcw } from "lucide-react";
+import { ArrowCounterClockwise as RotateCcw, Briefcase, Code } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
+import { BorderRotate } from "@/components/ui/border-rotate";
 import { Glassmorphism } from "@/components/ui/glassmorphism";
 import type { HeroContent, SiteConfig } from "@/lib/db-types";
 import {
@@ -67,17 +68,24 @@ export default function HeroSplit({
 
   return (
     <section className="relative w-full flex flex-col items-center overflow-hidden px-0 py-2">
-      <Glassmorphism
-        noShadow
-        className="relative w-full max-w-7xl h-[600px] md:h-[80vh] min-h-[600px] max-h-[600px] overflow-hidden md:rounded-[2.5rem]"
+      <BorderRotate
+        animationMode="auto-rotate"
+        animationSpeed={8}
+        borderWidth={2}
+        backgroundColor="var(--background)"
+        className="relative h-[600px] min-h-[600px] max-h-[600px] w-full max-w-7xl overflow-hidden [--border-radius:0px] md:h-[80vh] md:[--border-radius:var(--radius-layout)]"
       >
+        <Glassmorphism
+          noShadow
+          className="relative h-full w-full overflow-hidden rounded-none md:rounded-[calc(var(--radius-layout)-2px)]"
+        >
         {/* Navigation Buttons Layer */}
         <div className="absolute top-6 left-8 right-8 z-40 flex justify-between pointer-events-none">
           <div className="pointer-events-auto">
             {(isInitial || isTech) && (
               <Button
                 variant="outline"
-                className="rounded-full gap-2 bg-background/60 px-5 backdrop-blur-xl border-primary/20 shadow-xl transition-all hover:scale-105 hover:border-primary active:scale-95"
+                className="rounded-none gap-2 bg-background/60 px-5 backdrop-blur-xl border-control-border shadow-xl transition-all hover:scale-105 hover:border-primary active:scale-95"
                 onClick={() => goTo(1)}
               >
                 <Briefcase size={16} className="text-primary" />
@@ -101,7 +109,7 @@ export default function HeroSplit({
             {(isInitial || isProfessional) && (
               <Button
                 variant="outline"
-                className="rounded-full gap-2 bg-background/60 px-5 backdrop-blur-xl border-primary/20 shadow-xl transition-all hover:scale-105 hover:border-primary active:scale-95"
+                className="rounded-none gap-2 bg-background/60 px-5 backdrop-blur-xl border-control-border shadow-xl transition-all hover:scale-105 hover:border-primary active:scale-95"
                 onClick={() => goTo(0)}
               >
                 <span>{heroContent.exploreTechLabel}</span>
@@ -132,7 +140,7 @@ export default function HeroSplit({
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="absolute left-0 right-0 z-40 flex flex-col items-center pointer-events-none"
             >
-              <div className="rounded-2xl border border-white/10 bg-background/20 p-2 shadow-lg backdrop-blur-md">
+              <div className="rounded-none border border-control-border bg-background/20 p-2 shadow-lg backdrop-blur-md">
                 <h1 className="type-card-title text-center text-[1.15rem] md:text-[1.75rem] whitespace-nowrap">
                   {heroContent.displayName}
                 </h1>
@@ -185,11 +193,12 @@ export default function HeroSplit({
 
         {/* Thinner Separator Bar */}
         <motion.div
-          className="absolute top-0 h-full w-[2px] -translate-x-1/2 bg-primary/30 z-40 shadow-[0_0_15px_rgba(var(--primary),0.3)]"
+          className="absolute top-0 h-full w-[2px] -translate-x-1/2 bg-primary/30 z-40 shadow-lg"
           initial={false}
           style={{ left: splitPercent }}
         />
-      </Glassmorphism>
+        </Glassmorphism>
+      </BorderRotate>
       <ScrollCue
         testId="home-scroll-cue"
         label="Scroll to work experience"

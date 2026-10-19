@@ -7,8 +7,15 @@ import { ProfileMagneticYears } from "@/components/profile/profile-magnetic-year
 import { ProfileSkillMeters } from "@/components/profile/profile-skill-meters.client";
 import { ProfileHobbyPreview } from "@/components/profile/profile-hobby-preview.client";
 import type { SocialLink } from "@/lib/db-types";
-import type { LucideIcon } from "lucide-react";
-import { BriefcaseBusiness, Headphones, Linkedin, Mail, MapPin, Phone, Plane, Podcast, Popcorn } from "lucide-react";
+import type { Icon } from "@phosphor-icons/react";
+import {
+  ArrowUpRight as ExternalIcon,
+  EnvelopeSimple as Mail,
+  LinkedinLogo as Linkedin,
+  MapPin,
+  Phone,
+  WhatsappLogo as WhatsAppIcon,
+} from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 
 type SkillMeterEntry = {
@@ -44,7 +51,7 @@ type ExperienceEntry = {
 
 type HeroMetaItem = {
   label: string;
-  icon: LucideIcon;
+  icon: Icon;
 };
 
 type NameSegment = {
@@ -446,22 +453,5 @@ export function ProfileEditorialShell({
         </div>
       </div>
     </PageContent>
-  );
-}
-
-function ExternalIcon(props: React.ComponentProps<"svg">) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="M7 17 17 7" />
-      <path d="M7 7h10v10" />
-    </svg>
-  );
-}
-
-function WhatsAppIcon(props: React.ComponentProps<"svg">) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
-      <path d="M19.05 4.94A9.94 9.94 0 0 0 12.01 2C6.5 2 2.02 6.48 2.02 12c0 1.76.46 3.48 1.33 5L2 22l5.14-1.3A9.96 9.96 0 0 0 12 22h.01c5.51 0 9.99-4.48 9.99-10 0-2.67-1.04-5.18-2.95-7.06ZM12 20.3a8.24 8.24 0 0 1-4.2-1.15l-.3-.18-3.05.77.82-2.97-.2-.31A8.24 8.24 0 0 1 3.72 12a8.29 8.29 0 0 1 14.14-5.86A8.23 8.23 0 0 1 20.29 12c0 4.58-3.72 8.3-8.29 8.3Zm4.55-6.2c-.25-.13-1.47-.73-1.7-.81-.23-.08-.4-.13-.57.13-.17.25-.65.8-.8.97-.15.17-.3.19-.55.06-.25-.13-1.06-.39-2.02-1.26-.75-.67-1.25-1.5-1.4-1.76-.15-.25-.02-.38.11-.5.11-.11.25-.3.38-.44.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.57-1.38-.78-1.89-.21-.5-.42-.43-.57-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.09s.9 2.43 1.03 2.6c.13.17 1.77 2.7 4.29 3.78.6.26 1.07.42 1.44.53.61.19 1.17.16 1.61.1.49-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.1-.23-.17-.48-.29Z" />
-    </svg>
   );
 }

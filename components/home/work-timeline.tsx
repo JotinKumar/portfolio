@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollCue } from "@/components/ui/scroll-cue";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { ArrowUpRight, Building, Calendar, MapPin } from "lucide-react";
+import { ArrowUpRight, BuildingOffice as Building, Calendar, MapPin } from "@phosphor-icons/react";
 import type { ProfileMilestone } from "@/lib/db-types";
 
 interface Experience {
@@ -238,8 +238,8 @@ export function WorkTimeline({
                   return (
                     <span
                       key={`ellipsis-${index}`}
-                      className={`inline-flex w-full items-center justify-center px-0.5 font-mono text-muted-foreground ${
-                        railMode === "compact" ? "text-[0.68rem] md:text-[0.74rem]" : "text-[0.78rem] md:text-[0.86rem]"
+                      className={`inline-flex w-full items-center justify-center px-0.5 font-sans tabular-nums text-muted-foreground ${
+                        railMode === "compact" ? "text-[0.75rem]" : "text-[0.78rem] md:text-[0.86rem]"
                       }`}
                     >
                       ...
@@ -266,19 +266,19 @@ export function WorkTimeline({
                     onMouseLeave={milestone ? clearTooltip : undefined}
                     onFocus={milestone ? (event) => updateTooltipFromFocus(event, milestone.id) : undefined}
                     onBlur={milestone ? clearTooltip : undefined}
-                    className={`inline-flex w-full items-center justify-center px-2.5 py-1 font-mono text-[0.76rem] font-medium tracking-[0.08em] md:text-[0.9rem] ${
+                    className={`inline-flex w-full items-center justify-center rounded-none px-2.5 py-1 font-sans tabular-nums text-[0.76rem] font-medium tracking-[0.08em] md:text-[0.9rem] ${
                       isMilestone
                         ? "bg-primary/10 text-foreground"
                         : "bg-transparent text-muted-foreground"
-                    } ${railMode === "compact" ? "px-1.5 py-0.5 text-[0.66rem] md:text-[0.74rem]" : railMode === "tight" ? "px-2 py-0.5 text-[0.7rem] md:text-[0.8rem]" : ""}`}
+                    } ${railMode === "compact" ? "px-1.5 py-0.5 text-[0.75rem]" : railMode === "tight" ? "px-2 py-0.5 text-[0.75rem] md:text-[0.8rem]" : ""}`}
                   >
                     {label}
                   </button>
                 );
               })}
               <span
-                className={`inline-flex w-full items-center justify-center px-0.5 font-mono text-muted-foreground ${
-                  railMode === "compact" ? "text-[0.68rem] md:text-[0.74rem]" : "text-[0.78rem] md:text-[0.86rem]"
+                className={`inline-flex w-full items-center justify-center px-0.5 font-sans tabular-nums text-muted-foreground ${
+                  railMode === "compact" ? "text-[0.75rem]" : "text-[0.78rem] md:text-[0.86rem]"
                 }`}
               >
                 ...
@@ -286,7 +286,7 @@ export function WorkTimeline({
           </div>
           <div
             data-testid="home-milestone-hover-role"
-            className={`pointer-events-none absolute z-10 whitespace-nowrap bg-background/95 px-2 py-1 text-[0.72rem] uppercase tracking-[0.16em] text-muted-foreground transition-opacity duration-150 ${
+            className={`type-meta pointer-events-none absolute z-10 whitespace-nowrap bg-background/95 px-2 py-1 text-muted-foreground transition-opacity duration-150 ${
               hoveredMilestone && tooltipPosition ? "opacity-100" : "opacity-0"
             }`}
             style={
@@ -356,7 +356,7 @@ export function WorkTimeline({
                     <ul className="space-y-3">
                       {parseAchievements(currentExperience.achievements).slice(0, 3).map((achievement) => (
                         <li key={achievement} className="type-body flex gap-3 text-muted-foreground">
-                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/60" />
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-none bg-primary/60" />
                           <span>{achievement}</span>
                         </li>
                       ))}
@@ -466,7 +466,7 @@ export function WorkTimeline({
                     <ul className="space-y-3">
                       {parseAchievements(selectedExperience.achievements).map((achievement) => (
                         <li key={`${selectedExperience.id}-sheet-achievement-${achievement}`} className="type-body flex gap-3 text-muted-foreground">
-                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/60" />
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-none bg-primary/60" />
                           <span>{achievement}</span>
                         </li>
                       ))}

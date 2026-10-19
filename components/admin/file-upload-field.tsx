@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { FilePlus2, Upload } from "lucide-react";
+import { FilePlus as FilePlus2, UploadSimple as Upload } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";

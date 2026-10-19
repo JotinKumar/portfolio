@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Calendar, Tag, Clock, ArrowRight } from "lucide-react";
+import { Calendar, Tag } from "@phosphor-icons/react";
 import type { ArticleCardData } from "@/lib/server/queries";
 
 interface BlogLeadCardProps {
@@ -45,7 +45,7 @@ export function BlogLeadCard({ article }: BlogLeadCardProps) {
       initial="initial"
       whileHover="hover"
       variants={cardVariants}
-      className="relative block w-full overflow-hidden rounded-none shadow-lg h-[500px]"
+      className="relative block h-[500px] w-full overflow-hidden rounded-[var(--radius-layout)] shadow-lg"
     >
       <Link href={`/blogs/${article.slug}`} className="absolute inset-0 z-30" aria-label={`Read ${article.title}`} />
       
@@ -88,17 +88,17 @@ export function BlogLeadCard({ article }: BlogLeadCardProps) {
         transition={{ duration: 0.6, ease: [0.33, 0.66, 0.66, 1] }}
       >
         <div className="relative inline-block">
-          <h3 className="font-serif text-3xl md:text-3xl font-normal tracking-wide text-white drop-shadow-md">
+          <h3 className="type-section-title text-3xl tracking-wide text-white drop-shadow-md md:text-3xl">
             {article.title}
           </h3>
           {/* Animated Underline */}
           <motion.div 
-            className="h-[2px] bg-[#BDA26B] mx-auto mt-5"
+            className="mx-auto mt-5 h-[2px] rounded-none bg-primary"
             variants={lineVariants}
             transition={{ duration: 0.3 }}
           />
         </div>
-        <div className="mt-2 text-[#ddd] italic text-sm md:text-base font-serif">
+        <div className="type-meta mt-2 text-white/80">
           {article.category}
         </div>
       </motion.div>
@@ -109,17 +109,17 @@ export function BlogLeadCard({ article }: BlogLeadCardProps) {
         variants={infoVariants}
         transition={{ duration: 0.64, ease: [0.33, 0.66, 0.66, 1] }}
       >
-        <p className="text-white/90 text-sm md:text-[16px] leading-relaxed line-clamp-3 mb-4 font-serif">
+        <p className="type-body mb-4 line-clamp-3 text-white/90">
           {article.excerpt}
         </p>
-        <div className="inline-block bg-white text-[#444] px-3 py-1 rounded-sm text-xs font-medium transition-colors hover:bg-[#8e7c49] hover:text-white pointer-events-auto">
+        <div className="type-nav pointer-events-auto inline-block rounded-none bg-primary px-3 py-1 text-primary-foreground transition-colors hover:bg-primary/90">
           Read Article
         </div>
       </motion.div>
 
       {/* Utility Info (Footer) */}
       <div className="absolute inset-x-0 bottom-0 z-20 flex justify-start pb-4 px-6 pointer-events-none">
-        <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.8em] text-white font-serif list-none m-0 p-0">
+        <ul className="type-meta m-0 flex list-none flex-wrap items-center gap-x-4 gap-y-1 p-0 text-white">
           <li className="flex items-center gap-1.5 opacity-80">
              <Calendar className="size-3.5" />
              {dateLabel}
